@@ -12,7 +12,6 @@ import {
   Card,
   CardContent
 } from '@mui/material';
-import Grid from '@mui/material/Grid';
 import {
   Edit as EditIcon,
   ArrowBack as ArrowBackIcon,
@@ -127,8 +126,8 @@ const PracticeDetail: React.FC = () => {
         )}
       </Box>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+      <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={3}>
+        <Box flex={2}>
           <Paper sx={{ p: 3 }}>
             <Box display="flex" alignItems="center" mb={2}>
               <Typography variant="h5" sx={{ flexGrow: 1 }}>
@@ -140,16 +139,16 @@ const PracticeDetail: React.FC = () => {
               />
             </Box>
 
-            <Grid container spacing={2} mb={3}>
-              <Grid item xs={12} sm={6}>
+            <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} gap={2} mb={3}>
+              <Box flex={1}>
                 <Typography variant="subtitle2" color="text.secondary">
                   연습 날짜
                 </Typography>
                 <Typography variant="body1">
                   {formatDate(practice.practiceDate)}
                 </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
+              </Box>
+              <Box flex={1}>
                 <Typography variant="subtitle2" color="text.secondary">
                   연습 시간
                 </Typography>
@@ -159,16 +158,16 @@ const PracticeDetail: React.FC = () => {
                     ({practice.practiceDurationInMinutes}분)
                   </Typography>
                 </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
+              </Box>
+              <Box flex={1}>
                 <Typography variant="subtitle2" color="text.secondary">
                   연습 장소
                 </Typography>
                 <Typography variant="body1">
                   {practice.location}
                 </Typography>
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
 
             <Divider sx={{ my: 2 }} />
 
@@ -190,9 +189,9 @@ const PracticeDetail: React.FC = () => {
               </>
             )}
           </Paper>
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} md={4}>
+        <Box flex={1}>
           <Card sx={{ mb: 2 }}>
             <CardContent>
               <Typography variant="h6" mb={2}>
@@ -200,48 +199,52 @@ const PracticeDetail: React.FC = () => {
               </Typography>
               
               {practice.totalParticipants > 0 ? (
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      총 인원
-                    </Typography>
-                    <Typography variant="h6">
-                      {practice.totalParticipants}명
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      출석률
-                    </Typography>
-                    <Typography variant="h6" color="primary">
-                      {practice.attendanceRate.toFixed(1)}%
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography variant="body2" color="text.secondary">
-                      출석
-                    </Typography>
-                    <Typography variant="body1" color="success.main">
-                      {practice.presentCount}명
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography variant="body2" color="text.secondary">
-                      지각
-                    </Typography>
-                    <Typography variant="body1" color="warning.main">
-                      {practice.lateCount}명
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography variant="body2" color="text.secondary">
-                      결석
-                    </Typography>
-                    <Typography variant="body1" color="error.main">
-                      {practice.absentCount}명
-                    </Typography>
-                  </Grid>
-                </Grid>
+                <Box>
+                  <Box display="flex" justifyContent="space-between" mb={2}>
+                    <Box>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        총 인원
+                      </Typography>
+                      <Typography variant="h6">
+                        {practice.totalParticipants}명
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        출석률
+                      </Typography>
+                      <Typography variant="h6" color="primary">
+                        {practice.attendanceRate.toFixed(1)}%
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Box display="flex" justifyContent="space-between">
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        출석
+                      </Typography>
+                      <Typography variant="body1" color="success.main">
+                        {practice.presentCount}명
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        지각
+                      </Typography>
+                      <Typography variant="body1" color="warning.main">
+                        {practice.lateCount}명
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        결석
+                      </Typography>
+                      <Typography variant="body1" color="error.main">
+                        {practice.absentCount}명
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
               ) : (
                 <Typography variant="body2" color="text.secondary">
                   아직 참석 기록이 없습니다.
@@ -270,8 +273,8 @@ const PracticeDetail: React.FC = () => {
               </Typography>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 };
