@@ -1,5 +1,6 @@
 package com.culture.perfomingarts.domain.practiceParticipation.entity;
 
+import com.culture.perfomingarts.common.entity.Timestamped;
 import com.culture.perfomingarts.domain.practiceParticipation.enums.PracticeParticipationStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PracticeParticipation {
+public class PracticeParticipation extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

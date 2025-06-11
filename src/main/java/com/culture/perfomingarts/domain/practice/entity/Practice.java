@@ -1,5 +1,6 @@
 package com.culture.perfomingarts.domain.practice.entity;
 
+import com.culture.perfomingarts.common.entity.Timestamped;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Practice {
+public class Practice extends Timestamped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
