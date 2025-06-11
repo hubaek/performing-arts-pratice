@@ -4,7 +4,6 @@ import {
   Paper,
   Typography,
   Box,
-  Grid,
   Button,
   Chip,
   Divider,
@@ -13,6 +12,7 @@ import {
   Card,
   CardContent
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import {
   Edit as EditIcon,
   ArrowBack as ArrowBackIcon,

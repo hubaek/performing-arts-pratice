@@ -6,10 +6,10 @@ import {
   Button,
   Typography,
   Box,
-  Grid,
   Alert,
   CircularProgress
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { practiceApi, teamApi, PracticeCreateRequest, Team } from '../../api';
 
 const PracticeForm: React.FC = () => {
