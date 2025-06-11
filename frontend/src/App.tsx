@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AppBar, Toolbar, Typography, Container } from '@mui/material';
-import '@mui/material/styles';
 import PracticeList from './components/practice/PracticeList';
 import PracticeForm from './components/practice/PracticeForm';
 import PracticeDetail from './components/practice/PracticeDetail';
