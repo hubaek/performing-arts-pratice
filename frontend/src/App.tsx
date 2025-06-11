@@ -3,9 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AppBar, Toolbar, Typography, Container } from '@mui/material';
-import PracticeList from './components/practice/PracticeList';
-import PracticeForm from './components/practice/PracticeForm';
-import PracticeDetail from './components/practice/PracticeDetail';
+import { PracticeList, PracticeForm, PracticeDetail } from './components/practice';
 
 const theme = createTheme({
   palette: {
