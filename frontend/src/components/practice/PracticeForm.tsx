@@ -9,8 +9,7 @@ import {
   Alert,
   CircularProgress
 } from '@mui/material';
-import Grid from '@mui/material/Grid';
-import { practiceApi, teamApi, PracticeCreateRequest, Team } from '../../api';
+import { practiceApi, teamApi, PracticeCreateRequest, TeamListItem } from '../../api';
 
 const PracticeForm: React.FC = () => {
   const navigate = useNavigate();
@@ -28,7 +27,7 @@ const PracticeForm: React.FC = () => {
     teamId: undefined
   });
 
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [teams, setTeams] = useState<TeamListItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -121,19 +120,17 @@ const PracticeForm: React.FC = () => {
 
       <Paper sx={{ p: 3 }}>
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="연습 제목"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
+          <Box display="flex" flexDirection="column" gap={3}>
+            <TextField
+              fullWidth
+              label="연습 제목"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+            />
 
-            <Grid item xs={12} md={6}>
+            <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={2}>
               <TextField
                 fullWidth
                 label="연습 날짜"
@@ -144,9 +141,6 @@ const PracticeForm: React.FC = () => {
                 InputLabelProps={{ shrink: true }}
                 required
               />
-            </Grid>
-
-            <Grid item xs={12} md={3}>
               <TextField
                 fullWidth
                 label="시작 시간"
@@ -157,9 +151,6 @@ const PracticeForm: React.FC = () => {
                 InputLabelProps={{ shrink: true }}
                 required
               />
-            </Grid>
-
-            <Grid item xs={12} md={3}>
               <TextField
                 fullWidth
                 label="종료 시간"
@@ -170,9 +161,9 @@ const PracticeForm: React.FC = () => {
                 InputLabelProps={{ shrink: true }}
                 required
               />
-            </Grid>
+            </Box>
 
-            <Grid item xs={12} md={6}>
+            <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={2}>
               <TextField
                 fullWidth
                 label="연습 장소"
@@ -181,9 +172,6 @@ const PracticeForm: React.FC = () => {
                 onChange={handleChange}
                 required
               />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 select
@@ -200,52 +188,46 @@ const PracticeForm: React.FC = () => {
                   </option>
                 ))}
               </TextField>
-            </Grid>
+            </Box>
 
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="연습 내용"
-                name="content"
-                value={formData.content}
-                onChange={handleChange}
-                multiline
-                rows={4}
-                required
-              />
-            </Grid>
+            <TextField
+              fullWidth
+              label="연습 내용"
+              name="content"
+              value={formData.content}
+              onChange={handleChange}
+              multiline
+              rows={4}
+              required
+            />
 
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="특이사항 및 코멘트"
-                name="comment"
-                value={formData.comment}
-                onChange={handleChange}
-                multiline
-                rows={2}
-              />
-            </Grid>
+            <TextField
+              fullWidth
+              label="특이사항 및 코멘트"
+              name="comment"
+              value={formData.comment}
+              onChange={handleChange}
+              multiline
+              rows={2}
+            />
 
-            <Grid item xs={12}>
-              <Box display="flex" gap={2}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={loading}
-                >
-                  {loading ? <CircularProgress size={20} /> : (isEdit ? '수정' : '등록')}
-                </Button>
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate('/practices')}
-                  disabled={loading}
-                >
-                  취소
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
+            <Box display="flex" gap={2}>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={loading}
+              >
+                {loading ? <CircularProgress size={20} /> : (isEdit ? '수정' : '등록')}
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => navigate('/practices')}
+                disabled={loading}
+              >
+                취소
+              </Button>
+            </Box>
+          </Box>
         </form>
       </Paper>
     </Box>
