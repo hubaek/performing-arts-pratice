@@ -1,25 +1,49 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { AppBar, Toolbar, Typography, Container } from '@mui/material';
+import '@mui/material/styles';
+import PracticeList from './components/practice/PracticeList';
+import PracticeForm from './components/practice/PracticeForm';
+import PracticeDetail from './components/practice/PracticeDetail';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+});
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
+        <div className="App">
+          <AppBar position="static">
+            <Toolbar>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                연습일지 관리 시스템
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Routes>
+              <Route path="/" element={<PracticeList />} />
+              <Route path="/practices" element={<PracticeList />} />
+              <Route path="/practices/new" element={<PracticeForm />} />
+              <Route path="/practices/:id" element={<PracticeDetail />} />
+              <Route path="/practices/:id/edit" element={<PracticeForm />} />
+            </Routes>
+          </Container>
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
 
