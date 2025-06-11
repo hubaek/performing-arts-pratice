@@ -1,6 +1,7 @@
 package com.culture.performingarts.domain.member.repository;
 
 import com.culture.performingarts.domain.member.entity.Member;
+import com.culture.performingarts.domain.member.enums.MemberStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -40,45 +41,66 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      * @param teamId 팀 ID
      * @return 해당 팀의 활성화된 회원 목록
      */
-    List<Member> findByTeamIdAndIsActiveTrue(Long teamId);
+    List<Member> findByTeamIdAndStatus(Long teamId, MemberStatus status);
 
     /**
      * 부서별 회원 목록 조회
      * 
      * @param department 부서명
-     * @return 해당 부서의 활성화된 회원 목록
+     * @param status 회원 상태
+     * @return 해당 부서의 특정 상태 회원 목록
      */
-    List<Member> findByDepartmentAndIsActiveTrue(String department);
+    List<Member> findByDepartmentAndStatus(String department, MemberStatus status);
 
     /**
      * 입과년도별 회원 목록 조회
      * 
      * @param joinYear 입과년도
-     * @return 해당 년도에 입과한 활성화된 회원 목록
+     * @param status 회원 상태
+     * @return 해당 년도에 입과한 특정 상태 회원 목록
      */
-    List<Member> findByJoinYearAndIsActiveTrue(Integer joinYear);
+    List<Member> findByJoinYearAndStatus(Integer joinYear, MemberStatus status);
 
     /**
-     * 활성화된 전체 회원 목록 조회
+     * 특정 상태의 전체 회원 목록 조회
      * 
-     * @return 활성화된 회원 목록
+     * @param status 회원 상태
+     * @return 특정 상태의 회원 목록
      */
-    List<Member> findByIsActiveTrue();
+    List<Member> findByStatus(MemberStatus status);
 
     /**
      * 이름으로 회원 검색 (부분 일치)
      * 
      * @param name 검색할 이름
-     * @return 이름이 일치하는 활성화된 회원 목록
+     * @param status 회원 상태
+     * @return 이름이 일치하는 특정 상태 회원 목록
      */
-    @Query("SELECT m FROM Member m WHERE m.name LIKE %:name% AND m.isActive = true")
-    List<Member> searchByName(@Param("name") String name);
+    @Query("SELECT m FROM Member m WHERE m.name LIKE %:name% AND m.status = :status")
+    List<Member> searchByNameAndStatus(@Param("name") String name, @Param("status") MemberStatus status);
 
     /**
      * 직책별 회원 목록 조회
      * 
      * @param position 직책
-     * @return 해당 직책의 활성화된 회원 목록
+     * @param status 회원 상태
+     * @return 해당 직책의 특정 상태 회원 목록
      */
-    List<Member> findByPositionAndIsActiveTrue(String position);
+    List<Member> findByPositionAndStatus(String position, MemberStatus status);
+
+    /**
+     * 고유코드로 회원 조회
+     * 
+     * @param uniqueCode 고유코드
+     * @return 회원 정보
+     */
+    Optional<Member> findByUniqueCode(String uniqueCode);
+
+    /**
+     * 고유코드 중복 확인
+     * 
+     * @param uniqueCode 확인할 고유코드
+     * @return 존재 여부
+     */
+    boolean existsByUniqueCode(String uniqueCode);
 }

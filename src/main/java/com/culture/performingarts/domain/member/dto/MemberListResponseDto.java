@@ -2,6 +2,7 @@ package com.culture.performingarts.domain.member.dto;
 
 import com.culture.performingarts.domain.member.entity.Member;
 import com.culture.performingarts.domain.member.enums.Gender;
+import com.culture.performingarts.domain.member.enums.MemberStatus;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,13 +27,14 @@ public class MemberListResponseDto {
     private Integer joinYear;
     private String department;
     private String position;
-    private Boolean isActive;
+    private String uniqueCode;
+    private MemberStatus status;
     private Long teamId;
 
     @Builder
     public MemberListResponseDto(Long id, String name, String email, String phoneNumber,
                                 LocalDate birthDate, Gender gender, Integer joinYear,
-                                String department, String position, Boolean isActive, Long teamId) {
+                                String department, String position, String uniqueCode, MemberStatus status, Long teamId) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -42,7 +44,8 @@ public class MemberListResponseDto {
         this.joinYear = joinYear;
         this.department = department;
         this.position = position;
-        this.isActive = isActive;
+        this.uniqueCode = uniqueCode;
+        this.status = status;
         this.teamId = teamId;
     }
 
@@ -60,7 +63,8 @@ public class MemberListResponseDto {
                 .joinYear(member.getJoinYear())
                 .department(member.getDepartment())
                 .position(member.getPosition())
-                .isActive(member.getIsActive())
+                .uniqueCode(member.getUniqueCode())
+                .status(member.getStatus())
                 .teamId(member.getTeamId())
                 .build();
     }

@@ -6,6 +6,7 @@ import com.culture.performingarts.domain.member.dto.MemberPasswordChangeRequestD
 import com.culture.performingarts.domain.member.dto.MemberResponseDto;
 import com.culture.performingarts.domain.member.dto.MemberUpdateRequestDto;
 import com.culture.performingarts.domain.member.entity.Member;
+import com.culture.performingarts.domain.member.enums.MemberStatus;
 import com.culture.performingarts.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,8 @@ public class MemberService {
                 .position(requestDto.getPosition())
                 .responsibility(requestDto.getResponsibility())
                 .remarks(requestDto.getRemarks())
+                .uniqueCode(requestDto.getUniqueCode())
+                .status(requestDto.getStatus())
                 .teamId(requestDto.getTeamId())
                 .build();
 
@@ -62,35 +65,35 @@ public class MemberService {
     }
 
     public List<MemberListResponseDto> getAllActiveMembers() {
-        return memberRepository.findByIsActiveTrue()
+        return memberRepository.findByStatus(MemberStatus.ACTIVE)
                 .stream()
                 .map(MemberListResponseDto::from)
                 .collect(Collectors.toList());
     }
 
     public List<MemberListResponseDto> getMembersByTeam(Long teamId) {
-        return memberRepository.findByTeamIdAndIsActiveTrue(teamId)
+        return memberRepository.findByTeamIdAndStatus(teamId, MemberStatus.ACTIVE)
                 .stream()
                 .map(MemberListResponseDto::from)
                 .collect(Collectors.toList());
     }
 
     public List<MemberListResponseDto> getMembersByDepartment(String department) {
-        return memberRepository.findByDepartmentAndIsActiveTrue(department)
+        return memberRepository.findByDepartmentAndStatus(department, MemberStatus.ACTIVE)
                 .stream()
                 .map(MemberListResponseDto::from)
                 .collect(Collectors.toList());
     }
 
     public List<MemberListResponseDto> getMembersByJoinYear(Integer joinYear) {
-        return memberRepository.findByJoinYearAndIsActiveTrue(joinYear)
+        return memberRepository.findByJoinYearAndStatus(joinYear, MemberStatus.ACTIVE)
                 .stream()
                 .map(MemberListResponseDto::from)
                 .collect(Collectors.toList());
     }
 
     public List<MemberListResponseDto> searchMembersByName(String name) {
-        return memberRepository.searchByName(name)
+        return memberRepository.searchByNameAndStatus(name, MemberStatus.ACTIVE)
                 .stream()
                 .map(MemberListResponseDto::from)
                 .collect(Collectors.toList());
@@ -145,7 +148,49 @@ public class MemberService {
         member.activate();
     }
 
+    @Transactional
+    public void changeMemberStatus(Long memberId, MemberStatus status) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+
+        member.changeStatus(status);
+    }
+
+    @Transactional
+    public void putMemberOnLeave(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+
+        member.takeLeaveOfAbsence();
+    }
+
+    public List<MemberListResponseDto> getMembersByStatus(MemberStatus status) {
+        return memberRepository.findByStatus(status)
+                .stream()
+                .map(MemberListResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
+    public List<MemberListResponseDto> getLeaveOfAbsenceMembers() {
+        return getMembersByStatus(MemberStatus.LEAVE_OF_ABSENCE);
+    }
+
+    public List<MemberListResponseDto> getInactiveMembers() {
+        return getMembersByStatus(MemberStatus.INACTIVE);
+    }
+
+    public MemberResponseDto getMemberByUniqueCode(String uniqueCode) {
+        Member member = memberRepository.findByUniqueCode(uniqueCode)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+        
+        return MemberResponseDto.from(member);
+    }
+
     public boolean existsByEmail(String email) {
         return memberRepository.existsByEmail(email);
+    }
+
+    public boolean existsByUniqueCode(String uniqueCode) {
+        return memberRepository.existsByUniqueCode(uniqueCode);
     }
 }

@@ -3,6 +3,7 @@ package com.culture.performingarts.domain.member.dto;
 
 import com.culture.performingarts.domain.member.entity.Member;
 import com.culture.performingarts.domain.member.enums.Gender;
+import com.culture.performingarts.domain.member.enums.MemberStatus;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,7 +31,8 @@ public class MemberResponseDto {
     private String position;
     private String responsibility;
     private String remarks;
-    private Boolean isActive;
+    private String uniqueCode;
+    private MemberStatus status;
     private Long teamId;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
@@ -39,7 +41,7 @@ public class MemberResponseDto {
     public MemberResponseDto(Long id, String name, String email, String phoneNumber,
                             LocalDate birthDate, Gender gender, Integer joinYear, String major,
                             String department, String position, String responsibility,
-                            String remarks, Boolean isActive, Long teamId,
+                            String remarks, String uniqueCode, MemberStatus status, Long teamId,
                             LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.id = id;
         this.name = name;
@@ -53,7 +55,8 @@ public class MemberResponseDto {
         this.position = position;
         this.responsibility = responsibility;
         this.remarks = remarks;
-        this.isActive = isActive;
+        this.uniqueCode = uniqueCode;
+        this.status = status;
         this.teamId = teamId;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
@@ -76,7 +79,8 @@ public class MemberResponseDto {
                 .position(member.getPosition())
                 .responsibility(member.getResponsibility())
                 .remarks(member.getRemarks())
-                .isActive(member.getIsActive())
+                .uniqueCode(member.getUniqueCode())
+                .status(member.getStatus())
                 .teamId(member.getTeamId())
                 .createdAt(member.getCreatedAt())
                 .modifiedAt(member.getUpdatedAt())

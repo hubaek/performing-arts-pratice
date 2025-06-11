@@ -5,6 +5,7 @@ import com.culture.performingarts.domain.member.dto.MemberListResponseDto;
 import com.culture.performingarts.domain.member.dto.MemberPasswordChangeRequestDto;
 import com.culture.performingarts.domain.member.dto.MemberResponseDto;
 import com.culture.performingarts.domain.member.dto.MemberUpdateRequestDto;
+import com.culture.performingarts.domain.member.enums.MemberStatus;
 import com.culture.performingarts.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,12 @@ public class MemberController {
     @GetMapping("/email/{email}")
     public ResponseEntity<MemberResponseDto> getMemberByEmail(@PathVariable String email) {
         MemberResponseDto response = memberService.getMemberByEmail(email);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/unique-code/{uniqueCode}")
+    public ResponseEntity<MemberResponseDto> getMemberByUniqueCode(@PathVariable String uniqueCode) {
+        MemberResponseDto response = memberService.getMemberByUniqueCode(uniqueCode);
         return ResponseEntity.ok(response);
     }
 
@@ -75,6 +82,30 @@ public class MemberController {
         return ResponseEntity.ok(exists);
     }
 
+    @GetMapping("/check-unique-code")
+    public ResponseEntity<Boolean> checkUniqueCodeExists(@RequestParam String uniqueCode) {
+        boolean exists = memberService.existsByUniqueCode(uniqueCode);
+        return ResponseEntity.ok(exists);
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<MemberListResponseDto>> getMembersByStatus(@PathVariable MemberStatus status) {
+        List<MemberListResponseDto> members = memberService.getMembersByStatus(status);
+        return ResponseEntity.ok(members);
+    }
+
+    @GetMapping("/leave-of-absence")
+    public ResponseEntity<List<MemberListResponseDto>> getLeaveOfAbsenceMembers() {
+        List<MemberListResponseDto> members = memberService.getLeaveOfAbsenceMembers();
+        return ResponseEntity.ok(members);
+    }
+
+    @GetMapping("/inactive")
+    public ResponseEntity<List<MemberListResponseDto>> getInactiveMembers() {
+        List<MemberListResponseDto> members = memberService.getInactiveMembers();
+        return ResponseEntity.ok(members);
+    }
+
     @PutMapping("/{memberId}")
     public ResponseEntity<MemberResponseDto> updateMember(
             @PathVariable Long memberId,
@@ -102,6 +133,20 @@ public class MemberController {
     @PatchMapping("/{memberId}/deactivate")
     public ResponseEntity<Void> deactivateMember(@PathVariable Long memberId) {
         memberService.deactivateMember(memberId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{memberId}/status")
+    public ResponseEntity<Void> changeMemberStatus(
+            @PathVariable Long memberId,
+            @RequestParam MemberStatus status) {
+        memberService.changeMemberStatus(memberId, status);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{memberId}/leave-of-absence")
+    public ResponseEntity<Void> putMemberOnLeave(@PathVariable Long memberId) {
+        memberService.putMemberOnLeave(memberId);
         return ResponseEntity.ok().build();
     }
 }

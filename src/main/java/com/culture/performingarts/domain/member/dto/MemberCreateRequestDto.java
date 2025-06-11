@@ -1,6 +1,7 @@
 package com.culture.performingarts.domain.member.dto;
 
 import com.culture.performingarts.domain.member.enums.Gender;
+import com.culture.performingarts.domain.member.enums.MemberStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -53,13 +54,17 @@ public class MemberCreateRequestDto {
 
     private String remarks;
 
+    private String uniqueCode;
+
+    private MemberStatus status = MemberStatus.ACTIVE;
+
     private Long teamId;
 
     @Builder
     public MemberCreateRequestDto(String name, String email, String password, String phoneNumber,
                                  LocalDate birthDate, Gender gender, Integer joinYear, String major,
                                  String department, String position, String responsibility,
-                                 String remarks, Long teamId) {
+                                 String remarks, String uniqueCode, MemberStatus status, Long teamId) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -72,6 +77,8 @@ public class MemberCreateRequestDto {
         this.position = position;
         this.responsibility = responsibility;
         this.remarks = remarks;
+        this.uniqueCode = uniqueCode;
+        this.status = status;
         this.teamId = teamId;
     }
 }
