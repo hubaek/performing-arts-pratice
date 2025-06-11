@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * 연습 일지 데이터 접근을 위한 Repository
@@ -17,14 +19,23 @@ import java.util.List;
 public interface PracticeRepository extends JpaRepository<Practice, Long> {
 
     /**
+     * 전체 연습 목록 조회 (최신순)
+     */
+    List<Practice> findAllByOrderByPracticeDateDescStartTimeDesc();
+
+    /**
+     * 전체 연습 목록 조회 (페이징, 최신순)
+     */
+    Page<Practice> findAllByOrderByPracticeDateDescStartTimeDesc(Pageable pageable);
+
+    /**
      * 특정 기간의 연습 목록 조회
      * 
      * @param startDate 시작일
      * @param endDate 종료일
      * @return 해당 기간의 연습 목록
      */
-    @Query("SELECT p FROM Practice p WHERE p.practiceDate BETWEEN :startDate AND :endDate ORDER BY p.practiceDate DESC, p.startTime DESC")
-    List<Practice> findByDateRange(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    List<Practice> findByPracticeDateBetweenOrderByPracticeDateDescStartTimeDesc(LocalDate startDate, LocalDate endDate);
 
     /**
      * 팀별 연습 목록 조회
@@ -32,7 +43,7 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
      * @param teamId 팀 ID
      * @return 해당 팀의 연습 목록
      */
-    List<Practice> findByTeamIdOrderByPracticeDateDesc(Long teamId);
+    List<Practice> findByTeamIdOrderByPracticeDateDescStartTimeDesc(Long teamId);
 
     /**
      * 작성자별 연습 목록 조회
@@ -40,7 +51,7 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
      * @param userId 작성자 ID
      * @return 해당 작성자가 작성한 연습 목록
      */
-    List<Practice> findByUserIdOrderByPracticeDateDesc(Long userId);
+    List<Practice> findByUserIdOrderByPracticeDateDescStartTimeDesc(Long userId);
 
     /**
      * 특정 날짜의 연습 목록 조회
