@@ -80,6 +80,14 @@ public interface PracticeParticipationRepository extends JpaRepository<PracticeP
     Long countByPracticeIdAndStatus(Long practiceId, PracticeParticipationStatus status);
 
     /**
+     * 특정 연습의 전체 참여자 수 조회
+     * 
+     * @param practiceId 연습 ID
+     * @return 전체 참여자 수
+     */
+    Long countByPracticeId(Long practiceId);
+
+    /**
      * 특정 회원의 기간별 참여 통계 조회
      * 
      * @param userId 회원 ID
