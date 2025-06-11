@@ -19,7 +19,6 @@ import {
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { ko } from 'date-fns/locale';
 import { practiceApi, Practice } from '../../api';
 
 const PracticeDetail: React.FC = () => {
@@ -66,7 +65,7 @@ const PracticeDetail: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return format(new Date(dateString), 'yyyy년 MM월 dd일 (E)', { locale: ko });
+    return format(new Date(dateString), 'yyyy년 MM월 dd일');
   };
 
   const formatTime = (timeString: string) => {
@@ -74,7 +73,7 @@ const PracticeDetail: React.FC = () => {
   };
 
   const formatDateTime = (dateTimeString: string) => {
-    return format(new Date(dateTimeString), 'yyyy.MM.dd HH:mm', { locale: ko });
+    return format(new Date(dateTimeString), 'yyyy.MM.dd HH:mm');
   };
 
   if (loading) {

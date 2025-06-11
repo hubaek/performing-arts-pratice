@@ -23,7 +23,6 @@ import {
   Delete as DeleteIcon
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { ko } from 'date-fns/locale';
 import { practiceApi, PracticeListItem } from '../../api';
 
 const PracticeList: React.FC = () => {
@@ -62,7 +61,7 @@ const PracticeList: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return format(new Date(dateString), 'yyyy.MM.dd (E)', { locale: ko });
+    return format(new Date(dateString), 'yyyy.MM.dd');
   };
 
   const formatTime = (timeString: string) => {
