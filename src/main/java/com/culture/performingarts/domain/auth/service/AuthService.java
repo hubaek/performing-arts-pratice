@@ -122,6 +122,8 @@ public class AuthService {
                 signupRequest.getPassword()
             )
         );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         
         // JWT 토큰 생성
         String accessToken = jwtTokenProvider.createAccessToken(authentication);
