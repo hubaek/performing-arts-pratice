@@ -3,10 +3,10 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AppBar, Toolbar, Typography, Container } from '@mui/material';
-import { AuthProvider } from './contexts/AuthContext';
-import { LoginForm, SignupForm, ProtectedRoute, AdminRoute } from './components/auth';
-import { PracticeList, PracticeForm, PracticeDetail } from './components/practice';
-import { AdminTeamList } from './components/admin';
+import { AuthProvider } from './domains/auth/hooks/AuthContext';
+import { LoginForm, SignupForm, ProtectedRoute, AdminRoute } from './domains/auth';
+import { PracticeList, PracticeForm, PracticeDetail } from './domains/practice';
+import { AdminTeamList } from './domains/admin';
 
 const theme = createTheme({
   palette: {
