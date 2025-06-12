@@ -56,6 +56,10 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 // 회원 확인 엔드포인트는 허용 (중복 체크)
                 .requestMatchers("/api/members/check-email", "/api/members/check-unique-code").permitAll()
+                // 팀 조회는 인증 없이 허용 (회원가입 시 팀 선택용)
+                .requestMatchers("/api/teams", "/api/teams/**").permitAll()
+                // 관리자 전용 엔드포인트
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // 나머지는 인증 필요 (including /api/auth/me)
                 .anyRequest().authenticated()
             )
