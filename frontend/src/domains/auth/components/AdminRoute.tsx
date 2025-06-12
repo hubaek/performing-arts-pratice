@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { Role } from '../../types';
+import { useAuth } from '../hooks/AuthContext';
+import { Role } from '../../../shared/types';
 import { Box, Typography, Paper } from '@mui/material';
 
 interface AdminRouteProps {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { teamApi } from '../../api/teamApi';
-import { TeamListItem, TeamCreateRequest } from '../../types';
+import { teamApi } from '../../team/api/teamApi';
+import { TeamListItem, TeamCreateRequest } from '../../team/types';
 
 interface AdminTeamListProps {
   onTeamSelect?: (team: TeamListItem) => void;
