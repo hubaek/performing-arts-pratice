@@ -13,6 +13,17 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const LOADING_SPINNER_SIZE = 24;
+
+// 로딩 상태에 따른 버튼 컨텐츠 렌더링
+const LoginButtonContent: React.FC<{ loading: boolean }> = ({ loading }) => {
+  if (loading) {
+    return <CircularProgress size={LOADING_SPINNER_SIZE} />;
+  }
+  return <>로그인</>;
+};
+
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const { login, loading, error } = useAuth();
@@ -43,7 +54,7 @@ const LoginForm: React.FC = () => {
 
     if (!formData.email) {
       errors.email = '이메일을 입력해주세요';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!EMAIL_REGEX.test(formData.email)) {
       errors.email = '올바른 이메일 형식을 입력해주세요';
     }
 
@@ -129,7 +140,7 @@ const LoginForm: React.FC = () => {
               disabled={loading}
               size="large"
             >
-              {loading ? <CircularProgress size={24} /> : '로그인'}
+              <LoginButtonContent loading={loading} />
             </Button>
 
             <Box textAlign="center">

@@ -25,6 +25,8 @@ import {
 import { format } from 'date-fns';
 import { practiceApi, PracticeListItem } from '../../api';
 
+const TIME_FORMAT_LENGTH = 5; // HH:mm 형식
+
 const PracticeList: React.FC = () => {
   const navigate = useNavigate();
   const [practices, setPractices] = useState<PracticeListItem[]>([]);
@@ -65,7 +67,7 @@ const PracticeList: React.FC = () => {
   };
 
   const formatTime = (timeString: string) => {
-    return timeString.substring(0, 5); // HH:mm 형식으로 자르기
+    return timeString.substring(0, TIME_FORMAT_LENGTH); // HH:mm 형식으로 자르기
   };
 
   const getStatusColor = (isCompleted: boolean) => {

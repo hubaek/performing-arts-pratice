@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authApi } from '../api';
+import { authApi, ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../api';
 import { Role } from '../types';
 
 export interface User {
@@ -87,8 +87,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     const initializeAuth = async () => {
       try {
-        const storedToken = localStorage.getItem('accessToken');
-        const storedRefreshToken = localStorage.getItem('refreshToken');
+        const storedToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+        const storedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
         
         if (storedToken && storedRefreshToken && !abortController.signal.aborted) {
           setAccessToken(storedToken);
@@ -103,8 +103,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (!abortController.signal.aborted) {
           console.error('Auth initialization failed:', error);
           // 토큰이 유효하지 않으면 제거
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('refreshToken');
+          localStorage.removeItem(ACCESS_TOKEN_KEY);
+          localStorage.removeItem(REFRESH_TOKEN_KEY);
         }
       } finally {
         if (!abortController.signal.aborted) {
@@ -128,8 +128,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await authApi.login(credentials);
       
       // 토큰 저장
-      localStorage.setItem('accessToken', response.accessToken);
-      localStorage.setItem('refreshToken', response.refreshToken);
+      localStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
+      localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
       
       setAccessToken(response.accessToken);
       
@@ -155,8 +155,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await authApi.signup(userData);
       
       // 회원가입 후 자동 로그인
-      localStorage.setItem('accessToken', response.accessToken);
-      localStorage.setItem('refreshToken', response.refreshToken);
+      localStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
+      localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
       
       setAccessToken(response.accessToken);
       
@@ -175,8 +175,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
     setAccessToken(null);
     setUser(null);
     setError(null);
@@ -184,14 +184,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const refreshToken = async () => {
     try {
-      const storedRefreshToken = localStorage.getItem('refreshToken');
+      const storedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
       if (!storedRefreshToken) {
         throw new Error('No refresh token available');
       }
 
       const response = await authApi.refreshToken({ refreshToken: storedRefreshToken });
       
-      localStorage.setItem('accessToken', response.accessToken);
+      localStorage.setItem(ACCESS_TOKEN_KEY, response.accessToken);
       setAccessToken(response.accessToken);
       
       // 사용자 정보 다시 조회하여 전체 정보 설정
