@@ -1,11 +1,11 @@
-import { apiClient } from './client';
+import { apiClient } from '../../../shared/api/client';
 import { 
   Practice, 
   PracticeListItem, 
   PracticeCreateRequest, 
-  PracticeUpdateRequest,
-  PageResponse 
+  PracticeUpdateRequest
 } from '../types';
+import { PageResponse } from '../../../shared/types';
 
 const DEFAULT_PAGE_NUMBER = 0;
 const DEFAULT_PAGE_SIZE = 10;

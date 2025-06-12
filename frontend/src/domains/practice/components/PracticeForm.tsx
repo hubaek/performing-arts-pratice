@@ -9,7 +9,10 @@ import {
   Alert,
   CircularProgress
 } from '@mui/material';
-import { practiceApi, teamApi, PracticeCreateRequest, TeamListItem } from '../../api';
+import { practiceApi } from '../api/practiceApi';
+import { teamApi } from '../../team/api/teamApi';
+import { PracticeCreateRequest } from '../types';
+import { TeamListItem } from '../../team/types';
 
 const LOADING_SPINNER_SIZE = 20;
 

@@ -14,10 +14,10 @@ import {
   InputLabel,
   Select
 } from '@mui/material';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../hooks/AuthContext';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { teamApi } from '../../api/teamApi';
-import { TeamListItem } from '../../types';
+import { teamApi } from '../../team/api/teamApi';
+import { TeamListItem } from '../../team/types';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 6;

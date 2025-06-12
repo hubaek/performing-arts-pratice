@@ -1,9 +1,5 @@
-import { apiClient } from './client';
-import { AuthResponse, LoginRequest, SignupRequest, User } from '../contexts/AuthContext';
-
-interface TokenRefreshRequest {
-  refreshToken: string;
-}
+import { apiClient } from '../../../shared/api/client';
+import { AuthResponse, LoginRequest, SignupRequest, User, TokenRefreshRequest } from '../types';
 
 export const authApi = {
   // 로그인

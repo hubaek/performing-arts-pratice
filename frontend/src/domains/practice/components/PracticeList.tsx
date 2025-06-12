@@ -23,7 +23,8 @@ import {
   Delete as DeleteIcon
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { practiceApi, PracticeListItem } from '../../api';
+import { practiceApi } from '../api/practiceApi';
+import { PracticeListItem } from '../types';
 
 const TIME_FORMAT_LENGTH = 5; // HH:mm 형식
 

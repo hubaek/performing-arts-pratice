@@ -1,62 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authApi } from '../api/authApi';
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../../../shared/api/client';
-import { Role } from '../../../shared/types';
+import { User, LoginRequest, SignupRequest } from '../types';
+import type { AuthResponse } from '../types';
 
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-  phoneNumber?: string;
-  birthDate?: string;
-  gender: 'MALE' | 'FEMALE' | 'OTHER';
-  joinYear: number;
-  major?: string;
-  department?: string;
-  position?: string;
-  responsibility?: string;
-  remarks?: string;
-  uniqueCode?: string;
-  status: 'ACTIVE' | 'LEAVE_OF_ABSENCE' | 'INACTIVE';
-  role: Role;
-  teamId?: number;
-  createdAt: string;
-  modifiedAt: string;
-}
-
-export interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-  tokenType: string;
-  memberId: number;
-  name: string;
-  email: string;
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface SignupRequest {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  phoneNumber?: string;
-  birthDate: string;
-  gender: 'MALE' | 'FEMALE' | 'OTHER';
-  joinYear: number;
-  major?: string;
-  department?: string;
-  position?: string;
-  responsibility?: string;
-  remarks?: string;
-  uniqueCode?: string;
-  teamId?: number;
-}
-
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   accessToken: string | null;
   isAuthenticated: boolean;

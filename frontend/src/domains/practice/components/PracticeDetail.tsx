@@ -18,7 +18,8 @@ import {
   CheckCircle as CheckCircleIcon
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { practiceApi, Practice } from '../../api';
+import { practiceApi } from '../api/practiceApi';
+import { Practice } from '../types';
 
 const PracticeDetail: React.FC = () => {
   const navigate = useNavigate();

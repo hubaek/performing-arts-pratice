@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient } from '../../../shared/api/client';
 import { Team, TeamListItem, TeamCreateRequest } from '../types';
 
 export const teamApi = {
