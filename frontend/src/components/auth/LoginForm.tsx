@@ -13,7 +13,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
-export const LoginForm: React.FC = () => {
+const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const { login, loading, error } = useAuth();
   const [formData, setFormData] = useState({
@@ -146,3 +146,5 @@ export const LoginForm: React.FC = () => {
     </Box>
   );
 };
+
+export default LoginForm;

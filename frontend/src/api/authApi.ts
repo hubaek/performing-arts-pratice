@@ -1,4 +1,4 @@
-import { client } from './client';
+import { apiClient } from './client';
 import { AuthResponse, LoginRequest, SignupRequest, User } from '../contexts/AuthContext';
 
 interface TokenRefreshRequest {
@@ -8,42 +8,42 @@ interface TokenRefreshRequest {
 export const authApi = {
   // 로그인
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {
-    const response = await client.post<AuthResponse>('/auth/login', credentials);
+    const response = await apiClient.post<AuthResponse>('/auth/login', credentials);
     return response.data;
   },
 
   // 회원가입
   signup: async (userData: SignupRequest): Promise<AuthResponse> => {
-    const response = await client.post<AuthResponse>('/auth/signup', userData);
+    const response = await apiClient.post<AuthResponse>('/auth/signup', userData);
     return response.data;
   },
 
   // 토큰 갱신
   refreshToken: async (request: TokenRefreshRequest): Promise<AuthResponse> => {
-    const response = await client.post<AuthResponse>('/auth/refresh', request);
+    const response = await apiClient.post<AuthResponse>('/auth/refresh', request);
     return response.data;
   },
 
   // 현재 사용자 정보 조회
   getCurrentUser: async (): Promise<User> => {
-    const response = await client.get<User>('/auth/me');
+    const response = await apiClient.get<User>('/auth/me');
     return response.data;
   },
 
   // 로그아웃
   logout: async (): Promise<void> => {
-    await client.post('/auth/logout');
+    await apiClient.post('/auth/logout');
   },
 
   // 이메일 중복 확인
   checkEmailExists: async (email: string): Promise<boolean> => {
-    const response = await client.get<boolean>(`/members/check-email?email=${email}`);
+    const response = await apiClient.get<boolean>(`/members/check-email?email=${email}`);
     return response.data;
   },
 
   // 고유코드 중복 확인
   checkUniqueCodeExists: async (uniqueCode: string): Promise<boolean> => {
-    const response = await client.get<boolean>(`/members/check-unique-code?uniqueCode=${uniqueCode}`);
+    const response = await apiClient.get<boolean>(`/members/check-unique-code?uniqueCode=${uniqueCode}`);
     return response.data;
   }
 };
