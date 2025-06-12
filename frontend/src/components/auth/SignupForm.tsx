@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -16,6 +16,8 @@ import {
 } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { teamApi } from '../../api/teamApi';
+import { TeamListItem } from '../../types';
 
 const SignupForm: React.FC = () => {
   const navigate = useNavigate();
@@ -34,9 +36,27 @@ const SignupForm: React.FC = () => {
     position: '',
     responsibility: '',
     remarks: '',
-    uniqueCode: ''
+    uniqueCode: '',
+    teamId: ''
   });
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
+  const [teams, setTeams] = useState<TeamListItem[]>([]);
+  const [loadingTeams, setLoadingTeams] = useState(true);
+
+  useEffect(() => {
+    fetchActiveTeams();
+  }, []);
+
+  const fetchActiveTeams = async () => {
+    try {
+      const activeTeams = await teamApi.getActive();
+      setTeams(activeTeams);
+    } catch (err) {
+      console.error('Error fetching active teams:', err);
+    } finally {
+      setLoadingTeams(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | any) => {
     const name = e.target.name as string;
@@ -281,6 +301,29 @@ const SignupForm: React.FC = () => {
               onChange={handleChange}
               margin="normal"
             />
+
+            <FormControl fullWidth margin="normal">
+              <InputLabel>팀 선택</InputLabel>
+              <Select
+                name="teamId"
+                value={formData.teamId}
+                onChange={handleChange}
+                label="팀 선택"
+                disabled={loadingTeams}
+              >
+                <MenuItem value="">팀 선택 안함</MenuItem>
+                {teams.map((team) => (
+                  <MenuItem key={team.id} value={team.id.toString()}>
+                    {team.name} ({team.memberCount}명)
+                  </MenuItem>
+                ))}
+              </Select>
+              {loadingTeams && (
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
+                  팀 목록을 불러오는 중...
+                </Typography>
+              )}
+            </FormControl>
 
             <TextField
               fullWidth

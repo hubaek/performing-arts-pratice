@@ -101,6 +101,11 @@ export enum PracticeParticipationStatus {
   ABSENT = 'ABSENT'
 }
 
+export enum Role {
+  USER = 'USER',
+  ADMIN = 'ADMIN'
+}
+
 export interface PracticeParticipationCreateRequest {
   practiceId: number;
   userId: number;
@@ -124,6 +129,7 @@ export interface Member {
   responsibility?: string;
   remarks?: string;
   isActive: boolean;
+  role: Role;
   teamId?: number;
   createdAt: string;
   modifiedAt: string;

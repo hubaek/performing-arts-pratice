@@ -26,38 +26,35 @@ export const teamApi = {
     return response.data;
   },
 
-  // 팀 생성
-  create: async (team: TeamCreateRequest): Promise<Team> => {
-    const response = await apiClient.post<Team>('/teams', team);
-    return response.data;
-  },
+  // 관리자용 API
+  admin: {
+    // 관리자 - 모든 팀 조회
+    getAll: async (): Promise<TeamListItem[]> => {
+      const response = await apiClient.get<TeamListItem[]>('/admin/teams');
+      return response.data;
+    },
 
-  // 팀 수정
-  update: async (id: number, team: TeamCreateRequest): Promise<Team> => {
-    const response = await apiClient.put<Team>(`/teams/${id}`, team);
-    return response.data;
-  },
+    // 관리자 - 팀 상세 조회
+    getById: async (id: number): Promise<Team> => {
+      const response = await apiClient.get<Team>(`/admin/teams/${id}`);
+      return response.data;
+    },
 
-  // 팀 삭제
-  delete: async (id: number): Promise<void> => {
-    await apiClient.delete(`/teams/${id}`);
-  },
+    // 관리자 - 팀 생성
+    create: async (team: TeamCreateRequest): Promise<Team> => {
+      const response = await apiClient.post<Team>('/admin/teams', team);
+      return response.data;
+    },
 
-  // 팀 활성화
-  activate: async (id: number): Promise<Team> => {
-    const response = await apiClient.patch<Team>(`/teams/${id}/activate`);
-    return response.data;
-  },
+    // 관리자 - 팀 수정
+    update: async (id: number, team: TeamCreateRequest): Promise<Team> => {
+      const response = await apiClient.put<Team>(`/admin/teams/${id}`, team);
+      return response.data;
+    },
 
-  // 팀 비활성화
-  deactivate: async (id: number): Promise<Team> => {
-    const response = await apiClient.patch<Team>(`/teams/${id}/deactivate`);
-    return response.data;
-  },
-
-  // 팀원 수 업데이트
-  updateMemberCount: async (id: number, memberCount: number): Promise<Team> => {
-    const response = await apiClient.patch<Team>(`/teams/${id}/member-count?memberCount=${memberCount}`);
-    return response.data;
+    // 관리자 - 팀 삭제
+    delete: async (id: number): Promise<void> => {
+      await apiClient.delete(`/admin/teams/${id}`);
+    }
   }
 };

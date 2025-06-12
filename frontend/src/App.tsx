@@ -4,8 +4,9 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AppBar, Toolbar, Typography, Container } from '@mui/material';
 import { AuthProvider } from './contexts/AuthContext';
-import { LoginForm, SignupForm, ProtectedRoute } from './components/auth';
+import { LoginForm, SignupForm, ProtectedRoute, AdminRoute } from './components/auth';
 import { PracticeList, PracticeForm, PracticeDetail } from './components/practice';
+import { AdminTeamList } from './components/admin';
 
 const theme = createTheme({
   palette: {
@@ -60,6 +61,11 @@ function App() {
                   <ProtectedRoute>
                     <PracticeForm />
                   </ProtectedRoute>
+                } />
+                <Route path="/admin/teams" element={
+                  <AdminRoute>
+                    <AdminTeamList />
+                  </AdminRoute>
                 } />
               </Routes>
             </Container>
