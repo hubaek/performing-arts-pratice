@@ -19,6 +19,42 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { teamApi } from '../../api/teamApi';
 import { TeamListItem } from '../../types';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 6;
+const LOADING_SPINNER_SIZE = 24;
+
+// 통합 폼 검증 스키마
+const validateSignupForm = (formData: any) => {
+  const errors: {[key: string]: string} = {};
+
+  // 필수 필드 검증
+  if (!formData.name) errors.name = '이름을 입력해주세요';
+  if (!formData.email) errors.email = '이메일을 입력해주세요';
+  if (!formData.password) errors.password = '비밀번호를 입력해주세요';
+  if (!formData.birthDate) errors.birthDate = '생년월일을 입력해주세요';
+  if (!formData.uniqueCode) errors.uniqueCode = '고유번호를 입력해주세요';
+
+  // 이메일 형식 검증
+  if (formData.email && !EMAIL_REGEX.test(formData.email)) {
+    errors.email = '올바른 이메일 형식을 입력해주세요';
+  }
+
+  // 비밀번호 길이 검증
+  if (formData.password && formData.password.length < MIN_PASSWORD_LENGTH) {
+    errors.password = `비밀번호는 ${MIN_PASSWORD_LENGTH}자 이상이어야 합니다`;
+  }
+
+  // 비밀번호 확인 검증
+  if (formData.password !== formData.confirmPassword) {
+    errors.confirmPassword = '비밀번호가 일치하지 않습니다';
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors
+  };
+};
+
 const SignupForm: React.FC = () => {
   const navigate = useNavigate();
   const { signup, loading, error } = useAuth();
@@ -76,38 +112,9 @@ const SignupForm: React.FC = () => {
   };
 
   const validateForm = (): boolean => {
-    const errors: {[key: string]: string} = {};
-
-    if (!formData.name) {
-      errors.name = '이름을 입력해주세요';
-    }
-
-    if (!formData.email) {
-      errors.email = '이메일을 입력해주세요';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = '올바른 이메일 형식을 입력해주세요';
-    }
-
-    if (!formData.password) {
-      errors.password = '비밀번호를 입력해주세요';
-    } else if (formData.password.length < 6) {
-      errors.password = '비밀번호는 6자 이상이어야 합니다';
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = '비밀번호가 일치하지 않습니다';
-    }
-
-    if (!formData.birthDate) {
-      errors.birthDate = '생년월일을 입력해주세요';
-    }
-
-    if (!formData.uniqueCode) {
-      errors.uniqueCode = '고유번호를 입력해주세요';
-    }
-
+    const { isValid, errors } = validateSignupForm(formData);
     setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    return isValid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -345,7 +352,7 @@ const SignupForm: React.FC = () => {
               disabled={loading}
               size="large"
             >
-              {loading ? <CircularProgress size={24} /> : '회원가입'}
+              {loading ? <CircularProgress size={LOADING_SPINNER_SIZE} /> : '회원가입'}
             </Button>
 
             <Box textAlign="center">

@@ -11,6 +11,36 @@ import {
 } from '@mui/material';
 import { practiceApi, teamApi, PracticeCreateRequest, TeamListItem } from '../../api';
 
+const LOADING_SPINNER_SIZE = 20;
+
+// 연습 폼 검증 스키마
+const validatePracticeForm = (formData: PracticeCreateRequest) => {
+  const errors: {[key: string]: string} = {};
+
+  // 필수 필드 검증
+  if (!formData.title.trim()) errors.title = '연습 제목을 입력해주세요';
+  if (!formData.content.trim()) errors.content = '연습 내용을 입력해주세요';
+  if (!formData.location.trim()) errors.location = '연습 장소를 입력해주세요';
+  if (!formData.practiceDate) errors.practiceDate = '연습 날짜를 선택해주세요';
+  if (!formData.startTime) errors.startTime = '시작 시간을 입력해주세요';
+  if (!formData.endTime) errors.endTime = '종료 시간을 입력해주세요';
+
+  // 시간 유효성 검증
+  if (formData.startTime && formData.endTime) {
+    const startTime = new Date(`2000-01-01T${formData.startTime}`);
+    const endTime = new Date(`2000-01-01T${formData.endTime}`);
+    
+    if (endTime <= startTime) {
+      errors.endTime = '종료 시간은 시작 시간보다 늦어야 합니다';
+    }
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors
+  };
+};
+
 const PracticeForm: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -30,6 +60,7 @@ const PracticeForm: React.FC = () => {
   const [teams, setTeams] = useState<TeamListItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     loadTeams();
@@ -77,10 +108,26 @@ const PracticeForm: React.FC = () => {
       ...prev,
       [name]: name === 'teamId' ? (value ? Number(value) : undefined) : value
     }));
+    
+    // 입력 시 해당 필드 에러 제거
+    if (formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // 폼 검증
+    const { isValid, errors } = validatePracticeForm(formData);
+    setFormErrors(errors);
+    
+    if (!isValid) {
+      return;
+    }
     
     try {
       setLoading(true);
@@ -127,6 +174,8 @@ const PracticeForm: React.FC = () => {
               name="title"
               value={formData.title}
               onChange={handleChange}
+              error={!!formErrors.title}
+              helperText={formErrors.title}
               required
             />
 
@@ -138,6 +187,8 @@ const PracticeForm: React.FC = () => {
                 type="date"
                 value={formData.practiceDate}
                 onChange={handleChange}
+                error={!!formErrors.practiceDate}
+                helperText={formErrors.practiceDate}
                 InputLabelProps={{ shrink: true }}
                 required
               />
@@ -148,6 +199,8 @@ const PracticeForm: React.FC = () => {
                 type="time"
                 value={formData.startTime}
                 onChange={handleChange}
+                error={!!formErrors.startTime}
+                helperText={formErrors.startTime}
                 InputLabelProps={{ shrink: true }}
                 required
               />
@@ -158,6 +211,8 @@ const PracticeForm: React.FC = () => {
                 type="time"
                 value={formData.endTime}
                 onChange={handleChange}
+                error={!!formErrors.endTime}
+                helperText={formErrors.endTime}
                 InputLabelProps={{ shrink: true }}
                 required
               />
@@ -170,6 +225,8 @@ const PracticeForm: React.FC = () => {
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
+                error={!!formErrors.location}
+                helperText={formErrors.location}
                 required
               />
               <TextField
@@ -196,6 +253,8 @@ const PracticeForm: React.FC = () => {
               name="content"
               value={formData.content}
               onChange={handleChange}
+              error={!!formErrors.content}
+              helperText={formErrors.content}
               multiline
               rows={4}
               required
@@ -217,7 +276,7 @@ const PracticeForm: React.FC = () => {
                 variant="contained"
                 disabled={loading}
               >
-                {loading ? <CircularProgress size={20} /> : (isEdit ? '수정' : '등록')}
+                {loading ? <CircularProgress size={LOADING_SPINNER_SIZE} /> : (isEdit ? '수정' : '등록')}
               </Button>
               <Button
                 variant="outlined"
