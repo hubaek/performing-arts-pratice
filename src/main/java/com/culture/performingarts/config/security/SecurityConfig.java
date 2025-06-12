@@ -48,13 +48,13 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
-                // 인증 관련 엔드포인트는 허용
-                .requestMatchers("/api/auth/**").permitAll()
+                // 인증이 필요하지 않은 auth 엔드포인트
+                .requestMatchers("/api/auth/login", "/api/auth/signup", "/api/auth/refresh").permitAll()
                 // H2 콘솔 접근 허용 (개발용)
                 .requestMatchers("/h2-console/**").permitAll()
                 // 회원 확인 엔드포인트는 허용 (중복 체크)
                 .requestMatchers("/api/members/check-email", "/api/members/check-unique-code").permitAll()
-                // 나머지는 인증 필요
+                // 나머지는 인증 필요 (including /api/auth/me)
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
