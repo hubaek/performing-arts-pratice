@@ -1,13 +1,17 @@
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+const API_TIMEOUT_MS = 10000;
+const CONTENT_TYPE_JSON = 'application/json';
+const ACCESS_TOKEN_KEY = 'accessToken';
+const REFRESH_TOKEN_KEY = 'refreshToken';
 
 // Axios 인스턴스 생성
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: API_TIMEOUT_MS,
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': CONTENT_TYPE_JSON,
   },
 });
 
@@ -15,7 +19,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // 로컬 스토리지에서 토큰 가져오기
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem(ACCESS_TOKEN_KEY);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -39,7 +43,7 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
       
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
         if (refreshToken) {
           // Refresh token API 호출
           const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
@@ -47,7 +51,7 @@ apiClient.interceptors.response.use(
           });
           
           const { accessToken } = response.data;
-          localStorage.setItem('accessToken', accessToken);
+          localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
           
           // 원래 요청에 새 토큰 설정
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
@@ -57,8 +61,8 @@ apiClient.interceptors.response.use(
         }
       } catch (refreshError) {
         // Refresh 실패 시 로그아웃 처리
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        localStorage.removeItem(ACCESS_TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
@@ -66,8 +70,8 @@ apiClient.interceptors.response.use(
     
     // 401이 아니거나 재시도 실패 시
     if (error.response?.status === 401) {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
       window.location.href = '/login';
     }
     
