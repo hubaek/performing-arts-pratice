@@ -7,6 +7,9 @@ import {
   PageResponse 
 } from '../types';
 
+const DEFAULT_PAGE_NUMBER = 0;
+const DEFAULT_PAGE_SIZE = 10;
+
 export const practiceApi = {
   // 연습 목록 조회
   getAll: async (): Promise<PracticeListItem[]> => {
@@ -15,7 +18,7 @@ export const practiceApi = {
   },
 
   // 페이지네이션된 연습 목록 조회
-  getAllWithPaging: async (page = 0, size = 10): Promise<PageResponse<PracticeListItem>> => {
+  getAllWithPaging: async (page = DEFAULT_PAGE_NUMBER, size = DEFAULT_PAGE_SIZE): Promise<PageResponse<PracticeListItem>> => {
     const response = await apiClient.get<PageResponse<PracticeListItem>>(
       `/practices/paged?page=${page}&size=${size}`
     );
