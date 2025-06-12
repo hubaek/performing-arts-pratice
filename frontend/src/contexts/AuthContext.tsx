@@ -81,29 +81,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // 초기화 시 로컬 스토리지에서 토큰 확인
   useEffect(() => {
+    const abortController = new AbortController();
+    
     const initializeAuth = async () => {
       try {
         const storedToken = localStorage.getItem('accessToken');
         const storedRefreshToken = localStorage.getItem('refreshToken');
         
-        if (storedToken && storedRefreshToken) {
+        if (storedToken && storedRefreshToken && !abortController.signal.aborted) {
           setAccessToken(storedToken);
           
           // 현재 사용자 정보 가져오기
           const userData = await authApi.getCurrentUser();
-          setUser(userData);
+          if (!abortController.signal.aborted) {
+            setUser(userData);
+          }
         }
       } catch (error) {
-        console.error('Auth initialization failed:', error);
-        // 토큰이 유효하지 않으면 제거
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        if (!abortController.signal.aborted) {
+          console.error('Auth initialization failed:', error);
+          // 토큰이 유효하지 않으면 제거
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+        }
       } finally {
-        setLoading(false);
+        if (!abortController.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
     initializeAuth();
+    
+    return () => {
+      abortController.abort();
+    };
   }, []);
 
   const login = async (credentials: LoginRequest) => {
@@ -122,8 +134,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // 사용자 정보 다시 조회하여 전체 정보 설정
       const userData = await authApi.getCurrentUser();
       setUser(userData);
-    } catch (error: any) {
-      setError(error.response?.data?.message || '로그인에 실패했습니다.');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as any).response?.data?.message || '로그인에 실패했습니다.'
+        : '로그인에 실패했습니다.';
+      setError(errorMessage);
       throw error;
     } finally {
       setLoading(false);
@@ -146,8 +161,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // 사용자 정보 다시 조회하여 전체 정보 설정
       const userInfo = await authApi.getCurrentUser();
       setUser(userInfo);
-    } catch (error: any) {
-      setError(error.response?.data?.message || '회원가입에 실패했습니다.');
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error 
+        ? (error as any).response?.data?.message || '회원가입에 실패했습니다.'
+        : '회원가입에 실패했습니다.';
+      setError(errorMessage);
       throw error;
     } finally {
       setLoading(false);
