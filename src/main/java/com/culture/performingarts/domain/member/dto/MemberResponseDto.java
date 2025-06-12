@@ -4,6 +4,7 @@ package com.culture.performingarts.domain.member.dto;
 import com.culture.performingarts.domain.member.entity.Member;
 import com.culture.performingarts.domain.member.enums.Gender;
 import com.culture.performingarts.domain.member.enums.MemberStatus;
+import com.culture.performingarts.domain.member.enums.Role;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,6 +34,7 @@ public class MemberResponseDto {
     private String remarks;
     private String uniqueCode;
     private MemberStatus status;
+    private Role role;
     private Long teamId;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
@@ -41,7 +43,7 @@ public class MemberResponseDto {
     public MemberResponseDto(Long id, String name, String email, String phoneNumber,
                             LocalDate birthDate, Gender gender, Integer joinYear, String major,
                             String department, String position, String responsibility,
-                            String remarks, String uniqueCode, MemberStatus status, Long teamId,
+                            String remarks, String uniqueCode, MemberStatus status, Role role, Long teamId,
                             LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.id = id;
         this.name = name;
@@ -57,6 +59,7 @@ public class MemberResponseDto {
         this.remarks = remarks;
         this.uniqueCode = uniqueCode;
         this.status = status;
+        this.role = role;
         this.teamId = teamId;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
@@ -81,6 +84,7 @@ public class MemberResponseDto {
                 .remarks(member.getRemarks())
                 .uniqueCode(member.getUniqueCode())
                 .status(member.getStatus())
+                .role(member.getRole())
                 .teamId(member.getTeamId())
                 .createdAt(member.getCreatedAt())
                 .modifiedAt(member.getUpdatedAt())
