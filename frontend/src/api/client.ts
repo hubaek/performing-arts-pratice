@@ -14,14 +14,11 @@ export const apiClient = axios.create({
 // 요청 인터셉터 - 인증 토큰 등 추가 가능
 apiClient.interceptors.request.use(
   (config) => {
-    // TODO: 인증 토큰이 있다면 헤더에 추가
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
-    
-    // 임시로 User-Id 헤더 추가 (실제로는 인증 시스템 구현 필요)
-    config.headers['User-Id'] = '1';
+    // 로컬 스토리지에서 토큰 가져오기
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     
     return config;
   },
@@ -37,8 +34,10 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      // 인증 실패 시 로그인 페이지로 리다이렉트
-      // window.location.href = '/login';
+      // 인증 실패 시 토큰 제거 및 로그인 페이지로 리다이렉트
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
     }
     
     return Promise.reject(error);

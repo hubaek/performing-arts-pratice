@@ -28,7 +28,7 @@ export interface SignupRequest {
   password: string;
   confirmPassword: string;
   phoneNumber?: string;
-  birthDate: string;
+  birthDate?: string;
   gender: 'MALE' | 'FEMALE';
   joinYear: number;
   major?: string;

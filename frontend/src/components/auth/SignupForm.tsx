@@ -9,7 +9,6 @@ import {
   Alert,
   CircularProgress,
   Link,
-  Grid,
   MenuItem,
   FormControl,
   InputLabel,
@@ -18,7 +17,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
-export const SignupForm: React.FC = () => {
+const SignupForm: React.FC = () => {
   const navigate = useNavigate();
   const { signup, loading, error } = useAuth();
   const [formData, setFormData] = useState({
@@ -39,7 +38,7 @@ export const SignupForm: React.FC = () => {
   });
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | any) => {
     const name = e.target.name as string;
     const value = e.target.value;
     
@@ -48,7 +47,6 @@ export const SignupForm: React.FC = () => {
       [name]: value
     }));
     
-    // 입력 시 해당 필드 에러 제거
     if (formErrors[name]) {
       setFormErrors(prev => ({
         ...prev,
@@ -60,7 +58,6 @@ export const SignupForm: React.FC = () => {
   const validateForm = (): boolean => {
     const errors: {[key: string]: string} = {};
 
-    // 필수 필드 검증
     if (!formData.name) {
       errors.name = '이름을 입력해주세요';
     }
@@ -73,27 +70,20 @@ export const SignupForm: React.FC = () => {
 
     if (!formData.password) {
       errors.password = '비밀번호를 입력해주세요';
-    } else if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(formData.password)) {
-      errors.password = '비밀번호는 최소 8자 이상, 영문자, 숫자, 특수문자를 포함해야 합니다';
+    } else if (formData.password.length < 6) {
+      errors.password = '비밀번호는 6자 이상이어야 합니다';
     }
 
-    if (!formData.confirmPassword) {
-      errors.confirmPassword = '비밀번호 확인을 입력해주세요';
-    } else if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       errors.confirmPassword = '비밀번호가 일치하지 않습니다';
     }
 
-    if (!formData.birthDate) {
-      errors.birthDate = '생년월일을 입력해주세요';
+    if (!formData.phoneNumber) {
+      errors.phoneNumber = '전화번호를 입력해주세요';
     }
 
-    if (!formData.joinYear) {
-      errors.joinYear = '입과년도를 입력해주세요';
-    }
-
-    // 전화번호 형식 검증 (선택사항)
-    if (formData.phoneNumber && !/^\d{3}-\d{4}-\d{4}$/.test(formData.phoneNumber)) {
-      errors.phoneNumber = '전화번호는 000-0000-0000 형식으로 입력해주세요';
+    if (!formData.uniqueCode) {
+      errors.uniqueCode = '고유번호를 입력해주세요';
     }
 
     setFormErrors(errors);
@@ -108,8 +98,12 @@ export const SignupForm: React.FC = () => {
     }
 
     try {
-      await signup(formData);
-      navigate('/'); // 회원가입 성공 시 메인 페이지로 이동
+      const signupData = {
+        ...formData
+      };
+      
+      await signup(signupData);
+      navigate('/login');
     } catch (error) {
       console.error('Signup failed:', error);
     }
@@ -124,7 +118,7 @@ export const SignupForm: React.FC = () => {
       bgcolor="#f5f5f5"
       py={4}
     >
-      <Card sx={{ maxWidth: 800, width: '100%', mx: 2 }}>
+      <Card sx={{ maxWidth: 600, width: '100%', mx: 2 }}>
         <CardContent sx={{ p: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom align="center">
             회원가입
@@ -137,183 +131,163 @@ export const SignupForm: React.FC = () => {
           )}
 
           <Box component="form" onSubmit={handleSubmit} noValidate>
-            <Grid container spacing={2}>
-              {/* 기본 정보 */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="이름"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  error={!!formErrors.name}
-                  helperText={formErrors.name}
-                  required
-                />
-              </Grid>
+            <TextField
+              fullWidth
+              label="이름"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              error={!!formErrors.name}
+              helperText={formErrors.name}
+              margin="normal"
+              required
+            />
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="이메일"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  error={!!formErrors.email}
-                  helperText={formErrors.email}
-                  required
-                />
-              </Grid>
+            <TextField
+              fullWidth
+              label="이메일"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              error={!!formErrors.email}
+              helperText={formErrors.email}
+              margin="normal"
+              required
+            />
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="비밀번호"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  error={!!formErrors.password}
-                  helperText={formErrors.password}
-                  required
-                />
-              </Grid>
+            <TextField
+              fullWidth
+              label="비밀번호"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              error={!!formErrors.password}
+              helperText={formErrors.password}
+              margin="normal"
+              required
+            />
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="비밀번호 확인"
-                  name="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  error={!!formErrors.confirmPassword}
-                  helperText={formErrors.confirmPassword}
-                  required
-                />
-              </Grid>
+            <TextField
+              fullWidth
+              label="비밀번호 확인"
+              name="confirmPassword"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              error={!!formErrors.confirmPassword}
+              helperText={formErrors.confirmPassword}
+              margin="normal"
+              required
+            />
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="전화번호"
-                  name="phoneNumber"
-                  placeholder="010-0000-0000"
-                  value={formData.phoneNumber}
-                  onChange={handleChange}
-                  error={!!formErrors.phoneNumber}
-                  helperText={formErrors.phoneNumber}
-                />
-              </Grid>
+            <TextField
+              fullWidth
+              label="전화번호"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              error={!!formErrors.phoneNumber}
+              helperText={formErrors.phoneNumber}
+              margin="normal"
+              required
+            />
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="생년월일"
-                  name="birthDate"
-                  type="date"
-                  value={formData.birthDate}
-                  onChange={handleChange}
-                  error={!!formErrors.birthDate}
-                  helperText={formErrors.birthDate}
-                  InputLabelProps={{ shrink: true }}
-                  required
-                />
-              </Grid>
+            <TextField
+              fullWidth
+              label="생년월일"
+              name="birthDate"
+              type="date"
+              value={formData.birthDate}
+              onChange={handleChange}
+              margin="normal"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
 
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel>성별</InputLabel>
-                  <Select
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleChange}
-                    label="성별"
-                  >
-                    <MenuItem value="MALE">남성</MenuItem>
-                    <MenuItem value="FEMALE">여성</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
+            <FormControl fullWidth margin="normal">
+              <InputLabel>성별</InputLabel>
+              <Select
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                label="성별"
+              >
+                <MenuItem value="MALE">남성</MenuItem>
+                <MenuItem value="FEMALE">여성</MenuItem>
+              </Select>
+            </FormControl>
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="입과년도"
-                  name="joinYear"
-                  type="number"
-                  value={formData.joinYear}
-                  onChange={handleChange}
-                  error={!!formErrors.joinYear}
-                  helperText={formErrors.joinYear}
-                  required
-                />
-              </Grid>
+            <TextField
+              fullWidth
+              label="가입년도"
+              name="joinYear"
+              type="number"
+              value={formData.joinYear}
+              onChange={handleChange}
+              margin="normal"
+            />
 
-              {/* 추가 정보 */}
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="전공"
-                  name="major"
-                  value={formData.major}
-                  onChange={handleChange}
-                />
-              </Grid>
+            <TextField
+              fullWidth
+              label="전공"
+              name="major"
+              value={formData.major}
+              onChange={handleChange}
+              margin="normal"
+            />
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="소속"
-                  name="department"
-                  value={formData.department}
-                  onChange={handleChange}
-                />
-              </Grid>
+            <TextField
+              fullWidth
+              label="소속"
+              name="department"
+              value={formData.department}
+              onChange={handleChange}
+              margin="normal"
+            />
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="직책"
-                  name="position"
-                  value={formData.position}
-                  onChange={handleChange}
-                />
-              </Grid>
+            <TextField
+              fullWidth
+              label="직책"
+              name="position"
+              value={formData.position}
+              onChange={handleChange}
+              margin="normal"
+            />
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="고유번호"
-                  name="uniqueCode"
-                  value={formData.uniqueCode}
-                  onChange={handleChange}
-                />
-              </Grid>
+            <TextField
+              fullWidth
+              label="고유번호"
+              name="uniqueCode"
+              value={formData.uniqueCode}
+              onChange={handleChange}
+              error={!!formErrors.uniqueCode}
+              helperText={formErrors.uniqueCode}
+              margin="normal"
+              required
+            />
 
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="업무/담당"
-                  name="responsibility"
-                  value={formData.responsibility}
-                  onChange={handleChange}
-                />
-              </Grid>
+            <TextField
+              fullWidth
+              label="업무/담당"
+              name="responsibility"
+              value={formData.responsibility}
+              onChange={handleChange}
+              margin="normal"
+            />
 
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="비고"
-                  name="remarks"
-                  multiline
-                  rows={2}
-                  value={formData.remarks}
-                  onChange={handleChange}
-                />
-              </Grid>
-            </Grid>
+            <TextField
+              fullWidth
+              label="비고"
+              name="remarks"
+              multiline
+              rows={2}
+              value={formData.remarks}
+              onChange={handleChange}
+              margin="normal"
+            />
 
             <Button
               type="submit"
@@ -340,3 +314,5 @@ export const SignupForm: React.FC = () => {
     </Box>
   );
 };
+
+export default SignupForm;
