@@ -1,127 +1,43 @@
-// API 응답 타입 정의
+// 공통 타입 정의
 
-export interface Practice {
-  id: number;
-  title: string;
-  content: string;
-  location: string;
-  practiceDate: string; // ISO date string
-  startTime: string; // HH:mm format
-  endTime: string; // HH:mm format
-  comment?: string;
-  userId: number;
-  teamId?: number;
-  isCompleted: boolean;
-  totalParticipants: number;
-  presentCount: number;
-  lateCount: number;
-  absentCount: number;
-  attendanceRate: number;
-  practiceDurationInMinutes: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PracticeListItem {
-  id: number;
-  title: string;
-  location: string;
-  practiceDate: string;
-  startTime: string;
-  endTime: string;
-  teamId?: number;
-  isCompleted: boolean;
-  totalParticipants: number;
-  attendanceRate: number;
-}
-
-export interface PracticeCreateRequest {
-  title: string;
-  content: string;
-  location: string;
-  practiceDate: string;
-  startTime: string;
-  endTime: string;
-  comment?: string;
-  teamId?: number;
-}
-
-export interface PracticeUpdateRequest {
-  title: string;
-  content: string;
-  location: string;
-  practiceDate: string;
-  startTime: string;
-  endTime: string;
-  comment?: string;
-}
-
-export interface Team {
-  id: number;
-  name: string;
-  description?: string;
-  status: string;
-  leader?: string;
-  memberCount: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface TeamListItem {
-  id: number;
-  name: string;
-  status: string;
-  leader?: string;
-  memberCount: number;
-}
-
-export interface TeamCreateRequest {
-  name: string;
-  description?: string;
-  leader?: string;
-}
-
-export interface PracticeParticipation {
-  id: number;
-  practiceId: number;
-  userId: number;
-  status: PracticeParticipationStatus;
-  reason?: string;
-  comment?: string;
-  isExcused: boolean;
-  isPresent: boolean;
-  isAbsent: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export enum PracticeParticipationStatus {
-  ATTENDANCE = 'ATTENDANCE',
-  LATE = 'LATE',
-  ABSENT = 'ABSENT'
-}
-
+// 공통 열거형 타입
 export enum Role {
   USER = 'USER',
   ADMIN = 'ADMIN'
 }
 
-export interface PracticeParticipationCreateRequest {
-  practiceId: number;
-  userId: number;
-  status: PracticeParticipationStatus;
-  reason?: string;
-  comment?: string;
-  isExcused?: boolean;
+export enum Gender {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+  OTHER = 'OTHER'
 }
 
+export enum MemberStatus {
+  ACTIVE = 'ACTIVE',
+  LEAVE_OF_ABSENCE = 'LEAVE_OF_ABSENCE',
+  INACTIVE = 'INACTIVE'
+}
+
+// 공통 유틸리티 타입
+export interface BaseEntity {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TimestampedEntity {
+  createdAt: string;
+  modifiedAt: string;
+}
+
+// 멤버 관련 타입 (공통으로 사용됨)
 export interface Member {
   id: number;
   name: string;
   email: string;
   phoneNumber?: string;
   birthDate: string;
-  gender: 'MALE' | 'FEMALE' | 'OTHER';
+  gender: Gender;
   joinYear: number;
   major?: string;
   department?: string;
