@@ -3,6 +3,7 @@ package com.culture.performingarts.domain.member.entity;
 import com.culture.performingarts.common.entity.Timestamped;
 import com.culture.performingarts.domain.member.enums.Gender;
 import com.culture.performingarts.domain.member.enums.MemberStatus;
+import com.culture.performingarts.domain.member.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
@@ -91,6 +92,11 @@ public class Member extends Timestamped {
     @Column(nullable = false, length = 20)
     private MemberStatus status = MemberStatus.ACTIVE; // 회원 상태
 
+    @NotNull(message = "회원 역할은 필수입니다")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Role role = Role.USER; // 회원 역할 (일반 사용자 기본값)
+
     // 연관관계 매핑은 ID 참조 방식을 사용하므로 별도의 엔티티 참조는 하지 않습니다.
     private Long teamId; // 팀 ID 참조
 
@@ -98,7 +104,7 @@ public class Member extends Timestamped {
     public Member(String name, String email, String password, String phoneNumber,
                   LocalDate birthDate, Gender gender, Integer joinYear, String major,
                   String department, String position, String responsibility,
-                  String remarks, String uniqueCode, MemberStatus status, Long teamId) {
+                  String remarks, String uniqueCode, MemberStatus status, Role role, Long teamId) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -113,6 +119,7 @@ public class Member extends Timestamped {
         this.remarks = remarks;
         this.uniqueCode = uniqueCode;
         this.status = status;
+        this.role = role != null ? role : Role.USER;
         this.teamId = teamId;
     }
 
@@ -184,5 +191,43 @@ public class Member extends Timestamped {
      */
     public boolean canReturn() {
         return this.status.canReturn();
+    }
+
+    /**
+     * 관리자 권한을 가지고 있는지 확인
+     * @return 관리자 권한이 있으면 true
+     */
+    public boolean isAdmin() {
+        return this.role.isAdmin();
+    }
+
+    /**
+     * 일반 사용자 권한을 가지고 있는지 확인
+     * @return 일반 사용자 권한이면 true
+     */
+    public boolean isUser() {
+        return this.role.isUser();
+    }
+
+    /**
+     * 회원 역할 변경
+     * @param role 새로운 역할
+     */
+    public void changeRole(Role role) {
+        this.role = role;
+    }
+
+    /**
+     * 관리자 권한 부여
+     */
+    public void grantAdminRole() {
+        this.role = Role.ADMIN;
+    }
+
+    /**
+     * 일반 사용자 권한으로 변경
+     */
+    public void grantUserRole() {
+        this.role = Role.USER;
     }
 }
