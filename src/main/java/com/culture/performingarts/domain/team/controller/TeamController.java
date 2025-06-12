@@ -28,7 +28,7 @@ public class TeamController {
     @GetMapping("/{teamId}")
     public ResponseEntity<TeamResponseDto> getTeam(@PathVariable Long teamId) {
         log.info("Requesting team details for ID: {}", teamId);
-        TeamResponseDto response = teamService.getTeamById(teamId);
+        TeamResponseDto response = teamService.getTeam(teamId);
         return ResponseEntity.ok(response);
     }
 
