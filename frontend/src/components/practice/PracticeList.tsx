@@ -27,6 +27,69 @@ import { practiceApi, PracticeListItem } from '../../api';
 
 const TIME_FORMAT_LENGTH = 5; // HH:mm 형식
 
+// 참석률 표시 컴포넌트
+const AttendanceRateDisplay: React.FC<{
+  totalParticipants: number;
+  attendanceRate: number;
+}> = ({ totalParticipants, attendanceRate }) => {
+  if (totalParticipants > 0) {
+    return (
+      <Typography variant="body2">
+        {attendanceRate.toFixed(1)}%
+        <br />
+        <Typography variant="caption" color="text.secondary">
+          ({totalParticipants}명 중 참석)
+        </Typography>
+      </Typography>
+    );
+  }
+  
+  return (
+    <Typography variant="body2" color="text.secondary">
+      참석 기록 없음
+    </Typography>
+  );
+};
+
+// 액션 버튼들 컴포넌트
+const PracticeActionButtons: React.FC<{
+  practice: PracticeListItem;
+  onView: (id: number) => void;
+  onEdit: (id: number) => void;
+  onDelete: (id: number) => void;
+}> = ({ practice, onView, onEdit, onDelete }) => {
+  const isCompleted = practice.isCompleted;
+  
+  return (
+    <>
+      <IconButton
+        size="small"
+        onClick={() => onView(practice.id)}
+        title="상세보기"
+      >
+        <ViewIcon />
+      </IconButton>
+      <IconButton
+        size="small"
+        onClick={() => onEdit(practice.id)}
+        title="수정"
+        disabled={isCompleted}
+      >
+        <EditIcon />
+      </IconButton>
+      <IconButton
+        size="small"
+        onClick={() => onDelete(practice.id)}
+        title="삭제"
+        disabled={isCompleted}
+        color="error"
+      >
+        <DeleteIcon />
+      </IconButton>
+    </>
+  );
+};
+
 const PracticeList: React.FC = () => {
   const navigate = useNavigate();
   const [practices, setPractices] = useState<PracticeListItem[]>([]);
@@ -143,19 +206,10 @@ const PracticeList: React.FC = () => {
                   </TableCell>
                   <TableCell>{practice.location}</TableCell>
                   <TableCell>
-                    {practice.totalParticipants > 0 ? (
-                      <Typography variant="body2">
-                        {practice.attendanceRate.toFixed(1)}%
-                        <br />
-                        <Typography variant="caption" color="text.secondary">
-                          ({practice.totalParticipants}명 중 참석)
-                        </Typography>
-                      </Typography>
-                    ) : (
-                      <Typography variant="body2" color="text.secondary">
-                        참석 기록 없음
-                      </Typography>
-                    )}
+                    <AttendanceRateDisplay
+                      totalParticipants={practice.totalParticipants}
+                      attendanceRate={practice.attendanceRate}
+                    />
                   </TableCell>
                   <TableCell>
                     <Chip
@@ -165,30 +219,12 @@ const PracticeList: React.FC = () => {
                     />
                   </TableCell>
                   <TableCell align="center">
-                    <IconButton
-                      size="small"
-                      onClick={() => navigate(`/practices/${practice.id}`)}
-                      title="상세보기"
-                    >
-                      <ViewIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => navigate(`/practices/${practice.id}/edit`)}
-                      title="수정"
-                      disabled={practice.isCompleted}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleDelete(practice.id)}
-                      title="삭제"
-                      disabled={practice.isCompleted}
-                      color="error"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+                    <PracticeActionButtons
+                      practice={practice}
+                      onView={(id) => navigate(`/practices/${id}`)}
+                      onEdit={(id) => navigate(`/practices/${id}/edit`)}
+                      onDelete={handleDelete}
+                    />
                   </TableCell>
                 </TableRow>
               ))
