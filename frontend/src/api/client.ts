@@ -3,8 +3,10 @@ import axios from 'axios';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 const API_TIMEOUT_MS = 10000;
 const CONTENT_TYPE_JSON = 'application/json';
-const ACCESS_TOKEN_KEY = 'accessToken';
-const REFRESH_TOKEN_KEY = 'refreshToken';
+
+// Storage keys - exported for use in other components
+export const ACCESS_TOKEN_KEY = 'accessToken';
+export const REFRESH_TOKEN_KEY = 'refreshToken';
 
 // Axios 인스턴스 생성
 export const apiClient = axios.create({
