@@ -119,7 +119,8 @@ const SignupForm: React.FC = () => {
 
     try {
       const signupData = {
-        ...formData
+        ...formData,
+        teamId: formData.teamId ? parseInt(formData.teamId, 10) : undefined
       };
       
       await signup(signupData);

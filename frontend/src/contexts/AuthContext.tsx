@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authApi } from '../api';
+import { Role } from '../types';
 
 export interface User {
   id: number;
@@ -16,6 +17,7 @@ export interface User {
   remarks?: string;
   uniqueCode?: string;
   status: 'ACTIVE' | 'LEAVE_OF_ABSENCE' | 'INACTIVE';
+  role: Role;
   teamId?: number;
   createdAt: string;
   modifiedAt: string;
