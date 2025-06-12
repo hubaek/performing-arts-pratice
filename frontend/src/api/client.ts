@@ -32,9 +32,40 @@ apiClient.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
+    
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (refreshToken) {
+          // Refresh token API 호출
+          const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+            refreshToken
+          });
+          
+          const { accessToken } = response.data;
+          localStorage.setItem('accessToken', accessToken);
+          
+          // 원래 요청에 새 토큰 설정
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          
+          // 원래 요청 재시도
+          return apiClient(originalRequest);
+        }
+      } catch (refreshError) {
+        // Refresh 실패 시 로그아웃 처리
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      }
+    }
+    
+    // 401이 아니거나 재시도 실패 시
     if (error.response?.status === 401) {
-      // 인증 실패 시 토큰 제거 및 로그인 페이지로 리다이렉트
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       window.location.href = '/login';

@@ -37,13 +37,13 @@ export const authApi = {
 
   // 이메일 중복 확인
   checkEmailExists: async (email: string): Promise<boolean> => {
-    const response = await apiClient.get<boolean>(`/members/check-email?email=${email}`);
+    const response = await apiClient.get<boolean>(`/members/check-email?email=${encodeURIComponent(email)}`);
     return response.data;
   },
 
   // 고유코드 중복 확인
   checkUniqueCodeExists: async (uniqueCode: string): Promise<boolean> => {
-    const response = await apiClient.get<boolean>(`/members/check-unique-code?uniqueCode=${uniqueCode}`);
+    const response = await apiClient.get<boolean>(`/members/check-unique-code?uniqueCode=${encodeURIComponent(uniqueCode)}`);
     return response.data;
   }
 };
