@@ -5,7 +5,20 @@ export interface User {
   id: number;
   name: string;
   email: string;
-  status: string;
+  phoneNumber?: string;
+  birthDate?: string;
+  gender: 'MALE' | 'FEMALE' | 'OTHER';
+  joinYear: number;
+  major?: string;
+  department?: string;
+  position?: string;
+  responsibility?: string;
+  remarks?: string;
+  uniqueCode?: string;
+  status: 'ACTIVE' | 'LEAVE_OF_ABSENCE' | 'INACTIVE';
+  teamId?: number;
+  createdAt: string;
+  modifiedAt: string;
 }
 
 export interface AuthResponse {
@@ -28,8 +41,8 @@ export interface SignupRequest {
   password: string;
   confirmPassword: string;
   phoneNumber?: string;
-  birthDate?: string;
-  gender: 'MALE' | 'FEMALE';
+  birthDate: string;
+  gender: 'MALE' | 'FEMALE' | 'OTHER';
   joinYear: number;
   major?: string;
   department?: string;
@@ -105,12 +118,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem('refreshToken', response.refreshToken);
       
       setAccessToken(response.accessToken);
-      setUser({
-        id: response.memberId,
-        name: response.name,
-        email: response.email,
-        status: 'ACTIVE'
-      });
+      
+      // 사용자 정보 다시 조회하여 전체 정보 설정
+      const userData = await authApi.getCurrentUser();
+      setUser(userData);
     } catch (error: any) {
       setError(error.response?.data?.message || '로그인에 실패했습니다.');
       throw error;
@@ -131,12 +142,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem('refreshToken', response.refreshToken);
       
       setAccessToken(response.accessToken);
-      setUser({
-        id: response.memberId,
-        name: response.name,
-        email: response.email,
-        status: 'ACTIVE'
-      });
+      
+      // 사용자 정보 다시 조회하여 전체 정보 설정
+      const userInfo = await authApi.getCurrentUser();
+      setUser(userInfo);
     } catch (error: any) {
       setError(error.response?.data?.message || '회원가입에 실패했습니다.');
       throw error;
@@ -165,13 +174,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem('accessToken', response.accessToken);
       setAccessToken(response.accessToken);
       
-      // 사용자 정보 업데이트
-      setUser({
-        id: response.memberId,
-        name: response.name,
-        email: response.email,
-        status: 'ACTIVE'
-      });
+      // 사용자 정보 다시 조회하여 전체 정보 설정
+      const userData = await authApi.getCurrentUser();
+      setUser(userData);
     } catch (error) {
       console.error('Token refresh failed:', error);
       logout();

@@ -27,7 +27,7 @@ const SignupForm: React.FC = () => {
     confirmPassword: '',
     phoneNumber: '',
     birthDate: '',
-    gender: 'MALE' as 'MALE' | 'FEMALE',
+    gender: 'MALE' as 'MALE' | 'FEMALE' | 'OTHER',
     joinYear: new Date().getFullYear(),
     major: '',
     department: '',
@@ -78,8 +78,8 @@ const SignupForm: React.FC = () => {
       errors.confirmPassword = '비밀번호가 일치하지 않습니다';
     }
 
-    if (!formData.phoneNumber) {
-      errors.phoneNumber = '전화번호를 입력해주세요';
+    if (!formData.birthDate) {
+      errors.birthDate = '생년월일을 입력해주세요';
     }
 
     if (!formData.uniqueCode) {
@@ -103,7 +103,7 @@ const SignupForm: React.FC = () => {
       };
       
       await signup(signupData);
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       console.error('Signup failed:', error);
     }
@@ -191,7 +191,7 @@ const SignupForm: React.FC = () => {
               error={!!formErrors.phoneNumber}
               helperText={formErrors.phoneNumber}
               margin="normal"
-              required
+              placeholder="000-0000-0000"
             />
 
             <TextField
@@ -201,7 +201,10 @@ const SignupForm: React.FC = () => {
               type="date"
               value={formData.birthDate}
               onChange={handleChange}
+              error={!!formErrors.birthDate}
+              helperText={formErrors.birthDate}
               margin="normal"
+              required
               InputLabelProps={{
                 shrink: true,
               }}
@@ -217,6 +220,7 @@ const SignupForm: React.FC = () => {
               >
                 <MenuItem value="MALE">남성</MenuItem>
                 <MenuItem value="FEMALE">여성</MenuItem>
+                <MenuItem value="OTHER">기타</MenuItem>
               </Select>
             </FormControl>
 
