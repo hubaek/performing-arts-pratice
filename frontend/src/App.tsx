@@ -2,11 +2,12 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { AppBar, Toolbar, Typography, Container } from '@mui/material';
+import { Container } from '@mui/material';
 import { AuthProvider } from './domains/auth/hooks/AuthContext';
 import { LoginForm, SignupForm, ProtectedRoute, AdminRoute } from './domains/auth';
 import { PracticeList, PracticeForm, PracticeDetail } from './domains/practice';
 import { AdminTeamList } from './domains/admin';
+import { Header } from './shared/components';
 
 const theme = createTheme({
   palette: {
@@ -26,13 +27,7 @@ function App() {
       <Router>
         <AuthProvider>
           <div className="App">
-            <AppBar position="static">
-              <Toolbar>
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                  연습일지 관리 시스템
-                </Typography>
-              </Toolbar>
-            </AppBar>
+            <Header />
             <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
               <Routes>
                 <Route path="/login" element={<LoginForm />} />
