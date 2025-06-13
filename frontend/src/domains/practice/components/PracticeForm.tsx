@@ -78,13 +78,6 @@ const PracticeForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
 
-  useEffect(() => {
-    loadTeams();
-    if (isEdit) {
-      loadPractice();
-    }
-  }, [id, isEdit]);
-
   const loadTeams = async () => {
     try {
       const data = await teamApi.getActive();
@@ -94,7 +87,7 @@ const PracticeForm: React.FC = () => {
     }
   };
 
-  const loadPractice = async () => {
+  const loadPractice = useCallback(async () => {
     if (!id) return;
     
     try {
@@ -116,7 +109,14 @@ const PracticeForm: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    loadTeams();
+    if (isEdit) {
+      loadPractice();
+    }
+  }, [id, isEdit, loadPractice]);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
