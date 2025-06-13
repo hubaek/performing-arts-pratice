@@ -6,6 +6,8 @@ import com.culture.performingarts.domain.practice.dto.PracticeResponseDto;
 import com.culture.performingarts.domain.practice.dto.PracticeUpdateRequestDto;
 import com.culture.performingarts.domain.practice.entity.Practice;
 import com.culture.performingarts.domain.practice.repository.PracticeRepository;
+import com.culture.performingarts.domain.member.entity.Member;
+import com.culture.performingarts.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,9 +24,14 @@ import java.util.stream.Collectors;
 public class PracticeService {
 
     private final PracticeRepository practiceRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public PracticeResponseDto createPractice(PracticeCreateRequestDto requestDto, Long userId) {
+    public PracticeResponseDto createPractice(PracticeCreateRequestDto requestDto, String userEmail) {
+        // 이메일로 사용자 조회
+        Member member = memberRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
         Practice practice = Practice.builder()
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
@@ -33,7 +40,7 @@ public class PracticeService {
                 .startTime(requestDto.getStartTime())
                 .endTime(requestDto.getEndTime())
                 .comment(requestDto.getComment())
-                .userId(userId)
+                .userId(member.getId())
                 .teamId(requestDto.getTeamId())
                 .build();
 
