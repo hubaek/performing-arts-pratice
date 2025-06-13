@@ -81,19 +81,25 @@ public class PracticeService {
                 .collect(Collectors.toList());
     }
 
-    public List<PracticeListResponseDto> getPracticesByUser(Long userId) {
-        return practiceRepository.findByUserIdOrderByPracticeDateDescStartTimeDesc(userId)
+    public List<PracticeListResponseDto> getPracticesByUser(String userEmail) {
+        Member member = memberRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
+        return practiceRepository.findByUserIdOrderByPracticeDateDescStartTimeDesc(member.getId())
                 .stream()
                 .map(PracticeListResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public PracticeResponseDto updatePractice(Long practiceId, PracticeUpdateRequestDto requestDto, Long userId) {
+    public PracticeResponseDto updatePractice(Long practiceId, PracticeUpdateRequestDto requestDto, String userEmail) {
+        Member member = memberRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
         Practice practice = practiceRepository.findById(practiceId)
                 .orElseThrow(() -> new IllegalArgumentException("연습 정보를 찾을 수 없습니다."));
 
-        if (!practice.getUserId().equals(userId)) {
+        if (!practice.getUserId().equals(member.getId())) {
             throw new IllegalArgumentException("연습 정보를 수정할 권한이 없습니다.");
         }
 
@@ -111,11 +117,14 @@ public class PracticeService {
     }
 
     @Transactional
-    public void deletePractice(Long practiceId, Long userId) {
+    public void deletePractice(Long practiceId, String userEmail) {
+        Member member = memberRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
         Practice practice = practiceRepository.findById(practiceId)
                 .orElseThrow(() -> new IllegalArgumentException("연습 정보를 찾을 수 없습니다."));
 
-        if (!practice.getUserId().equals(userId)) {
+        if (!practice.getUserId().equals(member.getId())) {
             throw new IllegalArgumentException("연습 정보를 삭제할 권한이 없습니다.");
         }
 
@@ -127,11 +136,14 @@ public class PracticeService {
     }
 
     @Transactional
-    public PracticeResponseDto completePractice(Long practiceId, Long userId) {
+    public PracticeResponseDto completePractice(Long practiceId, String userEmail) {
+        Member member = memberRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
         Practice practice = practiceRepository.findById(practiceId)
                 .orElseThrow(() -> new IllegalArgumentException("연습 정보를 찾을 수 없습니다."));
 
-        if (!practice.getUserId().equals(userId)) {
+        if (!practice.getUserId().equals(member.getId())) {
             throw new IllegalArgumentException("연습을 완료할 권한이 없습니다.");
         }
 
