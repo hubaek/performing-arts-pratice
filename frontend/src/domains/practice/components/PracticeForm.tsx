@@ -158,17 +158,37 @@ const PracticeForm: React.FC = () => {
     
     try {
       setLoading(true);
+      setError(null); // 기존 오류 메시지 초기화
+      
+      // 디버깅용 요청 데이터 로깅
+      console.log('연습 등록/수정 요청 데이터:', {
+        formData,
+        isEdit,
+        id,
+        timestamp: new Date().toISOString()
+      });
+      
       if (isEdit) {
         await practiceApi.update(Number(id), formData);
+        console.log('연습 수정 성공');
       } else {
-        await practiceApi.create(formData);
+        const result = await practiceApi.create(formData);
+        console.log('연습 등록 성공:', result);
       }
       navigate('/practices');
     } catch (err: any) {
-      console.error('Error saving practice:', err);
+      console.error('연습 저장 오류 상세 정보:', {
+        error: err,
+        response: err.response,
+        request: err.request,
+        config: err.config,
+        formData,
+        timestamp: new Date().toISOString()
+      });
       
       // API 응답에서 상세 오류 메시지 추출
       let errorMessage = isEdit ? '수정에 실패했습니다.' : '등록에 실패했습니다.';
+      let debugInfo = '';
       
       if (err.response?.data?.message) {
         errorMessage = err.response.data.message;
@@ -178,24 +198,38 @@ const PracticeForm: React.FC = () => {
         switch (err.response.status) {
           case 400:
             errorMessage = '입력 데이터가 올바르지 않습니다.';
+            debugInfo = ' 입력한 정보를 다시 확인해주세요.';
             break;
           case 401:
             errorMessage = '로그인이 필요합니다.';
+            debugInfo = ' 다시 로그인해주세요.';
             break;
           case 403:
             errorMessage = '권한이 없습니다.';
+            debugInfo = ' 관리자에게 문의하세요.';
             break;
           case 404:
             errorMessage = '요청한 리소스를 찾을 수 없습니다.';
+            debugInfo = ' 페이지를 새로고침 후 다시 시도해주세요.';
             break;
           case 500:
             errorMessage = '서버 오류가 발생했습니다.';
+            debugInfo = ' 잠시 후 다시 시도해주세요.';
             break;
           default:
             errorMessage = `오류가 발생했습니다. (상태 코드: ${err.response.status})`;
+            debugInfo = ' 개발자 도구의 콘솔을 확인해주세요.';
         }
+      } else if (err.code === 'NETWORK_ERROR' || err.message.includes('Network Error')) {
+        errorMessage = '네트워크 연결을 확인해주세요.';
+        debugInfo = ' 인터넷 연결 상태를 확인하고 다시 시도해주세요.';
       } else if (err.message) {
         errorMessage = err.message;
+      }
+      
+      // 개발 환경에서는 디버그 정보도 포함
+      if (process.env.NODE_ENV === 'development') {
+        errorMessage += debugInfo;
       }
       
       setError(errorMessage);
