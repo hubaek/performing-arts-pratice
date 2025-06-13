@@ -1,6 +1,7 @@
 // Practice 도메인 타입 정의
+import { TimestampedEntity } from '../../../shared/types';
 
-export interface Practice {
+export interface Practice extends TimestampedEntity {
   id: number;
   title: string;
   content: string;
@@ -18,8 +19,6 @@ export interface Practice {
   absentCount: number;
   attendanceRate: number;
   practiceDurationInMinutes: number;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface PracticeListItem {
@@ -57,7 +56,7 @@ export interface PracticeUpdateRequest {
 }
 
 // Practice participation 관련 타입들
-export interface PracticeParticipation {
+export interface PracticeParticipation extends TimestampedEntity {
   id: number;
   practiceId: number;
   userId: number;
@@ -67,8 +66,6 @@ export interface PracticeParticipation {
   isExcused: boolean;
   isPresent: boolean;
   isAbsent: boolean;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export enum PracticeParticipationStatus {

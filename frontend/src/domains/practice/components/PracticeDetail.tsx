@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Paper,
@@ -50,7 +50,7 @@ const PracticeDetail: React.FC = () => {
     }
   };
 
-  const handleComplete = async () => {
+  const handleComplete = useCallback(async () => {
     if (!practice || !id) return;
 
     if (window.confirm('연습을 완료 처리하시겠습니까?')) {
@@ -62,7 +62,7 @@ const PracticeDetail: React.FC = () => {
         console.error('Error completing practice:', err);
       }
     }
-  };
+  }, [practice, id]);
 
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), 'yyyy년 MM월 dd일');

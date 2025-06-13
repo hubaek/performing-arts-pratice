@@ -86,8 +86,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userData = await authApi.getCurrentUser();
       setUser(userData);
     } catch (error: unknown) {
+      interface ErrorResponse {
+        response?: {
+          data?: {
+            message?: string;
+          };
+        };
+      }
+      
       const errorMessage = error instanceof Error && 'response' in error 
-        ? (error as any).response?.data?.message || '로그인에 실패했습니다.'
+        ? (error as ErrorResponse).response?.data?.message || '로그인에 실패했습니다.'
         : '로그인에 실패했습니다.';
       setError(errorMessage);
       throw error;
@@ -113,8 +121,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userInfo = await authApi.getCurrentUser();
       setUser(userInfo);
     } catch (error: unknown) {
+      interface ErrorResponse {
+        response?: {
+          data?: {
+            message?: string;
+          };
+        };
+      }
+      
       const errorMessage = error instanceof Error && 'response' in error 
-        ? (error as any).response?.data?.message || '회원가입에 실패했습니다.'
+        ? (error as ErrorResponse).response?.data?.message || '회원가입에 실패했습니다.'
         : '회원가입에 실패했습니다.';
       setError(errorMessage);
       throw error;

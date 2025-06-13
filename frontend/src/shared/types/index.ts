@@ -25,13 +25,20 @@ export interface BaseEntity {
   updatedAt: string;
 }
 
-export interface TimestampedEntity {
+// 타임스탬프 전용 인터페이스 (modifiedAt 사용)
+export interface LegacyTimestampedEntity {
   createdAt: string;
   modifiedAt: string;
 }
 
+// 표준 타임스탬프 인터페이스 (updatedAt 사용)
+export interface TimestampedEntity {
+  createdAt: string;
+  updatedAt: string;
+}
+
 // 멤버 관련 타입 (공통으로 사용됨)
-export interface Member {
+export interface Member extends LegacyTimestampedEntity {
   id: number;
   name: string;
   email: string;
@@ -47,8 +54,6 @@ export interface Member {
   isActive: boolean;
   role: Role;
   teamId?: number;
-  createdAt: string;
-  modifiedAt: string;
 }
 
 export interface MemberListItem {

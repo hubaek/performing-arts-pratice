@@ -23,9 +23,32 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 6;
 const LOADING_SPINNER_SIZE = 24;
 
+// 형태 정의
+interface SignupFormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  phoneNumber: string;
+  birthDate: string;
+  gender: 'MALE' | 'FEMALE' | 'OTHER';
+  joinYear: number;
+  major: string;
+  department: string;
+  position: string;
+  responsibility: string;
+  remarks: string;
+  uniqueCode: string;
+  teamId: string;
+}
+
+interface FormErrors {
+  [key: string]: string;
+}
+
 // 통합 폼 검증 스키마
-const validateSignupForm = (formData: any) => {
-  const errors: {[key: string]: string} = {};
+const validateSignupForm = (formData: SignupFormData) => {
+  const errors: FormErrors = {};
 
   // 필수 필드 검증
   if (!formData.name) errors.name = '이름을 입력해주세요';
@@ -44,6 +67,16 @@ const validateSignupForm = (formData: any) => {
     errors.password = `비밀번호는 ${MIN_PASSWORD_LENGTH}자 이상이어야 합니다`;
   }
 
+  // 생년월일 형식 검증
+  if (formData.birthDate && !/^\d{4}-\d{2}-\d{2}$/.test(formData.birthDate)) {
+    errors.birthDate = '올바른 날짜 형식을 입력해주세요 (YYYY-MM-DD)';
+  }
+
+  // 전화번호 형식 검증 (선택사항)
+  if (formData.phoneNumber && !/^\d{3}-\d{4}-\d{4}$/.test(formData.phoneNumber)) {
+    errors.phoneNumber = '올바른 전화번호 형식을 입력해주세요 (000-0000-0000)';
+  }
+
   // 비밀번호 확인 검증
   if (formData.password !== formData.confirmPassword) {
     errors.confirmPassword = '비밀번호가 일치하지 않습니다';
@@ -58,7 +91,7 @@ const validateSignupForm = (formData: any) => {
 const SignupForm: React.FC = () => {
   const navigate = useNavigate();
   const { signup, loading, error } = useAuth();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<SignupFormData>({
     name: '',
     email: '',
     password: '',
@@ -75,7 +108,7 @@ const SignupForm: React.FC = () => {
     uniqueCode: '',
     teamId: ''
   });
-  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [teams, setTeams] = useState<TeamListItem[]>([]);
   const [loadingTeams, setLoadingTeams] = useState(true);
 
@@ -94,7 +127,7 @@ const SignupForm: React.FC = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | React.ChangeEvent<{ name?: string; value: unknown }>) => {
     const name = e.target.name as string;
     const value = e.target.value;
     
@@ -127,7 +160,7 @@ const SignupForm: React.FC = () => {
     try {
       const signupData = {
         ...formData,
-        teamId: formData.teamId ? parseInt(formData.teamId, 10) : undefined
+        teamId: formData.teamId ? Number(formData.teamId) : undefined
       };
       
       await signup(signupData);

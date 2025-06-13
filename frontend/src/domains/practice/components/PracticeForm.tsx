@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Paper,
@@ -36,6 +36,19 @@ const validatePracticeForm = (formData: PracticeCreateRequest) => {
     if (endTime <= startTime) {
       errors.endTime = '종료 시간은 시작 시간보다 늦어야 합니다';
     }
+  }
+
+  // 날짜 유효성 검증
+  if (formData.practiceDate && !/^\d{4}-\d{2}-\d{2}$/.test(formData.practiceDate)) {
+    errors.practiceDate = '올바른 날짜 형식을 입력해주세요 (YYYY-MM-DD)';
+  }
+
+  // 시간 형식 검증
+  if (formData.startTime && !/^\d{2}:\d{2}$/.test(formData.startTime)) {
+    errors.startTime = '올바른 시간 형식을 입력해주세요 (HH:mm)';
+  }
+  if (formData.endTime && !/^\d{2}:\d{2}$/.test(formData.endTime)) {
+    errors.endTime = '올바른 시간 형식을 입력해주세요 (HH:mm)';
   }
 
   return {
@@ -105,7 +118,7 @@ const PracticeForm: React.FC = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -113,13 +126,16 @@ const PracticeForm: React.FC = () => {
     }));
     
     // 입력 시 해당 필드 에러 제거
-    if (formErrors[name]) {
-      setFormErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
+    setFormErrors(prev => {
+      if (prev[name]) {
+        return {
+          ...prev,
+          [name]: ''
+        };
+      }
+      return prev;
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

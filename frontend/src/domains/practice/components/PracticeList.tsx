@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Paper,
@@ -66,6 +66,7 @@ const PracticeActionButtons: React.FC<{
       <IconButton
         size="small"
         onClick={() => onView(practice.id)}
+        aria-label="상세보기"
         title="상세보기"
       >
         <ViewIcon />
@@ -73,6 +74,7 @@ const PracticeActionButtons: React.FC<{
       <IconButton
         size="small"
         onClick={() => onEdit(practice.id)}
+        aria-label="수정"
         title="수정"
         disabled={isCompleted}
       >
@@ -81,6 +83,7 @@ const PracticeActionButtons: React.FC<{
       <IconButton
         size="small"
         onClick={() => onDelete(practice.id)}
+        aria-label="삭제"
         title="삭제"
         disabled={isCompleted}
         color="error"
@@ -114,7 +117,7 @@ const PracticeList: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = useCallback(async (id: number) => {
     if (window.confirm('정말로 삭제하시겠습니까?')) {
       try {
         await practiceApi.delete(id);
@@ -124,7 +127,7 @@ const PracticeList: React.FC = () => {
         console.error('Error deleting practice:', err);
       }
     }
-  };
+  }, []);
 
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), 'yyyy.MM.dd');
