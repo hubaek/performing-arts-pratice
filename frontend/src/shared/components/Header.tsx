@@ -8,11 +8,15 @@ import {
   Box,
   IconButton,
   Menu,
-  MenuItem
+  MenuItem,
+  Divider
 } from '@mui/material';
 import {
   AccountCircle as AccountCircleIcon,
-  ExitToApp as LogoutIcon
+  ExitToApp as LogoutIcon,
+  Home as HomeIcon,
+  List as ListIcon,
+  AdminPanelSettings as AdminIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../domains/auth/hooks/AuthContext';
 
@@ -61,6 +65,32 @@ const Header: React.FC = () => {
         
         {isAuthenticated && user && (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Button 
+              color="inherit" 
+              startIcon={<HomeIcon />}
+              onClick={() => navigate('/')}
+              sx={{ mr: 1 }}
+            >
+              홈
+            </Button>
+            <Button 
+              color="inherit" 
+              startIcon={<ListIcon />}
+              onClick={() => navigate('/practices')}
+              sx={{ mr: 1 }}
+            >
+              연습일지
+            </Button>
+            {user.role === 'ADMIN' && (
+              <Button 
+                color="inherit" 
+                startIcon={<AdminIcon />}
+                onClick={() => navigate('/admin/teams')}
+                sx={{ mr: 2 }}
+              >
+                관리자
+              </Button>
+            )}
             <Typography variant="body1" sx={{ mr: 2 }}>
               {user.name}님
             </Typography>
@@ -89,6 +119,21 @@ const Header: React.FC = () => {
               open={isMenuOpen}
               onClose={handleMenuClose}
             >
+              <MenuItem onClick={() => { navigate('/'); handleMenuClose(); }}>
+                <HomeIcon sx={{ mr: 1 }} />
+                홈
+              </MenuItem>
+              <MenuItem onClick={() => { navigate('/practices'); handleMenuClose(); }}>
+                <ListIcon sx={{ mr: 1 }} />
+                연습일지
+              </MenuItem>
+              {user.role === 'ADMIN' && (
+                <MenuItem onClick={() => { navigate('/admin/teams'); handleMenuClose(); }}>
+                  <AdminIcon sx={{ mr: 1 }} />
+                  관리자
+                </MenuItem>
+              )}
+              <Divider />
               <MenuItem onClick={handleLogout}>
                 <LogoutIcon sx={{ mr: 1 }} />
                 로그아웃
