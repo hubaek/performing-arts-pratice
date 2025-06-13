@@ -1,7 +1,7 @@
 // Auth 도메인 타입 정의
-import { Role } from '../../../shared/types';
+import { Role, LegacyTimestampedEntity } from '../../../shared/types';
 
-export interface User {
+export interface User extends LegacyTimestampedEntity {
   id: number;
   name: string;
   email: string;
@@ -18,8 +18,6 @@ export interface User {
   status: 'ACTIVE' | 'LEAVE_OF_ABSENCE' | 'INACTIVE';
   role: Role;
   teamId?: number;
-  createdAt: string;
-  modifiedAt: string;
 }
 
 export interface AuthResponse {
