@@ -9,21 +9,27 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Divider
+  Divider,
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
 import {
   AccountCircle as AccountCircleIcon,
   ExitToApp as LogoutIcon,
   Home as HomeIcon,
   List as ListIcon,
-  AdminPanelSettings as AdminIcon
+  AdminPanelSettings as AdminIcon,
+  Menu as MenuIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../domains/auth/hooks/AuthContext';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleHomeClick = () => {
     navigate('/');
@@ -40,10 +46,26 @@ const Header: React.FC = () => {
   const handleLogout = () => {
     logout();
     handleMenuClose();
+    setMobileMenuAnchorEl(null);
     navigate('/login');
   };
 
+  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setMobileMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleMobileMenuClose = () => {
+    setMobileMenuAnchorEl(null);
+  };
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    handleMenuClose();
+    handleMobileMenuClose();
+  };
+
   const isMenuOpen = Boolean(anchorEl);
+  const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
 
   return (
     <AppBar position="static">
@@ -65,80 +87,143 @@ const Header: React.FC = () => {
         
         {isAuthenticated && user && (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Button 
-              color="inherit" 
-              startIcon={<HomeIcon />}
-              onClick={() => navigate('/')}
-              sx={{ mr: 1 }}
-            >
-              홈
-            </Button>
-            <Button 
-              color="inherit" 
-              startIcon={<ListIcon />}
-              onClick={() => navigate('/practices')}
-              sx={{ mr: 1 }}
-            >
-              연습일지
-            </Button>
-            {user.role === 'ADMIN' && (
-              <Button 
-                color="inherit" 
-                startIcon={<AdminIcon />}
-                onClick={() => navigate('/admin/teams')}
-                sx={{ mr: 2 }}
-              >
-                관리자
-              </Button>
+            {!isMobile ? (
+              <>
+                <Button 
+                  color="inherit" 
+                  startIcon={<HomeIcon />}
+                  onClick={() => navigate('/')}
+                  sx={{ mr: 1 }}
+                >
+                  홈
+                </Button>
+                <Button 
+                  color="inherit" 
+                  startIcon={<ListIcon />}
+                  onClick={() => navigate('/practices')}
+                  sx={{ mr: 1 }}
+                >
+                  연습일지
+                </Button>
+                {user.role === 'ADMIN' && (
+                  <Button 
+                    color="inherit" 
+                    startIcon={<AdminIcon />}
+                    onClick={() => navigate('/admin/teams')}
+                    sx={{ mr: 2 }}
+                  >
+                    관리자
+                  </Button>
+                )}
+                <Typography variant="body1" sx={{ mr: 2 }}>
+                  {user.name}님
+                </Typography>
+                <IconButton
+                  size="large"
+                  aria-label="사용자 계정"
+                  aria-controls="profile-menu"
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircleIcon />
+                </IconButton>
+              </>
+            ) : (
+              <>
+                <Typography variant="body2" sx={{ mr: 1 }}>
+                  {user.name}님
+                </Typography>
+                <IconButton
+                  size="large"
+                  aria-label="메뉴 열기"
+                  aria-controls="mobile-menu"
+                  aria-haspopup="true"
+                  onClick={handleMobileMenuOpen}
+                  color="inherit"
+                >
+                  <MenuIcon />
+                </IconButton>
+              </>
             )}
-            <Typography variant="body1" sx={{ mr: 2 }}>
-              {user.name}님
-            </Typography>
-            <IconButton
-              size="large"
-              aria-label="사용자 계정"
-              aria-controls="profile-menu"
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <AccountCircleIcon />
-            </IconButton>
-            <Menu
-              id="profile-menu"
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={isMenuOpen}
-              onClose={handleMenuClose}
-            >
-              <MenuItem onClick={() => { navigate('/'); handleMenuClose(); }}>
-                <HomeIcon sx={{ mr: 1 }} />
-                홈
-              </MenuItem>
-              <MenuItem onClick={() => { navigate('/practices'); handleMenuClose(); }}>
-                <ListIcon sx={{ mr: 1 }} />
-                연습일지
-              </MenuItem>
-              {user.role === 'ADMIN' && (
-                <MenuItem onClick={() => { navigate('/admin/teams'); handleMenuClose(); }}>
-                  <AdminIcon sx={{ mr: 1 }} />
-                  관리자
+            
+            {/* 데스크톱 프로필 메뉴 */}
+            {!isMobile && (
+              <Menu
+                id="profile-menu"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={isMenuOpen}
+                onClose={handleMenuClose}
+              >
+                <MenuItem onClick={() => handleNavigation('/')}>
+                  <HomeIcon sx={{ mr: 1 }} />
+                  홈
                 </MenuItem>
-              )}
-              <Divider />
-              <MenuItem onClick={handleLogout}>
-                <LogoutIcon sx={{ mr: 1 }} />
-                로그아웃
-              </MenuItem>
-            </Menu>
+                <MenuItem onClick={() => handleNavigation('/practices')}>
+                  <ListIcon sx={{ mr: 1 }} />
+                  연습일지
+                </MenuItem>
+                {user.role === 'ADMIN' && (
+                  <MenuItem onClick={() => handleNavigation('/admin/teams')}>
+                    <AdminIcon sx={{ mr: 1 }} />
+                    관리자
+                  </MenuItem>
+                )}
+                <Divider />
+                <MenuItem onClick={handleLogout}>
+                  <LogoutIcon sx={{ mr: 1 }} />
+                  로그아웃
+                </MenuItem>
+              </Menu>
+            )}
+            
+            {/* 모바일 메뉴 */}
+            {isMobile && (
+              <Menu
+                id="mobile-menu"
+                anchorEl={mobileMenuAnchorEl}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={isMobileMenuOpen}
+                onClose={handleMobileMenuClose}
+              >
+                <MenuItem onClick={() => handleNavigation('/')}>
+                  <HomeIcon sx={{ mr: 1 }} />
+                  홈
+                </MenuItem>
+                <MenuItem onClick={() => handleNavigation('/practices')}>
+                  <ListIcon sx={{ mr: 1 }} />
+                  연습일지
+                </MenuItem>
+                {user.role === 'ADMIN' && (
+                  <MenuItem onClick={() => handleNavigation('/admin/teams')}>
+                    <AdminIcon sx={{ mr: 1 }} />
+                    관리자
+                  </MenuItem>
+                )}
+                <Divider />
+                <MenuItem onClick={handleLogout}>
+                  <LogoutIcon sx={{ mr: 1 }} />
+                  로그아웃
+                </MenuItem>
+              </Menu>
+            )}
           </Box>
         )}
         
