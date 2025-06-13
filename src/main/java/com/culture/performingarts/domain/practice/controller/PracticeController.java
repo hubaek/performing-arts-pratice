@@ -12,6 +12,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -26,10 +28,13 @@ public class PracticeController {
 
     @PostMapping
     public ResponseEntity<PracticeResponseDto> createPractice(
-            @RequestBody PracticeCreateRequestDto requestDto,
-            @RequestHeader("User-Id") Long userId) {
+            @RequestBody PracticeCreateRequestDto requestDto) {
         
-        PracticeResponseDto response = practiceService.createPractice(requestDto, userId);
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        
+        PracticeResponseDto response = practiceService.createPractice(requestDto, userEmail);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -67,37 +72,45 @@ public class PracticeController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity<List<PracticeListResponseDto>> getMyPractices(
-            @RequestHeader("User-Id") Long userId) {
-        List<PracticeListResponseDto> practices = practiceService.getPracticesByUser(userId);
+    public ResponseEntity<List<PracticeListResponseDto>> getMyPractices() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        
+        List<PracticeListResponseDto> practices = practiceService.getPracticesByUser(userEmail);
         return ResponseEntity.ok(practices);
     }
 
     @PutMapping("/{practiceId}")
     public ResponseEntity<PracticeResponseDto> updatePractice(
             @PathVariable Long practiceId,
-            @RequestBody PracticeUpdateRequestDto requestDto,
-            @RequestHeader("User-Id") Long userId) {
+            @RequestBody PracticeUpdateRequestDto requestDto) {
         
-        PracticeResponseDto response = practiceService.updatePractice(practiceId, requestDto, userId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        
+        PracticeResponseDto response = practiceService.updatePractice(practiceId, requestDto, userEmail);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{practiceId}")
     public ResponseEntity<Void> deletePractice(
-            @PathVariable Long practiceId,
-            @RequestHeader("User-Id") Long userId) {
+            @PathVariable Long practiceId) {
         
-        practiceService.deletePractice(practiceId, userId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        
+        practiceService.deletePractice(practiceId, userEmail);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{practiceId}/complete")
     public ResponseEntity<PracticeResponseDto> completePractice(
-            @PathVariable Long practiceId,
-            @RequestHeader("User-Id") Long userId) {
+            @PathVariable Long practiceId) {
         
-        PracticeResponseDto response = practiceService.completePractice(practiceId, userId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+        
+        PracticeResponseDto response = practiceService.completePractice(practiceId, userEmail);
         return ResponseEntity.ok(response);
     }
 }
