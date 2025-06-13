@@ -39,8 +39,16 @@ const validatePracticeForm = (formData: PracticeCreateRequest) => {
   }
 
   // 날짜 유효성 검증
-  if (formData.practiceDate && !/^\d{4}-\d{2}-\d{2}$/.test(formData.practiceDate)) {
-    errors.practiceDate = '올바른 날짜 형식을 입력해주세요 (YYYY-MM-DD)';
+  if (formData.practiceDate) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(formData.practiceDate)) {
+      errors.practiceDate = '올바른 날짜 형식을 입력해주세요 (YYYY-MM-DD)';
+    } else {
+      // 선택한 날짜가 유효한 날짜인지 확인
+      const selectedDate = new Date(formData.practiceDate);
+      if (isNaN(selectedDate.getTime())) {
+        errors.practiceDate = '올바른 날짜를 선택해주세요';
+      }
+    }
   }
 
   // 시간 형식 검증
@@ -156,9 +164,41 @@ const PracticeForm: React.FC = () => {
         await practiceApi.create(formData);
       }
       navigate('/practices');
-    } catch (err) {
-      setError(isEdit ? '수정에 실패했습니다.' : '등록에 실패했습니다.');
+    } catch (err: any) {
       console.error('Error saving practice:', err);
+      
+      // API 응답에서 상세 오류 메시지 추출
+      let errorMessage = isEdit ? '수정에 실패했습니다.' : '등록에 실패했습니다.';
+      
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      } else if (err.response?.status) {
+        switch (err.response.status) {
+          case 400:
+            errorMessage = '입력 데이터가 올바르지 않습니다.';
+            break;
+          case 401:
+            errorMessage = '로그인이 필요합니다.';
+            break;
+          case 403:
+            errorMessage = '권한이 없습니다.';
+            break;
+          case 404:
+            errorMessage = '요청한 리소스를 찾을 수 없습니다.';
+            break;
+          case 500:
+            errorMessage = '서버 오류가 발생했습니다.';
+            break;
+          default:
+            errorMessage = `오류가 발생했습니다. (상태 코드: ${err.response.status})`;
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
