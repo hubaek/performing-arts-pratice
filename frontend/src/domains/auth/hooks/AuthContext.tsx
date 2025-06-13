@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { authApi } from '../api/authApi';
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../../../shared/api/client';
 import { User, LoginRequest, SignupRequest } from '../types';
-import type { AuthResponse } from '../types';
 
 export interface AuthContextType {
   user: User | null;
