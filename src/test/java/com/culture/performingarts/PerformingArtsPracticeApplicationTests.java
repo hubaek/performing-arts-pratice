@@ -2,9 +2,11 @@ package com.culture.performingarts;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-class PerfomingArtsPracticeApplicationTests {
+@ActiveProfiles("test")
+class PerformingArtsPracticeApplicationTests {
 
     @Test
     void contextLoads() {
