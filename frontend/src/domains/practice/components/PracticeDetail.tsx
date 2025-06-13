@@ -29,13 +29,7 @@ const PracticeDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (id) {
-      loadPractice();
-    }
-  }, [id]);
-
-  const loadPractice = async () => {
+  const loadPractice = useCallback(async () => {
     if (!id) return;
     
     try {
@@ -48,7 +42,13 @@ const PracticeDetail: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      loadPractice();
+    }
+  }, [id, loadPractice]);
 
   const handleComplete = useCallback(async () => {
     if (!practice || !id) return;
