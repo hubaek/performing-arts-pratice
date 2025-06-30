@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AuthResponse {
+public class AuthResponseDto {
     
     private String accessToken;
     private String refreshToken;
@@ -21,7 +21,7 @@ public class AuthResponse {
     private String email;
     
     @Builder
-    public AuthResponse(String accessToken, String refreshToken, Long memberId, String name, String email) {
+    public AuthResponseDto(String accessToken, String refreshToken, Long memberId, String name, String email) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.memberId = memberId;

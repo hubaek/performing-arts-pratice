@@ -1,9 +1,9 @@
 package com.culture.performingarts.domain.auth.controller;
 
-import com.culture.performingarts.domain.auth.dto.AuthResponse;
-import com.culture.performingarts.domain.auth.dto.LoginRequest;
-import com.culture.performingarts.domain.auth.dto.SignupRequest;
-import com.culture.performingarts.domain.auth.dto.TokenRefreshRequest;
+import com.culture.performingarts.domain.auth.dto.AuthResponseDtoDto;
+import com.culture.performingarts.domain.auth.dto.LoginRequestDtoDto;
+import com.culture.performingarts.domain.auth.dto.SignupRequestDtoDto;
+import com.culture.performingarts.domain.auth.dto.TokenRefreshRequestDtoDto;
 import com.culture.performingarts.domain.auth.service.AuthService;
 import com.culture.performingarts.domain.member.dto.MemberResponseDto;
 import com.culture.performingarts.domain.member.entity.Member;
@@ -29,9 +29,9 @@ public class AuthController {
      * 로그인
      */
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequest) {
         try {
-            AuthResponse response = authService.login(loginRequest);
+            AuthResponseDto response = authService.login(loginRequest);
             log.info("Login successful for user: {}", loginRequest.getEmail());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -44,9 +44,9 @@ public class AuthController {
      * 회원가입
      */
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<AuthResponseDto> signup(@Valid @RequestBody SignupRequestDto signupRequest) {
         try {
-            AuthResponse response = authService.signup(signupRequest);
+            AuthResponseDto response = authService.signup(signupRequest);
             log.info("Signup successful for user: {}", signupRequest.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
@@ -59,9 +59,9 @@ public class AuthController {
      * 토큰 갱신
      */
     @PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refreshToken(@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
+    public ResponseEntity<AuthResponseDto> refreshToken(@Valid @RequestBody TokenRefreshRequestDto tokenRefreshRequest) {
         try {
-            AuthResponse response = authService.refreshToken(tokenRefreshRequest);
+            AuthResponseDto response = authService.refreshToken(tokenRefreshRequest);
             log.info("Token refresh successful");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
