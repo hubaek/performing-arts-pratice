@@ -1,9 +1,9 @@
 package com.culture.performingarts.domain.auth.controller;
 
-import com.culture.performingarts.domain.auth.dto.AuthResponseDtoDto;
-import com.culture.performingarts.domain.auth.dto.LoginRequestDtoDto;
-import com.culture.performingarts.domain.auth.dto.SignupRequestDtoDto;
-import com.culture.performingarts.domain.auth.dto.TokenRefreshRequestDtoDto;
+import com.culture.performingarts.domain.auth.dto.AuthResponseDto;
+import com.culture.performingarts.domain.auth.dto.LoginRequestDto;
+import com.culture.performingarts.domain.auth.dto.SignupRequestDto;
+import com.culture.performingarts.domain.auth.dto.TokenRefreshRequestDto;
 import com.culture.performingarts.domain.auth.service.AuthService;
 import com.culture.performingarts.domain.member.dto.MemberResponseDto;
 import com.culture.performingarts.domain.member.entity.Member;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthApiController {
     
     private final AuthService authService;
     
