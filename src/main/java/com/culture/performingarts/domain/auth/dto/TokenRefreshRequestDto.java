@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TokenRefreshRequest {
+public class TokenRefreshRequestDto {
     
     @NotBlank(message = "리프레시 토큰은 필수입니다")
     private String refreshToken;
     
     @Builder
-    public TokenRefreshRequest(String refreshToken) {
+    public TokenRefreshRequestDto(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 }

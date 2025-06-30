@@ -15,7 +15,7 @@ import java.time.LocalDate;
  */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SignupRequest {
+public class SignupRequestDto {
     
     @NotBlank(message = "이름은 필수입니다")
     @Size(max = 50, message = "이름은 50자를 초과할 수 없습니다")
@@ -70,7 +70,7 @@ public class SignupRequest {
     private Long teamId;
     
     @Builder
-    public SignupRequest(String name, String email, String password, String confirmPassword,
+    public SignupRequestDto(String name, String email, String password, String confirmPassword,
                         String phoneNumber, LocalDate birthDate, Gender gender, Integer joinYear,
                         String major, String department, String position, String responsibility,
                         String remarks, String uniqueCode, Long teamId) {

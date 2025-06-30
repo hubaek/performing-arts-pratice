@@ -51,7 +51,6 @@ public class Member extends Timestamped {
     @Past(message = "생년월일은 과거 날짜여야 합니다")
     @Column(nullable = false)
     private LocalDate birthDate; // 생년월일
-
     @NotNull(message = "성별은 필수입니다")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)

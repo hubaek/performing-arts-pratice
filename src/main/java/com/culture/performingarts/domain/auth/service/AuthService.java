@@ -1,10 +1,10 @@
 package com.culture.performingarts.domain.auth.service;
 
 import com.culture.performingarts.config.security.JwtTokenProvider;
-import com.culture.performingarts.domain.auth.dto.AuthResponse;
-import com.culture.performingarts.domain.auth.dto.LoginRequest;
-import com.culture.performingarts.domain.auth.dto.SignupRequest;
-import com.culture.performingarts.domain.auth.dto.TokenRefreshRequest;
+import com.culture.performingarts.domain.auth.dto.AuthResponseDto;
+import com.culture.performingarts.domain.auth.dto.LoginRequestDto;
+import com.culture.performingarts.domain.auth.dto.SignupRequestDto;
+import com.culture.performingarts.domain.auth.dto.TokenRefreshRequestDto;
 import com.culture.performingarts.domain.auth.exception.InvalidLoginCredentialsException;
 import com.culture.performingarts.domain.auth.exception.InvalidTokenException;
 import com.culture.performingarts.domain.member.entity.Member;
@@ -41,7 +41,7 @@ public class AuthService {
     /**
      * 로그인 처리
      */
-    public AuthResponse login(LoginRequest loginRequest) {
+    public AuthResponseDto login(LoginRequestDto loginRequest) {
         // 사용자 인증
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
@@ -67,7 +67,7 @@ public class AuthService {
         
         log.info("User logged in successfully");
         
-        return AuthResponse.builder()
+        return AuthResponseDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .memberId(member.getId())
@@ -80,7 +80,7 @@ public class AuthService {
      * 회원가입 처리
      */
     @Transactional
-    public AuthResponse signup(SignupRequest signupRequest) {
+    public AuthResponseDto signup(SignupRequestDto signupRequest) {
         // 비밀번호 일치 확인
         if (!signupRequest.isPasswordMatching()) {
             throw new BusinessException("비밀번호가 일치하지 않습니다", ErrorCode.PASSWORD_MISMATCH);
@@ -137,7 +137,7 @@ public class AuthService {
         
         log.info("User signed up successfully");
         
-        return AuthResponse.builder()
+        return AuthResponseDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .memberId(savedMember.getId())
@@ -149,7 +149,7 @@ public class AuthService {
     /**
      * 토큰 갱신 처리
      */
-    public AuthResponse refreshToken(TokenRefreshRequest tokenRefreshRequest) {
+    public AuthResponseDto refreshToken(TokenRefreshRequestDto tokenRefreshRequest) {
         String refreshToken = tokenRefreshRequest.getRefreshToken();
         
         // 리프레시 토큰 유효성 검증
@@ -177,7 +177,7 @@ public class AuthService {
         
         log.info("Token refreshed successfully");
         
-        return AuthResponse.builder()
+        return AuthResponseDto.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(refreshToken) // 기존 리프레시 토큰 재사용
                 .memberId(member.getId())
