@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/practices")
 @RequiredArgsConstructor
-public class PracticeController {
+public class PracticeApiController {
 
     private final PracticeService practiceService;
 

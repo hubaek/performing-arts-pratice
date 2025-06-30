@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("/api/teams")
 @RequiredArgsConstructor
 @Slf4j
-public class TeamController {
+public class TeamApiController {
 
     private final TeamService teamService;
 

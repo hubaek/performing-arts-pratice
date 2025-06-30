@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/practice-participations")
 @RequiredArgsConstructor
-public class PracticeParticipationController {
+public class PracticeParticipationApiController {
 
     private final PracticeParticipationService participationService;
 
