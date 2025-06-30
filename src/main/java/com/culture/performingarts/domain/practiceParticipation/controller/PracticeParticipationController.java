@@ -6,6 +6,7 @@ import com.culture.performingarts.domain.practiceParticipation.dto.PracticeParti
 import com.culture.performingarts.domain.practiceParticipation.dto.PracticeParticipationUpdateRequestDto;
 import com.culture.performingarts.domain.practiceParticipation.enums.PracticeParticipationStatus;
 import com.culture.performingarts.domain.practiceParticipation.service.PracticeParticipationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class PracticeParticipationController {
 
     @PostMapping
     public ResponseEntity<PracticeParticipationResponseDto> createParticipation(
-            @RequestBody PracticeParticipationCreateRequestDto requestDto) {
+            @Valid @RequestBody PracticeParticipationCreateRequestDto requestDto) {
         
         PracticeParticipationResponseDto response = participationService.createParticipation(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -32,7 +33,7 @@ public class PracticeParticipationController {
 
     @PostMapping("/bulk")
     public ResponseEntity<List<PracticeParticipationResponseDto>> createBulkParticipations(
-            @RequestBody PracticeParticipationBulkCreateRequestDto requestDto) {
+            @Valid @RequestBody PracticeParticipationBulkCreateRequestDto requestDto) {
         
         List<PracticeParticipationResponseDto> responses = participationService.createBulkParticipations(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responses);
@@ -86,7 +87,7 @@ public class PracticeParticipationController {
     @PutMapping("/{participationId}")
     public ResponseEntity<PracticeParticipationResponseDto> updateParticipation(
             @PathVariable Long participationId,
-            @RequestBody PracticeParticipationUpdateRequestDto requestDto) {
+            @Valid @RequestBody PracticeParticipationUpdateRequestDto requestDto) {
         
         PracticeParticipationResponseDto response = participationService.updateParticipation(participationId, requestDto);
         return ResponseEntity.ok(response);

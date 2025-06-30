@@ -5,6 +5,7 @@ import com.culture.performingarts.domain.practice.dto.PracticeListResponseDto;
 import com.culture.performingarts.domain.practice.dto.PracticeResponseDto;
 import com.culture.performingarts.domain.practice.dto.PracticeUpdateRequestDto;
 import com.culture.performingarts.domain.practice.service.PracticeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,7 @@ public class PracticeController {
 
     @PostMapping
     public ResponseEntity<PracticeResponseDto> createPractice(
-            @RequestBody PracticeCreateRequestDto requestDto) {
+            @Valid @RequestBody PracticeCreateRequestDto requestDto) {
         
         // 현재 인증된 사용자 정보 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -83,7 +84,7 @@ public class PracticeController {
     @PutMapping("/{practiceId}")
     public ResponseEntity<PracticeResponseDto> updatePractice(
             @PathVariable Long practiceId,
-            @RequestBody PracticeUpdateRequestDto requestDto) {
+            @Valid @RequestBody PracticeUpdateRequestDto requestDto) {
         
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userEmail = authentication.getName();
