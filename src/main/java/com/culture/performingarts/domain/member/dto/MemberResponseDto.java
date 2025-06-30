@@ -37,14 +37,14 @@ public class MemberResponseDto {
     private Role role;
     private Long teamId;
     private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;
+    private LocalDateTime updatedAt;
 
     @Builder
     public MemberResponseDto(Long id, String name, String email, String phoneNumber,
                             LocalDate birthDate, Gender gender, Integer joinYear, String major,
                             String department, String position, String responsibility,
                             String remarks, String uniqueCode, MemberStatus status, Role role, Long teamId,
-                            LocalDateTime createdAt, LocalDateTime modifiedAt) {
+                            LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -62,7 +62,7 @@ public class MemberResponseDto {
         this.role = role;
         this.teamId = teamId;
         this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
+        this.updatedAt = updatedAt;
     }
 
     /**
@@ -87,7 +87,7 @@ public class MemberResponseDto {
                 .role(member.getRole())
                 .teamId(member.getTeamId())
                 .createdAt(member.getCreatedAt())
-                .modifiedAt(member.getUpdatedAt())
+                .updatedAt(member.getUpdatedAt())
                 .build();
     }
 }
