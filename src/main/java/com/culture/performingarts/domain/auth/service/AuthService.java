@@ -5,9 +5,15 @@ import com.culture.performingarts.domain.auth.dto.AuthResponse;
 import com.culture.performingarts.domain.auth.dto.LoginRequest;
 import com.culture.performingarts.domain.auth.dto.SignupRequest;
 import com.culture.performingarts.domain.auth.dto.TokenRefreshRequest;
+import com.culture.performingarts.domain.auth.exception.InvalidLoginCredentialsException;
+import com.culture.performingarts.domain.auth.exception.InvalidTokenException;
 import com.culture.performingarts.domain.member.entity.Member;
 import com.culture.performingarts.domain.member.enums.MemberStatus;
+import com.culture.performingarts.domain.member.exception.EmailDuplicateException;
+import com.culture.performingarts.domain.member.exception.MemberNotFoundException;
 import com.culture.performingarts.domain.member.repository.MemberRepository;
+import com.culture.performingarts.global.exception.BusinessException;
+import com.culture.performingarts.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,18 +54,18 @@ public class AuthService {
         
         // 회원 정보 조회
         Member member = memberRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다"));
         
         // 활성 상태가 아닌 회원은 로그인 불가
         if (member.getStatus() != MemberStatus.ACTIVE) {
-            throw new IllegalStateException("활동 중이 아닌 회원입니다. 관리자에게 문의하세요.");
+            throw new BusinessException("활동 중이 아닌 회원입니다. 관리자에게 문의하세요", ErrorCode.INVALID_MEMBER_STATUS);
         }
         
         // JWT 토큰 생성
         String accessToken = jwtTokenProvider.createAccessToken(authentication);
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
         
-        log.info("User logged in successfully: {}", member.getEmail());
+        log.info("User logged in successfully");
         
         return AuthResponse.builder()
                 .accessToken(accessToken)
@@ -77,18 +83,18 @@ public class AuthService {
     public AuthResponse signup(SignupRequest signupRequest) {
         // 비밀번호 일치 확인
         if (!signupRequest.isPasswordMatching()) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new BusinessException("비밀번호가 일치하지 않습니다", ErrorCode.PASSWORD_MISMATCH);
         }
         
         // 이메일 중복 확인
         if (memberRepository.existsByEmail(signupRequest.getEmail())) {
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+            throw new EmailDuplicateException("이미 사용 중인 이메일입니다");
         }
         
         // 고유코드 중복 확인 (고유코드가 있는 경우)
         if (signupRequest.getUniqueCode() != null && 
             memberRepository.existsByUniqueCode(signupRequest.getUniqueCode())) {
-            throw new IllegalArgumentException("이미 사용 중인 고유번호입니다.");
+            throw new BusinessException("이미 사용 중인 고유번호입니다", ErrorCode.INVALID_INPUT_VALUE);
         }
         
         // 비밀번호 암호화
@@ -129,7 +135,7 @@ public class AuthService {
         String accessToken = jwtTokenProvider.createAccessToken(authentication);
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
         
-        log.info("User signed up successfully: {}", savedMember.getEmail());
+        log.info("User signed up successfully");
         
         return AuthResponse.builder()
                 .accessToken(accessToken)
@@ -148,17 +154,17 @@ public class AuthService {
         
         // 리프레시 토큰 유효성 검증
         if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
+            throw new InvalidTokenException("유효하지 않은 리프레시 토큰입니다");
         }
         
         // 리프레시 토큰에서 사용자 정보 추출
         String email = jwtTokenProvider.getUsernameFromToken(refreshToken);
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다"));
         
         // 활성 상태 확인
         if (member.getStatus() != MemberStatus.ACTIVE) {
-            throw new IllegalStateException("활동 중이 아닌 회원입니다.");
+            throw new BusinessException("활동 중이 아닌 회원입니다", ErrorCode.INVALID_MEMBER_STATUS);
         }
         
         // 새로운 인증 객체 생성
@@ -169,7 +175,7 @@ public class AuthService {
         // 새로운 액세스 토큰 생성
         String newAccessToken = jwtTokenProvider.createAccessToken(authentication);
         
-        log.info("Token refreshed for user: {}", email);
+        log.info("Token refreshed successfully");
         
         return AuthResponse.builder()
                 .accessToken(newAccessToken)
@@ -186,11 +192,11 @@ public class AuthService {
     public Member getCurrentMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new IllegalStateException("인증되지 않은 사용자입니다.");
+            throw new BusinessException("인증되지 않은 사용자입니다", ErrorCode.UNAUTHORIZED);
         }
         
         String email = authentication.getName();
         return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다"));
     }
 }
