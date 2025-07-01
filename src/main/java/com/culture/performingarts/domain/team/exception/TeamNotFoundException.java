@@ -1,11 +1,12 @@
 package com.culture.performingarts.domain.team.exception;
 
-import com.culture.performingarts.global.exception.BusinessException;
+import com.culture.performingarts.global.exception.EntityNotFoundException;
 import com.culture.performingarts.global.exception.ErrorCode;
 
-public class TeamNotFoundException extends BusinessException {
+public class TeamNotFoundException extends EntityNotFoundException {
+    
     public TeamNotFoundException() {
-        super(ErrorCode.TEAM_NOT_FOUND);
+        super("팀을 찾을 수 없습니다", ErrorCode.TEAM_NOT_FOUND);
     }
     
     public TeamNotFoundException(String message) {

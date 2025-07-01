@@ -1,11 +1,15 @@
 package com.culture.performingarts.domain.practiceParticipation.exception;
 
-import com.culture.performingarts.global.exception.BusinessException;
+import com.culture.performingarts.global.exception.DuplicateResourceException;
 import com.culture.performingarts.global.exception.ErrorCode;
 
-public class PracticeParticipationDuplicateException extends BusinessException {
+public class PracticeParticipationDuplicateException extends DuplicateResourceException {
+    
+    public PracticeParticipationDuplicateException() {
+        super("이미 참여한 연습입니다", ErrorCode.ALREADY_PARTICIPATED);
+    }
     
     public PracticeParticipationDuplicateException(String message) {
-        super(message, ErrorCode.INVALID_INPUT_VALUE);
+        super(message, ErrorCode.ALREADY_PARTICIPATED);
     }
 }
