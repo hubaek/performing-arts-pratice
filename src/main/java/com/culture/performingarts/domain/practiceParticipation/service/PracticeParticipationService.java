@@ -2,6 +2,7 @@ package com.culture.performingarts.domain.practiceParticipation.service;
 
 import com.culture.performingarts.domain.practice.entity.Practice;
 import com.culture.performingarts.domain.practice.repository.PracticeRepository;
+import com.culture.performingarts.domain.practice.exception.PracticeNotFoundException;
 import com.culture.performingarts.domain.practiceParticipation.dto.PracticeParticipationBulkCreateRequestDto;
 import com.culture.performingarts.domain.practiceParticipation.dto.PracticeParticipationCreateRequestDto;
 import com.culture.performingarts.domain.practiceParticipation.dto.PracticeParticipationResponseDto;
@@ -9,6 +10,8 @@ import com.culture.performingarts.domain.practiceParticipation.dto.PracticeParti
 import com.culture.performingarts.domain.practiceParticipation.entity.PracticeParticipation;
 import com.culture.performingarts.domain.practiceParticipation.enums.PracticeParticipationStatus;
 import com.culture.performingarts.domain.practiceParticipation.repository.PracticeParticipationRepository;
+import com.culture.performingarts.domain.practiceParticipation.exception.PracticeParticipationNotFoundException;
+import com.culture.performingarts.domain.practiceParticipation.exception.PracticeParticipationDuplicateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +27,21 @@ public class PracticeParticipationService {
 
     private final PracticeParticipationRepository participationRepository;
     private final PracticeRepository practiceRepository;
+    
+    private PracticeParticipation findParticipationById(Long participationId) {
+        return participationRepository.findById(participationId)
+                .orElseThrow(() -> new PracticeParticipationNotFoundException("참여 기록을 찾을 수 없습니다."));
+    }
+    
+    private Practice findPracticeById(Long practiceId) {
+        return practiceRepository.findById(practiceId)
+                .orElseThrow(() -> new PracticeNotFoundException("연습 정보를 찾을 수 없습니다."));
+    }
 
     @Transactional
     public PracticeParticipationResponseDto createParticipation(PracticeParticipationCreateRequestDto requestDto) {
         if (participationRepository.existsByPracticeIdAndUserId(requestDto.getPracticeId(), requestDto.getUserId())) {
-            throw new IllegalArgumentException("이미 참여 기록이 존재합니다.");
+            throw new PracticeParticipationDuplicateException("이미 참여 기록이 존재합니다.");
         }
 
         PracticeParticipation participation = PracticeParticipation.builder()
@@ -51,7 +64,7 @@ public class PracticeParticipationService {
         List<PracticeParticipation> participations = requestDto.getParticipations().stream()
                 .map(dto -> {
                     if (participationRepository.existsByPracticeIdAndUserId(dto.getPracticeId(), dto.getUserId())) {
-                        throw new IllegalArgumentException("이미 참여 기록이 존재합니다: User ID " + dto.getUserId());
+                        throw new PracticeParticipationDuplicateException("이미 참여 기록이 존재합니다: User ID " + dto.getUserId());
                     }
                     return PracticeParticipation.builder()
                             .practiceId(dto.getPracticeId())
@@ -73,9 +86,7 @@ public class PracticeParticipationService {
     }
 
     public PracticeParticipationResponseDto getParticipation(Long participationId) {
-        PracticeParticipation participation = participationRepository.findById(participationId)
-                .orElseThrow(() -> new IllegalArgumentException("참여 기록을 찾을 수 없습니다."));
-        
+        PracticeParticipation participation = findParticipationById(participationId);
         return PracticeParticipationResponseDto.fromEntity(participation);
     }
 
@@ -109,8 +120,7 @@ public class PracticeParticipationService {
 
     @Transactional
     public PracticeParticipationResponseDto updateParticipation(Long participationId, PracticeParticipationUpdateRequestDto requestDto) {
-        PracticeParticipation participation = participationRepository.findById(participationId)
-                .orElseThrow(() -> new IllegalArgumentException("참여 기록을 찾을 수 없습니다."));
+        PracticeParticipation participation = findParticipationById(participationId);
 
         participation.updateStatus(
                 requestDto.getStatus(),
@@ -129,8 +139,7 @@ public class PracticeParticipationService {
 
     @Transactional
     public void deleteParticipation(Long participationId) {
-        PracticeParticipation participation = participationRepository.findById(participationId)
-                .orElseThrow(() -> new IllegalArgumentException("참여 기록을 찾을 수 없습니다."));
+        PracticeParticipation participation = findParticipationById(participationId);
 
         Long practiceId = participation.getPracticeId();
         participationRepository.delete(participation);
@@ -139,8 +148,7 @@ public class PracticeParticipationService {
 
     @Transactional
     public PracticeParticipationResponseDto excuseParticipation(Long participationId) {
-        PracticeParticipation participation = participationRepository.findById(participationId)
-                .orElseThrow(() -> new IllegalArgumentException("참여 기록을 찾을 수 없습니다."));
+        PracticeParticipation participation = findParticipationById(participationId);
 
         participation.excuse();
         return PracticeParticipationResponseDto.fromEntity(participation);
@@ -148,8 +156,7 @@ public class PracticeParticipationService {
 
     @Transactional
     public PracticeParticipationResponseDto unexcuseParticipation(Long participationId) {
-        PracticeParticipation participation = participationRepository.findById(participationId)
-                .orElseThrow(() -> new IllegalArgumentException("참여 기록을 찾을 수 없습니다."));
+        PracticeParticipation participation = findParticipationById(participationId);
 
         participation.unexcuse();
         return PracticeParticipationResponseDto.fromEntity(participation);
@@ -188,8 +195,7 @@ public class PracticeParticipationService {
     }
 
     private void updatePracticeAttendanceStats(Long practiceId) {
-        Practice practice = practiceRepository.findById(practiceId)
-                .orElseThrow(() -> new IllegalArgumentException("연습 정보를 찾을 수 없습니다."));
+        Practice practice = findPracticeById(practiceId);
 
         Long totalParticipants = participationRepository.countByPracticeId(practiceId);
         Long presentCount = participationRepository.countByPracticeIdAndStatus(practiceId, PracticeParticipationStatus.ATTENDANCE);

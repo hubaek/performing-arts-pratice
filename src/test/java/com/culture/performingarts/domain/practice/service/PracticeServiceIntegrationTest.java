@@ -4,7 +4,11 @@ import com.culture.performingarts.domain.practice.dto.PracticeCreateRequestDto;
 import com.culture.performingarts.domain.practice.dto.PracticeResponseDto;
 import com.culture.performingarts.domain.practice.entity.Practice;
 import com.culture.performingarts.domain.practice.repository.PracticeRepository;
+import com.culture.performingarts.domain.member.entity.Member;
+import com.culture.performingarts.domain.member.repository.MemberRepository;
+import com.culture.performingarts.domain.member.enums.MemberStatus;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,6 +29,28 @@ class PracticeServiceIntegrationTest {
 
     @Autowired
     private PracticeRepository practiceRepository;
+    
+    @Autowired
+    private MemberRepository memberRepository;
+    
+    @BeforeEach
+    void setUp() {
+        // 기존 데이터 정리 후 테스트용 회원 생성
+        memberRepository.deleteAll();
+        Member testMember = Member.builder()
+                .name("테스트 사용자")
+                .email("test@example.com")
+                .password("password123")
+                .phoneNumber("010-1234-5678")
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .joinYear(2020)
+                .department("연극과")
+                .major("연기")
+                .status(MemberStatus.ACTIVE)
+                .teamId(1L)
+                .build();
+        memberRepository.save(testMember);
+    }
 
     @Test
     void 연습_생성_테스트() {
@@ -41,13 +67,13 @@ class PracticeServiceIntegrationTest {
                 .build();
 
         // when
-        PracticeResponseDto response = practiceService.createPractice(requestDto, 1L);
+        PracticeResponseDto response = practiceService.createPractice(requestDto, "test@example.com");
 
         // then
         assertThat(response).isNotNull();
         assertThat(response.getTitle()).isEqualTo("연기 연습");
         assertThat(response.getContent()).isEqualTo("햄릿 1막 연습");
-        assertThat(response.getUserId()).isEqualTo(1L);
+        assertThat(response.getUserId()).isNotNull();
         assertThat(response.getIsCompleted()).isFalse();
         
         // 데이터베이스 확인

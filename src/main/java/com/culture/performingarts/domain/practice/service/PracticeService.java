@@ -6,8 +6,10 @@ import com.culture.performingarts.domain.practice.dto.PracticeResponseDto;
 import com.culture.performingarts.domain.practice.dto.PracticeUpdateRequestDto;
 import com.culture.performingarts.domain.practice.entity.Practice;
 import com.culture.performingarts.domain.practice.repository.PracticeRepository;
+import com.culture.performingarts.domain.practice.exception.PracticeNotFoundException;
 import com.culture.performingarts.domain.member.entity.Member;
 import com.culture.performingarts.domain.member.repository.MemberRepository;
+import com.culture.performingarts.domain.member.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,12 +27,20 @@ public class PracticeService {
 
     private final PracticeRepository practiceRepository;
     private final MemberRepository memberRepository;
+    
+    private Member findMemberByEmail(String userEmail) {
+        return memberRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new MemberNotFoundException("사용자를 찾을 수 없습니다."));
+    }
+    
+    private Practice findPracticeById(Long practiceId) {
+        return practiceRepository.findById(practiceId)
+                .orElseThrow(() -> new PracticeNotFoundException("연습 정보를 찾을 수 없습니다."));
+    }
 
     @Transactional
     public PracticeResponseDto createPractice(PracticeCreateRequestDto requestDto, String userEmail) {
-        // 이메일로 사용자 조회
-        Member member = memberRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        Member member = findMemberByEmail(userEmail);
         
         Practice practice = Practice.builder()
                 .title(requestDto.getTitle())
@@ -49,9 +59,7 @@ public class PracticeService {
     }
 
     public PracticeResponseDto getPractice(Long practiceId) {
-        Practice practice = practiceRepository.findById(practiceId)
-                .orElseThrow(() -> new IllegalArgumentException("연습 정보를 찾을 수 없습니다."));
-        
+        Practice practice = findPracticeById(practiceId);
         return PracticeResponseDto.fromEntity(practice);
     }
 
@@ -82,9 +90,7 @@ public class PracticeService {
     }
 
     public List<PracticeListResponseDto> getPracticesByUser(String userEmail) {
-        Member member = memberRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        
+        Member member = findMemberByEmail(userEmail);
         return practiceRepository.findByUserIdOrderByPracticeDateDescStartTimeDesc(member.getId())
                 .stream()
                 .map(PracticeListResponseDto::fromEntity)
@@ -93,11 +99,8 @@ public class PracticeService {
 
     @Transactional
     public PracticeResponseDto updatePractice(Long practiceId, PracticeUpdateRequestDto requestDto, String userEmail) {
-        Member member = memberRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        
-        Practice practice = practiceRepository.findById(practiceId)
-                .orElseThrow(() -> new IllegalArgumentException("연습 정보를 찾을 수 없습니다."));
+        Member member = findMemberByEmail(userEmail);
+        Practice practice = findPracticeById(practiceId);
 
         if (!practice.getUserId().equals(member.getId())) {
             throw new IllegalArgumentException("연습 정보를 수정할 권한이 없습니다.");
@@ -118,11 +121,8 @@ public class PracticeService {
 
     @Transactional
     public void deletePractice(Long practiceId, String userEmail) {
-        Member member = memberRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        
-        Practice practice = practiceRepository.findById(practiceId)
-                .orElseThrow(() -> new IllegalArgumentException("연습 정보를 찾을 수 없습니다."));
+        Member member = findMemberByEmail(userEmail);
+        Practice practice = findPracticeById(practiceId);
 
         if (!practice.getUserId().equals(member.getId())) {
             throw new IllegalArgumentException("연습 정보를 삭제할 권한이 없습니다.");
@@ -137,11 +137,8 @@ public class PracticeService {
 
     @Transactional
     public PracticeResponseDto completePractice(Long practiceId, String userEmail) {
-        Member member = memberRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        
-        Practice practice = practiceRepository.findById(practiceId)
-                .orElseThrow(() -> new IllegalArgumentException("연습 정보를 찾을 수 없습니다."));
+        Member member = findMemberByEmail(userEmail);
+        Practice practice = findPracticeById(practiceId);
 
         if (!practice.getUserId().equals(member.getId())) {
             throw new IllegalArgumentException("연습을 완료할 권한이 없습니다.");
