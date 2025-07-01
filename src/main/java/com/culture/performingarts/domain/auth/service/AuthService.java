@@ -7,13 +7,15 @@ import com.culture.performingarts.domain.auth.dto.SignupRequestDto;
 import com.culture.performingarts.domain.auth.dto.TokenRefreshRequestDto;
 import com.culture.performingarts.domain.auth.exception.InvalidLoginCredentialsException;
 import com.culture.performingarts.domain.auth.exception.InvalidTokenException;
+import com.culture.performingarts.domain.auth.exception.InvalidMemberStatusException;
+import com.culture.performingarts.domain.auth.exception.PasswordMismatchException;
+import com.culture.performingarts.domain.auth.exception.UnauthorizedException;
+import com.culture.performingarts.domain.auth.exception.UniqueCodeDuplicateException;
 import com.culture.performingarts.domain.member.entity.Member;
 import com.culture.performingarts.domain.member.enums.MemberStatus;
 import com.culture.performingarts.domain.member.exception.EmailDuplicateException;
 import com.culture.performingarts.domain.member.exception.MemberNotFoundException;
 import com.culture.performingarts.domain.member.repository.MemberRepository;
-import com.culture.performingarts.global.exception.BusinessException;
-import com.culture.performingarts.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -58,7 +60,7 @@ public class AuthService {
         
         // 활성 상태가 아닌 회원은 로그인 불가
         if (member.getStatus() != MemberStatus.ACTIVE) {
-            throw new BusinessException("활동 중이 아닌 회원입니다. 관리자에게 문의하세요", ErrorCode.INVALID_MEMBER_STATUS);
+            throw new InvalidMemberStatusException("활동 중이 아닌 회원입니다. 관리자에게 문의하세요");
         }
         
         // JWT 토큰 생성
@@ -83,7 +85,7 @@ public class AuthService {
     public AuthResponseDto signup(SignupRequestDto signupRequest) {
         // 비밀번호 일치 확인
         if (!signupRequest.isPasswordMatching()) {
-            throw new BusinessException("비밀번호가 일치하지 않습니다", ErrorCode.PASSWORD_MISMATCH);
+            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다");
         }
         
         // 이메일 중복 확인
@@ -94,7 +96,7 @@ public class AuthService {
         // 고유코드 중복 확인 (고유코드가 있는 경우)
         if (signupRequest.getUniqueCode() != null && 
             memberRepository.existsByUniqueCode(signupRequest.getUniqueCode())) {
-            throw new BusinessException("이미 사용 중인 고유번호입니다", ErrorCode.INVALID_INPUT_VALUE);
+            throw new UniqueCodeDuplicateException("이미 사용 중인 고유번호입니다");
         }
         
         // 비밀번호 암호화
@@ -164,7 +166,7 @@ public class AuthService {
         
         // 활성 상태 확인
         if (member.getStatus() != MemberStatus.ACTIVE) {
-            throw new BusinessException("활동 중이 아닌 회원입니다", ErrorCode.INVALID_MEMBER_STATUS);
+            throw new InvalidMemberStatusException("활동 중이 아닌 회원입니다");
         }
         
         // 새로운 인증 객체 생성
@@ -192,7 +194,7 @@ public class AuthService {
     public Member getCurrentMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new BusinessException("인증되지 않은 사용자입니다", ErrorCode.UNAUTHORIZED);
+            throw new UnauthorizedException("인증되지 않은 사용자입니다");
         }
         
         String email = authentication.getName();

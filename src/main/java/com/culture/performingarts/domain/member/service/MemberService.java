@@ -9,9 +9,8 @@ import com.culture.performingarts.domain.member.entity.Member;
 import com.culture.performingarts.domain.member.enums.MemberStatus;
 import com.culture.performingarts.domain.member.exception.EmailDuplicateException;
 import com.culture.performingarts.domain.member.exception.MemberNotFoundException;
+import com.culture.performingarts.domain.member.exception.PasswordMismatchException;
 import com.culture.performingarts.domain.member.repository.MemberRepository;
-import com.culture.performingarts.global.exception.ErrorCode;
-import com.culture.performingarts.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -132,12 +131,12 @@ public class MemberService {
 
         // 현재 비밀번호 확인
         if (!passwordEncoder.matches(requestDto.getCurrentPassword(), member.getPassword())) {
-            throw new BusinessException("현재 비밀번호가 일치하지 않습니다", ErrorCode.PASSWORD_MISMATCH);
+            throw new PasswordMismatchException("현재 비밀번호가 일치하지 않습니다");
         }
         
         // 새 비밀번호와 확인 비밀번호 일치 확인
         if (!requestDto.getNewPassword().equals(requestDto.getConfirmPassword())) {
-            throw new BusinessException("새 비밀번호와 확인 비밀번호가 일치하지 않습니다", ErrorCode.PASSWORD_MISMATCH);
+            throw new PasswordMismatchException("새 비밀번호와 확인 비밀번호가 일치하지 않습니다");
         }
 
         // 비밀번호 암호화 후 저장
