@@ -136,9 +136,9 @@ const Dashboard: React.FC = () => {
     loadInitialData();
   }, [loadOverviewData, loadPracticeData, loadMemberData, loadTeamData, loadTrendData]);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = useCallback((event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
-  };
+  }, []);
 
   if (loading) {
     return (
