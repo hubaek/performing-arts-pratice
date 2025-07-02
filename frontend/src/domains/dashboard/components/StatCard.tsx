@@ -26,6 +26,7 @@ const StatCard: React.FC<StatCardProps> = ({
           boxShadow: 3,
         }
       }}
+      aria-label={`${title}: ${typeof value === 'number' ? value.toLocaleString() : value}${subtitle ? `, ${subtitle}` : ''}`}
     >
       <CardContent>
         <Box display="flex" alignItems="center" justifyContent="space-between">
