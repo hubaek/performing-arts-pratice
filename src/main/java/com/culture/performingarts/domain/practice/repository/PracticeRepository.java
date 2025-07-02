@@ -157,7 +157,7 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
      * 월별 연습 수 조회 (최근 N개월)
      */
     @Query("SELECT CONCAT(YEAR(p.practiceDate), '-', " +
-           "CASE WHEN MONTH(p.practiceDate) < 10 THEN CONCAT('0', MONTH(p.practiceDate)) ELSE CAST(MONTH(p.practiceDate) AS string) END) as month, " +
+           "CASE WHEN MONTH(p.practiceDate) < 10 THEN CONCAT('0', MONTH(p.practiceDate)) ELSE MONTH(p.practiceDate) END) as month, " +
            "COUNT(p) " +
            "FROM Practice p " +
            "WHERE p.practiceDate >= :startDate " +
@@ -169,7 +169,7 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
      * 주별 연습 수 조회 (최근 N주)
      */
     @Query("SELECT CONCAT(YEAR(p.practiceDate), '-', " +
-           "CASE WHEN (WEEK(p.practiceDate) + 1) < 10 THEN CONCAT('0', (WEEK(p.practiceDate) + 1)) ELSE CAST((WEEK(p.practiceDate) + 1) AS string) END) as week, " +
+           "CASE WHEN (WEEK(p.practiceDate) + 1) < 10 THEN CONCAT('0', (WEEK(p.practiceDate) + 1)) ELSE (WEEK(p.practiceDate) + 1) END) as week, " +
            "COUNT(p), " +
            "AVG(CASE WHEN p.totalParticipants > 0 THEN (p.presentCount + p.lateCount) * 100.0 / p.totalParticipants ELSE 0 END) " +
            "FROM Practice p " +
@@ -182,7 +182,7 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
      * 월별 트렌드 통계 조회
      */
     @Query("SELECT CONCAT(YEAR(p.practiceDate), '-', " +
-           "CASE WHEN MONTH(p.practiceDate) < 10 THEN CONCAT('0', MONTH(p.practiceDate)) ELSE CAST(MONTH(p.practiceDate) AS string) END) as month, " +
+           "CASE WHEN MONTH(p.practiceDate) < 10 THEN CONCAT('0', MONTH(p.practiceDate)) ELSE MONTH(p.practiceDate) END) as month, " +
            "COUNT(p) as practiceCount, " +
            "SUM(CASE WHEN p.isCompleted = true THEN 1 ELSE 0 END) as completedCount, " +
            "AVG(CASE WHEN p.totalParticipants > 0 THEN (p.presentCount + p.lateCount) * 100.0 / p.totalParticipants ELSE 0 END) as avgAttendanceRate " +
