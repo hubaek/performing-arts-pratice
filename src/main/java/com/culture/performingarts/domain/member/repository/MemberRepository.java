@@ -140,10 +140,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     /**
      * 월별 신규 가입자 수 조회
      */
-    @Query("SELECT DATE_FORMAT(m.createdAt, '%Y-%m') as month, COUNT(m) " +
+    @Query("SELECT CONCAT(YEAR(m.createdAt), '-', " +
+           "CASE WHEN MONTH(m.createdAt) < 10 THEN CONCAT('0', MONTH(m.createdAt)) ELSE CAST(MONTH(m.createdAt) AS string) END) as month, " +
+           "COUNT(m) " +
            "FROM Member m " +
            "WHERE m.createdAt >= :startDate " +
-           "GROUP BY DATE_FORMAT(m.createdAt, '%Y-%m') " +
-           "ORDER BY month DESC")
+           "GROUP BY YEAR(m.createdAt), MONTH(m.createdAt) " +
+           "ORDER BY YEAR(m.createdAt) DESC, MONTH(m.createdAt) DESC")
     List<Object[]> findMonthlyNewMemberCount(@Param("startDate") LocalDateTime startDate);
 }
