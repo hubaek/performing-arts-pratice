@@ -208,9 +208,9 @@ public class DashboardService {
         
         return results.stream()
                 .map(result -> PracticeStatisticsDto.LocationPracticeCountDto.builder()
-                        .location((String) result[0])
-                        .practiceCount(((Number) result[1]).longValue())
-                        .averageAttendanceRate(((Number) result[2]).doubleValue())
+                        .location(result[0] != null ? (String) result[0] : "")
+                        .practiceCount(result[1] != null ? ((Number) result[1]).longValue() : 0L)
+                        .averageAttendanceRate(result[2] != null ? ((Number) result[2]).doubleValue() : 0.0)
                         .build())
                 .collect(Collectors.toList());
     }
@@ -242,8 +242,8 @@ public class DashboardService {
         
         return results.stream()
                 .map(result -> MemberStatisticsDto.JoinYearMemberCountDto.builder()
-                        .joinYear(((Number) result[0]).intValue())
-                        .memberCount(((Number) result[1]).longValue())
+                        .joinYear(result[0] != null ? ((Number) result[0]).intValue() : 0)
+                        .memberCount(result[1] != null ? ((Number) result[1]).longValue() : 0L)
                         .build())
                 .collect(Collectors.toList());
     }
@@ -254,8 +254,8 @@ public class DashboardService {
         
         return results.stream()
                 .map(result -> MemberStatisticsDto.MonthlyNewMemberDto.builder()
-                        .month((String) result[0])
-                        .newMemberCount(((Number) result[1]).longValue())
+                        .month(result[0] != null ? (String) result[0] : "")
+                        .newMemberCount(result[1] != null ? ((Number) result[1]).longValue() : 0L)
                         .build())
                 .collect(Collectors.toList());
     }
