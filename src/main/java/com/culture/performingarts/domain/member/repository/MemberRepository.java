@@ -118,6 +118,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Long countByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
     
     /**
+     * 특정 시점 이전에 가입한 회원 수 조회
+     */
+    Long countByCreatedAtBefore(LocalDateTime dateTime);
+    
+    /**
      * 부서별 회원 수 조회
      */
     @Query("SELECT m.department, COUNT(m) " +
