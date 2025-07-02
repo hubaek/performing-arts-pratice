@@ -131,4 +131,59 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
      */
     @Query("SELECT p FROM Practice p WHERE p.isCompleted = true AND ((p.presentCount + p.lateCount) * 100.0 / p.totalParticipants) <= :rate")
     List<Practice> findLowAttendancePractices(@Param("rate") double rate);
+    
+    // === 대시보드 통계용 메서드들 ===
+    
+    /**
+     * 특정 기간의 연습 수 조회
+     */
+    Long countByPracticeDateBetween(LocalDate startDate, LocalDate endDate);
+    
+    /**
+     * 완료된 연습 수 조회
+     */
+    Long countByIsCompletedTrue();
+    
+    /**
+     * 장소별 연습 수 및 평균 출석률 조회
+     */
+    @Query("SELECT p.location, COUNT(p), " +
+           "AVG(CASE WHEN p.totalParticipants > 0 THEN (p.presentCount + p.lateCount) * 100.0 / p.totalParticipants ELSE 0 END) " +
+           "FROM Practice p WHERE p.location IS NOT NULL AND p.location != '' " +
+           "GROUP BY p.location ORDER BY COUNT(p) DESC")
+    List<Object[]> findPracticeCountAndAttendanceRateByLocation();
+    
+    /**
+     * 월별 연습 수 조회 (최근 N개월)
+     */
+    @Query("SELECT DATE_FORMAT(p.practiceDate, '%Y-%m') as month, COUNT(p) " +
+           "FROM Practice p " +
+           "WHERE p.practiceDate >= :startDate " +
+           "GROUP BY DATE_FORMAT(p.practiceDate, '%Y-%m') " +
+           "ORDER BY month DESC")
+    List<Object[]> findMonthlyPracticeCount(@Param("startDate") LocalDate startDate);
+    
+    /**
+     * 주별 연습 수 조회 (최근 N주)
+     */
+    @Query("SELECT YEARWEEK(p.practiceDate, 1) as week, COUNT(p), " +
+           "AVG(CASE WHEN p.totalParticipants > 0 THEN (p.presentCount + p.lateCount) * 100.0 / p.totalParticipants ELSE 0 END) " +
+           "FROM Practice p " +
+           "WHERE p.practiceDate >= :startDate " +
+           "GROUP BY YEARWEEK(p.practiceDate, 1) " +
+           "ORDER BY week DESC")
+    List<Object[]> findWeeklyPracticeStats(@Param("startDate") LocalDate startDate);
+    
+    /**
+     * 월별 트렌드 통계 조회
+     */
+    @Query("SELECT DATE_FORMAT(p.practiceDate, '%Y-%m') as month, " +
+           "COUNT(p) as practiceCount, " +
+           "SUM(CASE WHEN p.isCompleted = true THEN 1 ELSE 0 END) as completedCount, " +
+           "AVG(CASE WHEN p.totalParticipants > 0 THEN (p.presentCount + p.lateCount) * 100.0 / p.totalParticipants ELSE 0 END) as avgAttendanceRate " +
+           "FROM Practice p " +
+           "WHERE p.practiceDate >= :startDate " +
+           "GROUP BY DATE_FORMAT(p.practiceDate, '%Y-%m') " +
+           "ORDER BY month DESC")
+    List<Object[]> findMonthlyTrendStats(@Param("startDate") LocalDate startDate);
 }

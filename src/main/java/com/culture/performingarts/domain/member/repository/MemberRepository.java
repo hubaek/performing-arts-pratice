@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,4 +104,46 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      * @return 존재 여부
      */
     boolean existsByUniqueCode(String uniqueCode);
+    
+    // === 대시보드 통계용 메서드들 ===
+    
+    /**
+     * 특정 상태의 회원 수 조회
+     */
+    Long countByStatus(MemberStatus status);
+    
+    /**
+     * 특정 기간의 신규 가입자 수 조회
+     */
+    Long countByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
+    
+    /**
+     * 부서별 회원 수 조회
+     */
+    @Query("SELECT m.department, COUNT(m) " +
+           "FROM Member m " +
+           "WHERE m.status = :status " +
+           "GROUP BY m.department " +
+           "ORDER BY COUNT(m) DESC")
+    List<Object[]> findMemberCountByDepartment(@Param("status") MemberStatus status);
+    
+    /**
+     * 입과년도별 회원 수 조회
+     */
+    @Query("SELECT m.joinYear, COUNT(m) " +
+           "FROM Member m " +
+           "WHERE m.status = :status " +
+           "GROUP BY m.joinYear " +
+           "ORDER BY m.joinYear DESC")
+    List<Object[]> findMemberCountByJoinYear(@Param("status") MemberStatus status);
+    
+    /**
+     * 월별 신규 가입자 수 조회
+     */
+    @Query("SELECT DATE_FORMAT(m.createdAt, '%Y-%m') as month, COUNT(m) " +
+           "FROM Member m " +
+           "WHERE m.createdAt >= :startDate " +
+           "GROUP BY DATE_FORMAT(m.createdAt, '%Y-%m') " +
+           "ORDER BY month DESC")
+    List<Object[]> findMonthlyNewMemberCount(@Param("startDate") LocalDateTime startDate);
 }
