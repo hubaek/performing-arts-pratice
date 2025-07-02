@@ -146,7 +146,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
      * 월별 신규 가입자 수 조회
      */
     @Query("SELECT CONCAT(YEAR(m.createdAt), '-', " +
-           "CASE WHEN MONTH(m.createdAt) < 10 THEN CONCAT('0', MONTH(m.createdAt)) ELSE CAST(MONTH(m.createdAt) AS string) END) as month, " +
+           "CASE WHEN MONTH(m.createdAt) < 10 THEN CONCAT('0', MONTH(m.createdAt)) ELSE MONTH(m.createdAt) END) as month, " +
            "COUNT(m) " +
            "FROM Member m " +
            "WHERE m.createdAt >= :startDate " +
