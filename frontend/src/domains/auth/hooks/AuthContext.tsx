@@ -42,9 +42,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setAccessToken(storedToken);
           
           // 현재 사용자 정보 가져오기
-          const userData = await authApi.getCurrentUser();
-          if (!abortController.signal.aborted) {
-            setUser(userData);
+          try {
+            const userData = await authApi.getCurrentUser();
+            if (!abortController.signal.aborted) {
+              setUser(userData);
+            }
+          } catch (userError) {
+            console.warn('Failed to get current user, but continuing:', userError);
+            // 사용자 정보를 가져올 수 없어도 로딩은 완료
+            localStorage.removeItem(ACCESS_TOKEN_KEY);
+            localStorage.removeItem(REFRESH_TOKEN_KEY);
+            setAccessToken(null);
           }
         }
       } catch (error) {
@@ -53,6 +61,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // 토큰이 유효하지 않으면 제거
           localStorage.removeItem(ACCESS_TOKEN_KEY);
           localStorage.removeItem(REFRESH_TOKEN_KEY);
+          setAccessToken(null);
         }
       } finally {
         if (!abortController.signal.aborted) {
