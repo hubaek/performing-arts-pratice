@@ -191,4 +191,12 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
            "GROUP BY YEAR(p.practiceDate), MONTH(p.practiceDate) " +
            "ORDER BY YEAR(p.practiceDate) DESC, MONTH(p.practiceDate) DESC")
     List<Object[]> findMonthlyTrendStats(@Param("startDate") LocalDate startDate);
+    
+    /**
+     * 팀별 출석률 통계 조회
+     */
+    @Query("SELECT SUM(p.totalParticipants), SUM(p.presentCount), SUM(p.lateCount) " +
+           "FROM Practice p " +
+           "WHERE p.teamId = :teamId AND p.isCompleted = true")
+    List<Object[]> findTeamAttendanceRate(@Param("teamId") Long teamId);
 }

@@ -304,9 +304,28 @@ public class DashboardService {
     }
     
     private Double calculateTeamAttendanceRate(Long teamId) {
-        // 팀별 평균 출석률 계산 로직
-        // 실제 구현에서는 팀 내 연습의 출석률을 계산해야 함
-        return 85.0; // 임시 값
+        try {
+            // 팀에 속한 연습들의 평균 출석률 계산
+            List<Object[]> attendanceStats = practiceRepository.findTeamAttendanceRate(teamId);
+            
+            if (attendanceStats.isEmpty() || attendanceStats.get(0)[0] == null) {
+                return 0.0;
+            }
+            
+            Object[] result = attendanceStats.get(0);
+            Long totalParticipants = result[0] != null ? ((Number) result[0]).longValue() : 0L;
+            Long attendanceCount = result[1] != null ? ((Number) result[1]).longValue() : 0L;
+            Long lateCount = result[2] != null ? ((Number) result[2]).longValue() : 0L;
+            
+            if (totalParticipants == 0) {
+                return 0.0;
+            }
+            
+            return ((double) (attendanceCount + lateCount) / totalParticipants) * 100;
+        } catch (Exception e) {
+            // 오류 시 기본값 반환
+            return 0.0;
+        }
     }
     
     private List<TrendStatisticsDto.MonthlyTrendDto> getMonthlyTrends(int monthCount) {
@@ -325,13 +344,16 @@ public class DashboardService {
                             .findFirst()
                             .orElse(0L);
                     
+                    // 해당 달의 전체 회원 수 조회 (월말 기준)
+                    Long totalMemberCount = getTotalMemberCountForMonth(month);
+                    
                     return TrendStatisticsDto.MonthlyTrendDto.builder()
                             .month(month)
-                            .practiceCount(((Number) result[1]).longValue())
-                            .completedPracticeCount(((Number) result[2]).longValue())
+                            .practiceCount(result[1] != null ? ((Number) result[1]).longValue() : 0L)
+                            .completedPracticeCount(result[2] != null ? ((Number) result[2]).longValue() : 0L)
                             .averageAttendanceRate(result[3] != null ? ((Number) result[3]).doubleValue() : 0.0)
                             .newMemberCount(newMemberCount)
-                            .memberCount(0L) // 전체 멤버 수는 별도 쿼리 필요
+                            .memberCount(totalMemberCount)
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -343,18 +365,38 @@ public class DashboardService {
         
         return results.stream()
                 .map(result -> {
-                    // YEARWEEK 결과를 YYYY-WW 형식으로 변환
-                    String yearWeek = String.valueOf(result[0]);
-                    String formattedWeek = yearWeek.substring(0, 4) + "-" + 
-                                          String.format("%02d", Integer.parseInt(yearWeek.substring(4)));
+                    // 주별 형식은 이미 YYYY-WW 형식으로 리턴됨
+                    String formattedWeek = String.valueOf(result[0]);
                     
                     return TrendStatisticsDto.WeeklyTrendDto.builder()
                             .week(formattedWeek)
-                            .practiceCount(((Number) result[1]).longValue())
+                            .practiceCount(result[1] != null ? ((Number) result[1]).longValue() : 0L)
                             .averageAttendanceRate(result[2] != null ? ((Number) result[2]).doubleValue() : 0.0)
                             .totalParticipants(0L) // 주별 총 참여자는 별도 계산 필요
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+    
+    /**
+     * 특정 달의 전체 회원 수 조회 (월말 기준)
+     */
+    private Long getTotalMemberCountForMonth(String month) {
+        try {
+            // month 형식: YYYY-MM
+            String[] parts = month.split("-");
+            int year = Integer.parseInt(parts[0]);
+            int monthValue = Integer.parseInt(parts[1]);
+            
+            // 해당 달의 마지막 날
+            LocalDate endOfMonth = LocalDate.of(year, monthValue, 1).plusMonths(1).minusDays(1);
+            LocalDateTime endOfMonthDateTime = endOfMonth.atTime(23, 59, 59);
+            
+            // 해당 시점까지 생성된 회원 수 조회
+            return memberRepository.countByCreatedAtBefore(endOfMonthDateTime);
+        } catch (Exception e) {
+            // 파싱 오류 시 기본값 반환
+            return 0L;
+        }
     }
 }
