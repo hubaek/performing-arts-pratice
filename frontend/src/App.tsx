@@ -7,6 +7,7 @@ import { AuthProvider } from './domains/auth/hooks/AuthContext';
 import { LoginForm, SignupForm, ProtectedRoute, AdminRoute } from './domains/auth';
 import { PracticeList, PracticeForm, PracticeDetail } from './domains/practice';
 import { AdminTeamList } from './domains/admin';
+import { Dashboard } from './domains/dashboard';
 import { Header } from './shared/components';
 
 const theme = createTheme({
@@ -34,7 +35,12 @@ function App() {
                 <Route path="/signup" element={<SignupForm />} />
                 <Route path="/" element={
                   <ProtectedRoute>
-                    <PracticeList />
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Dashboard />
                   </ProtectedRoute>
                 } />
                 <Route path="/practices" element={

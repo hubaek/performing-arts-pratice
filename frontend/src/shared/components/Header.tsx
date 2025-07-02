@@ -19,7 +19,8 @@ import {
   Home as HomeIcon,
   List as ListIcon,
   AdminPanelSettings as AdminIcon,
-  Menu as MenuIcon
+  Menu as MenuIcon,
+  Dashboard as DashboardIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../domains/auth/hooks/AuthContext';
 
@@ -91,11 +92,11 @@ const Header: React.FC = () => {
               <>
                 <Button 
                   color="inherit" 
-                  startIcon={<HomeIcon />}
-                  onClick={() => navigate('/')}
+                  startIcon={<DashboardIcon />}
+                  onClick={() => navigate('/dashboard')}
                   sx={{ mr: 1 }}
                 >
-                  홈
+                  대시보드
                 </Button>
                 <Button 
                   color="inherit" 
@@ -164,9 +165,9 @@ const Header: React.FC = () => {
                 open={isMenuOpen}
                 onClose={handleMenuClose}
               >
-                <MenuItem onClick={() => handleNavigation('/')}>
-                  <HomeIcon sx={{ mr: 1 }} />
-                  홈
+                <MenuItem onClick={() => handleNavigation('/dashboard')}>
+                  <DashboardIcon sx={{ mr: 1 }} />
+                  대시보드
                 </MenuItem>
                 <MenuItem onClick={() => handleNavigation('/practices')}>
                   <ListIcon sx={{ mr: 1 }} />
@@ -203,9 +204,9 @@ const Header: React.FC = () => {
                 open={isMobileMenuOpen}
                 onClose={handleMobileMenuClose}
               >
-                <MenuItem onClick={() => handleNavigation('/')}>
-                  <HomeIcon sx={{ mr: 1 }} />
-                  홈
+                <MenuItem onClick={() => handleNavigation('/dashboard')}>
+                  <DashboardIcon sx={{ mr: 1 }} />
+                  대시보드
                 </MenuItem>
                 <MenuItem onClick={() => handleNavigation('/practices')}>
                   <ListIcon sx={{ mr: 1 }} />
