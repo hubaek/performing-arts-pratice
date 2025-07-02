@@ -52,6 +52,7 @@ const TopAttendanceList: React.FC<TopAttendanceListProps> = ({
                 borderBottom: index < data.length - 1 ? 1 : 0,
                 borderColor: 'divider',
               }}
+              aria-label={`${index + 1}위: ${member.memberName}, 출석률 ${member.attendanceRate.toFixed(1)}%`}
             >
               <ListItemAvatar>
                 <Avatar
