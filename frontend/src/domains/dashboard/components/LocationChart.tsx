@@ -21,7 +21,7 @@ const LocationChart: React.FC<LocationChartProps> = ({
   const totalPractices = data.reduce((sum, item) => sum + item.practiceCount, 0);
 
   return (
-    <Card sx={{ height: '100%' }}>
+    <Card sx={{ height: '100%' }} aria-label={`${title} 차트`}>
       <CardHeader title={title} />
       <CardContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -71,6 +71,11 @@ const LocationChart: React.FC<LocationChartProps> = ({
                       borderRadius: 3,
                       overflow: 'hidden',
                     }}
+                    role="progressbar"
+                    aria-valuenow={percentage}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`${item.location} 연습 비율: ${percentage.toFixed(1)}%`}
                   >
                     <Box
                       sx={{
