@@ -82,4 +82,17 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
      * @return 해당 상태의 팀 수
      */
     Long countByStatus(String status);
+    
+    // === 대시보드 통계용 메서드들 ===
+    
+    /**
+     * 팀별 상세 통계 조회
+     */
+    @Query("SELECT t.id, t.name, t.leader, t.memberCount, " +
+           "(SELECT COUNT(m) FROM Member m WHERE m.teamId = t.id AND m.status = 'ACTIVE') as activeMemberCount, " +
+           "(SELECT COUNT(p) FROM Practice p WHERE p.teamId = t.id) as totalPractices, " +
+           "(SELECT COUNT(p) FROM Practice p WHERE p.teamId = t.id AND p.practiceDate >= :startDate) as thisMonthPractices " +
+           "FROM Team t " +
+           "ORDER BY t.memberCount DESC")
+    List<Object[]> findTeamDetailStats(@Param("startDate") java.time.LocalDate startDate);
 }

@@ -157,4 +157,43 @@ public interface PracticeParticipationRepository extends JpaRepository<PracticeP
            "SUM(CASE WHEN pp.status = 'ABSENT' THEN 1 ELSE 0 END) " +
            "FROM PracticeParticipation pp WHERE pp.userId = :userId")
     List<Object[]> getAttendanceStatsByUserId(@Param("userId") Long userId);
+    
+    // === 대시보드 통계용 메서드들 ===
+    
+    /**
+     * 전체 출석 통계 조회
+     */
+    @Query("SELECT COUNT(pp), " +
+           "SUM(CASE WHEN pp.status = 'ATTENDANCE' THEN 1 ELSE 0 END), " +
+           "SUM(CASE WHEN pp.status = 'LATE' THEN 1 ELSE 0 END) " +
+           "FROM PracticeParticipation pp")
+    List<Object[]> getOverallAttendanceStats();
+    
+    /**
+     * 출석률 상위 회원 조회
+     */
+    @Query("SELECT pp.userId, m.name, m.department, " +
+           "COUNT(pp) as totalPractices, " +
+           "(SUM(CASE WHEN pp.status = 'ATTENDANCE' THEN 1 ELSE 0 END) + " +
+           " SUM(CASE WHEN pp.status = 'LATE' THEN 1 ELSE 0 END)) * 100.0 / COUNT(pp) as attendanceRate " +
+           "FROM PracticeParticipation pp " +
+           "JOIN Member m ON pp.userId = m.id " +
+           "GROUP BY pp.userId, m.name, m.department " +
+           "HAVING COUNT(pp) >= 3 " +
+           "ORDER BY attendanceRate DESC " +
+           "LIMIT :limit")
+    List<Object[]> findTopAttendanceMembers(@Param("limit") int limit);
+    
+    /**
+     * 부서별 평균 출석률 조회
+     */
+    @Query("SELECT m.department, " +
+           "(SUM(CASE WHEN pp.status = 'ATTENDANCE' THEN 1 ELSE 0 END) + " +
+           " SUM(CASE WHEN pp.status = 'LATE' THEN 1 ELSE 0 END)) * 100.0 / COUNT(pp) as attendanceRate " +
+           "FROM PracticeParticipation pp " +
+           "JOIN Member m ON pp.userId = m.id " +
+           "WHERE m.department IS NOT NULL " +
+           "GROUP BY m.department " +
+           "ORDER BY attendanceRate DESC")
+    List<Object[]> findAttendanceRateByDepartment();
 }
