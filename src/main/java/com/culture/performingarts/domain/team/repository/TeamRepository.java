@@ -89,10 +89,13 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
      * 팀별 상세 통계 조회
      */
     @Query("SELECT t.id, t.name, t.leader, t.memberCount, " +
-           "(SELECT COUNT(m) FROM Member m WHERE m.teamId = t.id AND m.status = 'ACTIVE') as activeMemberCount, " +
-           "(SELECT COUNT(p) FROM Practice p WHERE p.teamId = t.id) as totalPractices, " +
-           "(SELECT COUNT(p) FROM Practice p WHERE p.teamId = t.id AND p.practiceDate >= :startDate) as thisMonthPractices " +
+           "COUNT(DISTINCT CASE WHEN m.status = 'ACTIVE' THEN m.id END) as activeMemberCount, " +
+           "COUNT(DISTINCT p.id) as totalPractices, " +
+           "COUNT(DISTINCT CASE WHEN p.practiceDate >= :startDate THEN p.id END) as thisMonthPractices " +
            "FROM Team t " +
+           "LEFT JOIN Member m ON m.teamId = t.id " +
+           "LEFT JOIN Practice p ON p.teamId = t.id " +
+           "GROUP BY t.id, t.name, t.leader, t.memberCount " +
            "ORDER BY t.memberCount DESC")
     List<Object[]> findTeamDetailStats(@Param("startDate") java.time.LocalDate startDate);
 }
