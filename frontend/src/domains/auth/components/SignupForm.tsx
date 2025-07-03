@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Card,
-  CardContent,
   TextField,
   Button,
   Typography,
@@ -227,12 +225,22 @@ const SignupForm: React.FC = () => {
       justifyContent="center"
       alignItems="center"
       minHeight="100vh"
-      bgcolor="#f5f5f5"
-      py={2}
+      bgcolor="#ffffff"
+      py={3}
     >
-      <Card sx={{ maxWidth: 600, width: '100%', mx: 2 }}>
-        <CardContent sx={{ p: 3 }}>
-          <Typography variant="h4" component="h1" gutterBottom align="center">
+      <Box sx={{ maxWidth: 480, width: '100%', mx: 2 }}>
+          <Typography 
+            variant="h3" 
+            component="h1" 
+            gutterBottom 
+            align="center"
+            sx={{ 
+              fontWeight: 700, 
+              color: '#333', 
+              mb: 4,
+              fontSize: '28px'
+            }}
+          >
             회원가입
           </Typography>
           
@@ -242,23 +250,41 @@ const SignupForm: React.FC = () => {
             </Alert>
           )}
 
-          <Box component="form" onSubmit={handleSubmit} noValidate>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
             <TextField
               fullWidth
-              label={<span>이름 <span style={{ color: 'red' }}>*</span></span>}
+              label="이름 *"
               name="name"
               value={formData.name}
               onChange={handleChange}
               onBlur={handleBlur}
               error={!!formErrors.name}
               helperText={formErrors.name}
-              margin="dense"
+              margin="normal"
               required
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  '&:hover fieldset': {
+                    borderColor: '#5f0080',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#5f0080',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '16px',
+                  '&.Mui-focused': {
+                    color: '#5f0080',
+                  }
+                }
+              }}
             />
 
             <TextField
               fullWidth
-              label={<span>이메일 <span style={{ color: 'red' }}>*</span></span>}
+              label="이메일 *"
               name="email"
               type="email"
               value={formData.email}
@@ -266,13 +292,31 @@ const SignupForm: React.FC = () => {
               onBlur={handleBlur}
               error={!!formErrors.email}
               helperText={formErrors.email}
-              margin="dense"
+              margin="normal"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  '&:hover fieldset': {
+                    borderColor: '#5f0080',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#5f0080',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '16px',
+                  '&.Mui-focused': {
+                    color: '#5f0080',
+                  }
+                }
+              }}
               required
             />
 
             <TextField
               fullWidth
-              label={<span>비밀번호 <span style={{ color: 'red' }}>*</span></span>}
+              label="비밀번호 *"
               name="password"
               type="password"
               value={formData.password}
@@ -280,13 +324,31 @@ const SignupForm: React.FC = () => {
               onBlur={handleBlur}
               error={!!formErrors.password}
               helperText={formErrors.password}
-              margin="dense"
+              margin="normal"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  '&:hover fieldset': {
+                    borderColor: '#5f0080',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#5f0080',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '16px',
+                  '&.Mui-focused': {
+                    color: '#5f0080',
+                  }
+                }
+              }}
               required
             />
 
             <TextField
               fullWidth
-              label={<span>비밀번호 확인 <span style={{ color: 'red' }}>*</span></span>}
+              label="비밀번호 확인 *"
               name="confirmPassword"
               type="password"
               value={formData.confirmPassword}
@@ -294,29 +356,93 @@ const SignupForm: React.FC = () => {
               onBlur={handleBlur}
               error={!!formErrors.confirmPassword}
               helperText={formErrors.confirmPassword}
-              margin="dense"
+              margin="normal"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  '&:hover fieldset': {
+                    borderColor: '#5f0080',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#5f0080',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '16px',
+                  '&.Mui-focused': {
+                    color: '#5f0080',
+                  }
+                }
+              }}
               required
             />
 
             <TextField
               fullWidth
-              label={<span>전화번호 <span style={{ color: 'red' }}>*</span></span>}
+              label="전화번호 *"
               name="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleChange}
               onBlur={handleBlur}
               error={!!formErrors.phoneNumber}
               helperText={formErrors.phoneNumber}
-              margin="dense"
+              margin="normal"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  '&:hover fieldset': {
+                    borderColor: '#5f0080',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#5f0080',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '16px',
+                  '&.Mui-focused': {
+                    color: '#5f0080',
+                  }
+                }
+              }}
               placeholder="010-1234-1234"
               required
             />
 
-            <Typography variant="body1" sx={{ mt: 1, mb: 0.5, fontWeight: 'medium' }}>
-              생년월일 <span style={{ color: 'red' }}>*</span>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                mt: 2, 
+                mb: 1, 
+                fontWeight: 600,
+                fontSize: '16px',
+                color: '#333'
+              }}
+            >
+              생년월일 *
             </Typography>
-            <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-              <FormControl sx={{ minWidth: 120 }} error={!!formErrors.birthYear}>
+            <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
+              <FormControl 
+                sx={{ 
+                  minWidth: 120,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '6px',
+                    '&:hover fieldset': {
+                      borderColor: '#5f0080',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#5f0080',
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    '&.Mui-focused': {
+                      color: '#5f0080',
+                    }
+                  }
+                }} 
+                error={!!formErrors.birthYear}
+              >
                 <InputLabel>년도</InputLabel>
                 <Select
                   name="birthYear"
@@ -335,7 +461,26 @@ const SignupForm: React.FC = () => {
                 )}
               </FormControl>
               
-              <FormControl sx={{ minWidth: 80 }} error={!!formErrors.birthMonth}>
+              <FormControl 
+                sx={{ 
+                  minWidth: 80,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '6px',
+                    '&:hover fieldset': {
+                      borderColor: '#5f0080',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#5f0080',
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    '&.Mui-focused': {
+                      color: '#5f0080',
+                    }
+                  }
+                }} 
+                error={!!formErrors.birthMonth}
+              >
                 <InputLabel>월</InputLabel>
                 <Select
                   name="birthMonth"
@@ -354,7 +499,26 @@ const SignupForm: React.FC = () => {
                 )}
               </FormControl>
               
-              <FormControl sx={{ minWidth: 80 }} error={!!formErrors.birthDay}>
+              <FormControl 
+                sx={{ 
+                  minWidth: 80,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '6px',
+                    '&:hover fieldset': {
+                      borderColor: '#5f0080',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#5f0080',
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    '&.Mui-focused': {
+                      color: '#5f0080',
+                    }
+                  }
+                }} 
+                error={!!formErrors.birthDay}
+              >
                 <InputLabel>일</InputLabel>
                 <Select
                   name="birthDay"
@@ -374,7 +538,27 @@ const SignupForm: React.FC = () => {
               </FormControl>
             </Box>
 
-            <FormControl fullWidth sx={{ mt: 1, mb: 1 }}>
+            <FormControl 
+              fullWidth 
+              sx={{ 
+                mt: 2, 
+                mb: 1,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '6px',
+                  '&:hover fieldset': {
+                    borderColor: '#5f0080',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#5f0080',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  '&.Mui-focused': {
+                    color: '#5f0080',
+                  }
+                }
+              }}
+            >
               <InputLabel>성별</InputLabel>
               <Select
                 name="gender"
@@ -395,26 +579,82 @@ const SignupForm: React.FC = () => {
               type="number"
               value={formData.joinYear}
               onChange={handleChange}
-              margin="dense"
+              margin="normal"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  '&:hover fieldset': {
+                    borderColor: '#5f0080',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#5f0080',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '16px',
+                  '&.Mui-focused': {
+                    color: '#5f0080',
+                  }
+                }
+              }}
             />
 
 
             <TextField
               fullWidth
-              label={<span>고유번호 <span style={{ color: 'red' }}>*</span></span>}
+              label="고유번호 *"
               name="uniqueCode"
               value={formData.uniqueCode}
               onChange={handleChange}
               onBlur={handleBlur}
               error={!!formErrors.uniqueCode}
               helperText={formErrors.uniqueCode}
-              margin="dense"
+              margin="normal"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  '&:hover fieldset': {
+                    borderColor: '#5f0080',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#5f0080',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '16px',
+                  '&.Mui-focused': {
+                    color: '#5f0080',
+                  }
+                }
+              }}
               placeholder="00120314-00001"
               required
             />
 
 
-            <FormControl fullWidth sx={{ mt: 1, mb: 1 }}>
+            <FormControl 
+              fullWidth 
+              sx={{ 
+                mt: 2, 
+                mb: 1,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '6px',
+                  '&:hover fieldset': {
+                    borderColor: '#5f0080',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#5f0080',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  '&.Mui-focused': {
+                    color: '#5f0080',
+                  }
+                }
+              }}
+            >
               <InputLabel>팀 선택</InputLabel>
               <Select
                 name="teamId"
@@ -442,11 +682,25 @@ const SignupForm: React.FC = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 2, mb: 1 }}
               disabled={loading}
               size="large"
+              sx={{
+                mt: 4,
+                mb: 2,
+                height: '56px',
+                borderRadius: '6px',
+                backgroundColor: '#5f0080',
+                fontSize: '16px',
+                fontWeight: 600,
+                '&:hover': {
+                  backgroundColor: '#4a0066',
+                },
+                '&:disabled': {
+                  backgroundColor: '#b5b5b5',
+                }
+              }}
             >
-              {loading ? <CircularProgress size={LOADING_SPINNER_SIZE} /> : '회원가입'}
+              {loading ? <CircularProgress size={LOADING_SPINNER_SIZE} color="inherit" /> : '회원가입'}
             </Button>
 
             <Box textAlign="center">
@@ -458,8 +712,7 @@ const SignupForm: React.FC = () => {
               </Typography>
             </Box>
           </Box>
-        </CardContent>
-      </Card>
+      </Box>
     </Box>
   );
 };
