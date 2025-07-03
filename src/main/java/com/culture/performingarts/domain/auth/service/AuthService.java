@@ -11,6 +11,7 @@ import com.culture.performingarts.domain.auth.exception.InvalidMemberStatusExcep
 import com.culture.performingarts.domain.auth.exception.UniqueCodeDuplicateException;
 import com.culture.performingarts.global.exception.PasswordMismatchException;
 import com.culture.performingarts.global.exception.UnauthorizedException;
+import com.culture.performingarts.global.util.SecurityMaskingUtil;
 import com.culture.performingarts.domain.member.entity.Member;
 import com.culture.performingarts.domain.member.enums.MemberStatus;
 import com.culture.performingarts.domain.member.exception.EmailDuplicateException;
@@ -40,20 +41,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     
-    /**
-     * 이메일 마스킹 처리
-     * 예: user@example.com -> u***@example.com
-     */
-    private String maskEmail(String email) {
-        if (email == null || email.length() < 3) {
-            return "***";
-        }
-        int atIndex = email.indexOf('@');
-        if (atIndex <= 1) {
-            return "***@" + email.substring(atIndex + 1);
-        }
-        return email.charAt(0) + "***@" + email.substring(atIndex + 1);
-    }
     
     /**
      * 로그인 처리
@@ -82,7 +69,7 @@ public class AuthService {
         String accessToken = jwtTokenProvider.createAccessToken(authentication);
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
         
-        log.info("User logged in successfully - email: {}", maskEmail(member.getEmail()));
+        log.info("User logged in successfully - email: {}", SecurityMaskingUtil.maskEmail(member.getEmail()));
         
         return AuthResponseDto.builder()
                 .accessToken(accessToken)
@@ -152,7 +139,7 @@ public class AuthService {
         String accessToken = jwtTokenProvider.createAccessToken(authentication);
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
         
-        log.info("User signed up successfully - email: {}", maskEmail(savedMember.getEmail()));
+        log.info("User signed up successfully - email: {}", SecurityMaskingUtil.maskEmail(savedMember.getEmail()));
         
         return AuthResponseDto.builder()
                 .accessToken(accessToken)
@@ -192,7 +179,7 @@ public class AuthService {
         // 새로운 액세스 토큰 생성
         String newAccessToken = jwtTokenProvider.createAccessToken(authentication);
         
-        log.info("Token refreshed successfully - email: {}", maskEmail(member.getEmail()));
+        log.info("Token refreshed successfully - email: {}", SecurityMaskingUtil.maskEmail(member.getEmail()));
         
         return AuthResponseDto.builder()
                 .accessToken(newAccessToken)

@@ -1,5 +1,6 @@
 package com.culture.performingarts.config.security;
 
+import com.culture.performingarts.global.util.SecurityMaskingUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,9 @@ public class JwtTokenProvider {
     private final SecretKey secretKey;
     private final long accessTokenValidityInSeconds;
     private final long refreshTokenValidityInSeconds;
+    
+    @Value("${spring.profiles.active:dev}")
+    private String activeProfile;
     
     public JwtTokenProvider(
             @Value("${jwt.secret:performingArtsSecretKeyForJwtTokenGeneration123456789}") String secret,
@@ -96,15 +100,31 @@ public class JwtTokenProvider {
                 .parseSignedClaims(token);
             return true;
         } catch (SecurityException ex) {
-            log.warn("Invalid JWT signature: {}", ex.getMessage());
+            if ("prod".equals(activeProfile)) {
+                log.warn("Invalid JWT signature");
+            } else {
+                log.warn("Invalid JWT signature: {}", ex.getMessage());
+            }
         } catch (MalformedJwtException ex) {
-            log.warn("Invalid JWT token: {}", ex.getMessage());
+            if ("prod".equals(activeProfile)) {
+                log.warn("Invalid JWT token");
+            } else {
+                log.warn("Invalid JWT token: {}", ex.getMessage());
+            }
         } catch (ExpiredJwtException ex) {
-            log.debug("Expired JWT token: {}", ex.getMessage());
+            log.debug("Expired JWT token");
         } catch (UnsupportedJwtException ex) {
-            log.warn("Unsupported JWT token: {}", ex.getMessage());
+            if ("prod".equals(activeProfile)) {
+                log.warn("Unsupported JWT token");
+            } else {
+                log.warn("Unsupported JWT token: {}", ex.getMessage());
+            }
         } catch (IllegalArgumentException ex) {
-            log.warn("JWT claims string is empty: {}", ex.getMessage());
+            if ("prod".equals(activeProfile)) {
+                log.warn("JWT claims string is empty");
+            } else {
+                log.warn("JWT claims string is empty: {}", ex.getMessage());
+            }
         }
         return false;
     }
