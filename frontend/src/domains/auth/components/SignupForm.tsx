@@ -267,16 +267,16 @@ const SignupForm: React.FC = () => {
                   borderRadius: '6px',
                   fontSize: '16px',
                   '&:hover fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   },
                   '&.Mui-focused fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   }
                 },
                 '& .MuiInputLabel-root': {
                   fontSize: '16px',
                   '&.Mui-focused': {
-                    color: '#5f0080',
+                    color: '#1976d2',
                   }
                 }
               }}
@@ -298,16 +298,16 @@ const SignupForm: React.FC = () => {
                   borderRadius: '6px',
                   fontSize: '16px',
                   '&:hover fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   },
                   '&.Mui-focused fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   }
                 },
                 '& .MuiInputLabel-root': {
                   fontSize: '16px',
                   '&.Mui-focused': {
-                    color: '#5f0080',
+                    color: '#1976d2',
                   }
                 }
               }}
@@ -330,16 +330,16 @@ const SignupForm: React.FC = () => {
                   borderRadius: '6px',
                   fontSize: '16px',
                   '&:hover fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   },
                   '&.Mui-focused fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   }
                 },
                 '& .MuiInputLabel-root': {
                   fontSize: '16px',
                   '&.Mui-focused': {
-                    color: '#5f0080',
+                    color: '#1976d2',
                   }
                 }
               }}
@@ -362,16 +362,16 @@ const SignupForm: React.FC = () => {
                   borderRadius: '6px',
                   fontSize: '16px',
                   '&:hover fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   },
                   '&.Mui-focused fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   }
                 },
                 '& .MuiInputLabel-root': {
                   fontSize: '16px',
                   '&.Mui-focused': {
-                    color: '#5f0080',
+                    color: '#1976d2',
                   }
                 }
               }}
@@ -393,16 +393,16 @@ const SignupForm: React.FC = () => {
                   borderRadius: '6px',
                   fontSize: '16px',
                   '&:hover fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   },
                   '&.Mui-focused fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   }
                 },
                 '& .MuiInputLabel-root': {
                   fontSize: '16px',
                   '&.Mui-focused': {
-                    color: '#5f0080',
+                    color: '#1976d2',
                   }
                 }
               }}
@@ -546,15 +546,15 @@ const SignupForm: React.FC = () => {
                 '& .MuiOutlinedInput-root': {
                   borderRadius: '6px',
                   '&:hover fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   },
                   '&.Mui-focused fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   }
                 },
                 '& .MuiInputLabel-root': {
                   '&.Mui-focused': {
-                    color: '#5f0080',
+                    color: '#1976d2',
                   }
                 }
               }}
@@ -585,16 +585,16 @@ const SignupForm: React.FC = () => {
                   borderRadius: '6px',
                   fontSize: '16px',
                   '&:hover fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   },
                   '&.Mui-focused fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   }
                 },
                 '& .MuiInputLabel-root': {
                   fontSize: '16px',
                   '&.Mui-focused': {
-                    color: '#5f0080',
+                    color: '#1976d2',
                   }
                 }
               }}
@@ -616,16 +616,16 @@ const SignupForm: React.FC = () => {
                   borderRadius: '6px',
                   fontSize: '16px',
                   '&:hover fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   },
                   '&.Mui-focused fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   }
                 },
                 '& .MuiInputLabel-root': {
                   fontSize: '16px',
                   '&.Mui-focused': {
-                    color: '#5f0080',
+                    color: '#1976d2',
                   }
                 }
               }}
@@ -642,15 +642,15 @@ const SignupForm: React.FC = () => {
                 '& .MuiOutlinedInput-root': {
                   borderRadius: '6px',
                   '&:hover fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   },
                   '&.Mui-focused fieldset': {
-                    borderColor: '#5f0080',
+                    borderColor: '#1976d2',
                   }
                 },
                 '& .MuiInputLabel-root': {
                   '&.Mui-focused': {
-                    color: '#5f0080',
+                    color: '#1976d2',
                   }
                 }
               }}
@@ -689,11 +689,11 @@ const SignupForm: React.FC = () => {
                 mb: 2,
                 height: '56px',
                 borderRadius: '6px',
-                backgroundColor: '#5f0080',
+                backgroundColor: '#1976d2',
                 fontSize: '16px',
                 fontWeight: 600,
                 '&:hover': {
-                  backgroundColor: '#4a0066',
+                  backgroundColor: '#1565c0',
                 },
                 '&:disabled': {
                   backgroundColor: '#b5b5b5',
