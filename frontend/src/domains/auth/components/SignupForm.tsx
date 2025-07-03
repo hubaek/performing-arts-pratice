@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Card,
-  CardContent,
   TextField,
   Button,
   Typography,
@@ -30,14 +28,11 @@ interface SignupFormData {
   password: string;
   confirmPassword: string;
   phoneNumber: string;
-  birthDate: string;
+  birthYear: string;
+  birthMonth: string;
+  birthDay: string;
   gender: 'MALE' | 'FEMALE' | 'OTHER';
   joinYear: number;
-  major: string;
-  department: string;
-  position: string;
-  responsibility: string;
-  remarks: string;
   uniqueCode: string;
   teamId: string;
 }
@@ -54,7 +49,10 @@ const validateSignupForm = (formData: SignupFormData) => {
   if (!formData.name) errors.name = '이름을 입력해주세요';
   if (!formData.email) errors.email = '이메일을 입력해주세요';
   if (!formData.password) errors.password = '비밀번호를 입력해주세요';
-  if (!formData.birthDate) errors.birthDate = '생년월일을 입력해주세요';
+  if (!formData.phoneNumber) errors.phoneNumber = '전화번호를 입력해주세요';
+  if (!formData.birthYear) errors.birthYear = '출생년도를 선택해주세요';
+  if (!formData.birthMonth) errors.birthMonth = '출생월을 선택해주세요';
+  if (!formData.birthDay) errors.birthDay = '출생일을 선택해주세요';
   if (!formData.uniqueCode) errors.uniqueCode = '고유번호를 입력해주세요';
 
   // 이메일 형식 검증
@@ -67,14 +65,34 @@ const validateSignupForm = (formData: SignupFormData) => {
     errors.password = `비밀번호는 ${MIN_PASSWORD_LENGTH}자 이상이어야 합니다`;
   }
 
-  // 생년월일 형식 검증
-  if (formData.birthDate && !/^\d{4}-\d{2}-\d{2}$/.test(formData.birthDate)) {
-    errors.birthDate = '올바른 날짜 형식을 입력해주세요 (YYYY-MM-DD)';
+  // 생년월일 유효성 검증
+  if (formData.birthYear && formData.birthMonth && formData.birthDay) {
+    const year = parseInt(formData.birthYear);
+    const month = parseInt(formData.birthMonth);
+    const day = parseInt(formData.birthDay);
+    
+    if (year < 1900 || year > new Date().getFullYear()) {
+      errors.birthYear = '올바른 출생년도를 선택해주세요';
+    }
+    
+    const date = new Date(year, month - 1, day);
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+      errors.birthDay = '존재하지 않는 날짜입니다';
+    }
+    
+    if (date > new Date()) {
+      errors.birthDay = '미래 날짜는 선택할 수 없습니다';
+    }
   }
 
-  // 전화번호 형식 검증 (선택사항)
-  if (formData.phoneNumber && !/^\d{3}-\d{4}-\d{4}$/.test(formData.phoneNumber)) {
-    errors.phoneNumber = '올바른 전화번호 형식을 입력해주세요 (000-0000-0000)';
+  // 전화번호 형식 검증
+  if (formData.phoneNumber && !/^010-\d{4}-\d{4}$/.test(formData.phoneNumber)) {
+    errors.phoneNumber = '올바른 전화번호 형식을 입력해주세요 (010-1234-1234)';
+  }
+
+  // 고유번호 형식 검증 (8자리-5자리)
+  if (formData.uniqueCode && !/^\d{8}-\d{5}$/.test(formData.uniqueCode)) {
+    errors.uniqueCode = '올바른 고유번호 형식을 입력해주세요 (00120314-00001)';
   }
 
   // 비밀번호 확인 검증
@@ -97,18 +115,16 @@ const SignupForm: React.FC = () => {
     password: '',
     confirmPassword: '',
     phoneNumber: '',
-    birthDate: '',
+    birthYear: '',
+    birthMonth: '',
+    birthDay: '',
     gender: 'MALE' as 'MALE' | 'FEMALE' | 'OTHER',
     joinYear: new Date().getFullYear(),
-    major: '',
-    department: '',
-    position: '',
-    responsibility: '',
-    remarks: '',
     uniqueCode: '',
     teamId: ''
   });
   const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [touchedFields, setTouchedFields] = useState<{[key: string]: boolean}>({});
   const [teams, setTeams] = useState<TeamListItem[]>([]);
   const [loadingTeams, setLoadingTeams] = useState(true);
 
@@ -136,12 +152,31 @@ const SignupForm: React.FC = () => {
       [name]: value
     }));
     
-    if (formErrors[name]) {
+    // 이미 touched된 필드만 실시간 검증
+    if (touchedFields[name]) {
+      const newFormData = { ...formData, [name]: value };
+      const { errors } = validateSignupForm(newFormData);
       setFormErrors(prev => ({
         ...prev,
-        [name]: ''
+        [name]: errors[name] || ''
       }));
     }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const name = e.target.name as string;
+    
+    setTouchedFields(prev => ({
+      ...prev,
+      [name]: true
+    }));
+    
+    // 필드 검증 수행
+    const { errors } = validateSignupForm(formData);
+    setFormErrors(prev => ({
+      ...prev,
+      [name]: errors[name] || ''
+    }));
   };
 
   const validateForm = (): boolean => {
@@ -154,19 +189,33 @@ const SignupForm: React.FC = () => {
     e.preventDefault();
     
     if (!validateForm()) {
+      alert('입력한 정보를 다시 확인해주세요.');
       return;
     }
 
     try {
+      // 생년월일 조합
+      const birthDate = `${formData.birthYear}-${formData.birthMonth.padStart(2, '0')}-${formData.birthDay.padStart(2, '0')}`;
+      
       const signupData = {
-        ...formData,
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        phoneNumber: formData.phoneNumber,
+        birthDate: birthDate,
+        gender: formData.gender,
+        joinYear: formData.joinYear,
+        uniqueCode: formData.uniqueCode,
         teamId: formData.teamId ? Number(formData.teamId) : undefined
       };
       
       await signup(signupData);
+      alert('회원가입이 완료되었습니다! 환영합니다.');
       navigate('/');
     } catch (error) {
       console.error('Signup failed:', error);
+      alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
 
@@ -174,14 +223,32 @@ const SignupForm: React.FC = () => {
     <Box
       display="flex"
       justifyContent="center"
-      alignItems="center"
+      alignItems="flex-start"
       minHeight="100vh"
-      bgcolor="#f5f5f5"
+      bgcolor="#f8f9fa"
       py={4}
     >
-      <Card sx={{ maxWidth: 600, width: '100%', mx: 2 }}>
-        <CardContent sx={{ p: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom align="center">
+      <Box sx={{ 
+        maxWidth: 600, 
+        width: '100%', 
+        mx: 2,
+        backgroundColor: '#ffffff',
+        borderRadius: '12px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        p: 4
+      }}>
+          <Typography 
+            variant="h4" 
+            component="h1" 
+            gutterBottom 
+            align="center"
+            sx={{ 
+              fontWeight: 700, 
+              color: '#333', 
+              mb: 3,
+              fontSize: '24px'
+            }}
+          >
             회원가입
           </Typography>
           
@@ -191,17 +258,36 @@ const SignupForm: React.FC = () => {
             </Alert>
           )}
 
-          <Box component="form" onSubmit={handleSubmit} noValidate>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               fullWidth
               label="이름"
               name="name"
               value={formData.name}
               onChange={handleChange}
+              onBlur={handleBlur}
               error={!!formErrors.name}
               helperText={formErrors.name}
               margin="normal"
               required
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                  '&:hover fieldset': {
+                    borderColor: '#1976d2',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1976d2',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '16px',
+                  '&.Mui-focused': {
+                    color: '#1976d2',
+                  }
+                }
+              }}
             />
 
             <TextField
@@ -211,9 +297,28 @@ const SignupForm: React.FC = () => {
               type="email"
               value={formData.email}
               onChange={handleChange}
+              onBlur={handleBlur}
               error={!!formErrors.email}
               helperText={formErrors.email}
               margin="normal"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                  '&:hover fieldset': {
+                    borderColor: '#1976d2',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1976d2',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '16px',
+                  '&.Mui-focused': {
+                    color: '#1976d2',
+                  }
+                }
+              }}
               required
             />
 
@@ -224,9 +329,28 @@ const SignupForm: React.FC = () => {
               type="password"
               value={formData.password}
               onChange={handleChange}
+              onBlur={handleBlur}
               error={!!formErrors.password}
               helperText={formErrors.password}
               margin="normal"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                  '&:hover fieldset': {
+                    borderColor: '#1976d2',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1976d2',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '16px',
+                  '&.Mui-focused': {
+                    color: '#1976d2',
+                  }
+                }
+              }}
               required
             />
 
@@ -237,9 +361,28 @@ const SignupForm: React.FC = () => {
               type="password"
               value={formData.confirmPassword}
               onChange={handleChange}
+              onBlur={handleBlur}
               error={!!formErrors.confirmPassword}
               helperText={formErrors.confirmPassword}
               margin="normal"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                  '&:hover fieldset': {
+                    borderColor: '#1976d2',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1976d2',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '16px',
+                  '&.Mui-focused': {
+                    color: '#1976d2',
+                  }
+                }
+              }}
               required
             />
 
@@ -249,29 +392,181 @@ const SignupForm: React.FC = () => {
               name="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleChange}
+              onBlur={handleBlur}
               error={!!formErrors.phoneNumber}
               helperText={formErrors.phoneNumber}
               margin="normal"
-              placeholder="000-0000-0000"
-            />
-
-            <TextField
-              fullWidth
-              label="생년월일"
-              name="birthDate"
-              type="date"
-              value={formData.birthDate}
-              onChange={handleChange}
-              error={!!formErrors.birthDate}
-              helperText={formErrors.birthDate}
-              margin="normal"
-              required
-              InputLabelProps={{
-                shrink: true,
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                  '&:hover fieldset': {
+                    borderColor: '#1976d2',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1976d2',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '16px',
+                  '&.Mui-focused': {
+                    color: '#1976d2',
+                  }
+                }
               }}
+              placeholder="010-1234-1234"
+              required
             />
 
-            <FormControl fullWidth margin="normal">
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                mt: 1, 
+                mb: 1.5, 
+                fontWeight: 600,
+                fontSize: '15px',
+                color: '#333'
+              }}
+            >
+              생년월일
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 1.5, mb: 2.5 }}>
+              <FormControl 
+                sx={{ 
+                  minWidth: 120,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '4px',
+                    '&:hover fieldset': {
+                      borderColor: '#1976d2',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#1976d2',
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    '&.Mui-focused': {
+                      color: '#1976d2',
+                    }
+                  }
+                }} 
+                error={!!formErrors.birthYear}
+              >
+                <InputLabel>년도</InputLabel>
+                <Select
+                  name="birthYear"
+                  value={formData.birthYear}
+                  onChange={handleChange}
+                  label="년도"
+                >
+                  {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                    <MenuItem key={year} value={year.toString()}>{year}년</MenuItem>
+                  ))}
+                </Select>
+                {formErrors.birthYear && (
+                  <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+                    {formErrors.birthYear}
+                  </Typography>
+                )}
+              </FormControl>
+              
+              <FormControl 
+                sx={{ 
+                  minWidth: 80,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '4px',
+                    '&:hover fieldset': {
+                      borderColor: '#1976d2',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#1976d2',
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    '&.Mui-focused': {
+                      color: '#1976d2',
+                    }
+                  }
+                }} 
+                error={!!formErrors.birthMonth}
+              >
+                <InputLabel>월</InputLabel>
+                <Select
+                  name="birthMonth"
+                  value={formData.birthMonth}
+                  onChange={handleChange}
+                  label="월"
+                >
+                  {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                    <MenuItem key={month} value={month.toString()}>{month}월</MenuItem>
+                  ))}
+                </Select>
+                {formErrors.birthMonth && (
+                  <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+                    {formErrors.birthMonth}
+                  </Typography>
+                )}
+              </FormControl>
+              
+              <FormControl 
+                sx={{ 
+                  minWidth: 80,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '4px',
+                    '&:hover fieldset': {
+                      borderColor: '#1976d2',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#1976d2',
+                    }
+                  },
+                  '& .MuiInputLabel-root': {
+                    '&.Mui-focused': {
+                      color: '#1976d2',
+                    }
+                  }
+                }} 
+                error={!!formErrors.birthDay}
+              >
+                <InputLabel>일</InputLabel>
+                <Select
+                  name="birthDay"
+                  value={formData.birthDay}
+                  onChange={handleChange}
+                  label="일"
+                >
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                    <MenuItem key={day} value={day.toString()}>{day}일</MenuItem>
+                  ))}
+                </Select>
+                {formErrors.birthDay && (
+                  <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+                    {formErrors.birthDay}
+                  </Typography>
+                )}
+              </FormControl>
+            </Box>
+
+            <FormControl 
+              fullWidth 
+              sx={{ 
+                mt: 2, 
+                mb: 2,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  '&:hover fieldset': {
+                    borderColor: '#1976d2',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1976d2',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  '&.Mui-focused': {
+                    color: '#1976d2',
+                  }
+                }
+              }}
+            >
               <InputLabel>성별</InputLabel>
               <Select
                 name="gender"
@@ -287,40 +582,32 @@ const SignupForm: React.FC = () => {
 
             <TextField
               fullWidth
-              label="가입년도"
+              label="입과년도"
               name="joinYear"
               type="number"
               value={formData.joinYear}
               onChange={handleChange}
               margin="normal"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                  '&:hover fieldset': {
+                    borderColor: '#1976d2',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1976d2',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '16px',
+                  '&.Mui-focused': {
+                    color: '#1976d2',
+                  }
+                }
+              }}
             />
 
-            <TextField
-              fullWidth
-              label="전공"
-              name="major"
-              value={formData.major}
-              onChange={handleChange}
-              margin="normal"
-            />
-
-            <TextField
-              fullWidth
-              label="소속"
-              name="department"
-              value={formData.department}
-              onChange={handleChange}
-              margin="normal"
-            />
-
-            <TextField
-              fullWidth
-              label="직책"
-              name="position"
-              value={formData.position}
-              onChange={handleChange}
-              margin="normal"
-            />
 
             <TextField
               fullWidth
@@ -328,22 +615,54 @@ const SignupForm: React.FC = () => {
               name="uniqueCode"
               value={formData.uniqueCode}
               onChange={handleChange}
+              onBlur={handleBlur}
               error={!!formErrors.uniqueCode}
               helperText={formErrors.uniqueCode}
               margin="normal"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  fontSize: '16px',
+                  '&:hover fieldset': {
+                    borderColor: '#1976d2',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1976d2',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  fontSize: '16px',
+                  '&.Mui-focused': {
+                    color: '#1976d2',
+                  }
+                }
+              }}
+              placeholder="00120314-00001"
               required
             />
 
-            <TextField
-              fullWidth
-              label="업무/담당"
-              name="responsibility"
-              value={formData.responsibility}
-              onChange={handleChange}
-              margin="normal"
-            />
 
-            <FormControl fullWidth margin="normal">
+            <FormControl 
+              fullWidth 
+              sx={{ 
+                mt: 2, 
+                mb: 2,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  '&:hover fieldset': {
+                    borderColor: '#1976d2',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1976d2',
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  '&.Mui-focused': {
+                    color: '#1976d2',
+                  }
+                }
+              }}
+            >
               <InputLabel>팀 선택</InputLabel>
               <Select
                 name="teamId"
@@ -366,39 +685,50 @@ const SignupForm: React.FC = () => {
               )}
             </FormControl>
 
-            <TextField
-              fullWidth
-              label="비고"
-              name="remarks"
-              multiline
-              rows={2}
-              value={formData.remarks}
-              onChange={handleChange}
-              margin="normal"
-            />
 
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
               disabled={loading}
               size="large"
+              sx={{
+                mt: 3,
+                mb: 3,
+                height: '48px',
+                borderRadius: '6px',
+                backgroundColor: '#1976d2',
+                fontSize: '16px',
+                fontWeight: 600,
+                '&:hover': {
+                  backgroundColor: '#1565c0',
+                },
+                '&:disabled': {
+                  backgroundColor: '#b5b5b5',
+                }
+              }}
             >
-              {loading ? <CircularProgress size={LOADING_SPINNER_SIZE} /> : '회원가입'}
+              {loading ? <CircularProgress size={LOADING_SPINNER_SIZE} color="inherit" /> : '회원가입'}
             </Button>
 
-            <Box textAlign="center">
-              <Typography variant="body2">
+            <Box textAlign="center" sx={{ mt: 2 }}>
+              <Typography variant="body2" sx={{ color: '#666' }}>
                 이미 계정이 있으신가요?{' '}
-                <Link component={RouterLink} to="/login" underline="hover">
+                <Link 
+                  component={RouterLink} 
+                  to="/login" 
+                  underline="hover"
+                  sx={{ 
+                    color: '#1976d2',
+                    fontWeight: 500
+                  }}
+                >
                   로그인
                 </Link>
               </Typography>
             </Box>
           </Box>
-        </CardContent>
-      </Card>
+      </Box>
     </Box>
   );
 };

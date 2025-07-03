@@ -9,11 +9,6 @@ export interface User extends LegacyTimestampedEntity {
   birthDate?: string;
   gender: 'MALE' | 'FEMALE' | 'OTHER';
   joinYear: number;
-  major?: string;
-  department?: string;
-  position?: string;
-  responsibility?: string;
-  remarks?: string;
   uniqueCode?: string;
   status: 'ACTIVE' | 'LEAVE_OF_ABSENCE' | 'INACTIVE';
   role: Role;
@@ -39,16 +34,11 @@ export interface SignupRequest {
   email: string;
   password: string;
   confirmPassword: string;
-  phoneNumber?: string;
+  phoneNumber: string;
   birthDate: string;
   gender: 'MALE' | 'FEMALE' | 'OTHER';
   joinYear: number;
-  major?: string;
-  department?: string;
-  position?: string;
-  responsibility?: string;
-  remarks?: string;
-  uniqueCode?: string;
+  uniqueCode: string;
   teamId?: number;
 }
 

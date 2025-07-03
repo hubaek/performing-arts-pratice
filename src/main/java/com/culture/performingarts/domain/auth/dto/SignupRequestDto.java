@@ -34,7 +34,8 @@ public class SignupRequestDto {
     @NotBlank(message = "비밀번호 확인은 필수입니다")
     private String confirmPassword;
     
-    @Pattern(regexp = "^\\d{3}-\\d{4}-\\d{4}$", message = "연락처는 000-0000-0000 형식으로 입력해주세요")
+    @NotBlank(message = "전화번호는 필수입니다")
+    @Pattern(regexp = "^010-\\d{4}-\\d{4}$", message = "전화번호는 010-0000-0000 형식으로 입력해주세요")
     private String phoneNumber;
     
     @NotNull(message = "생년월일은 필수입니다")
@@ -49,21 +50,9 @@ public class SignupRequestDto {
     @Max(value = 2100, message = "입과년도는 2100년 이전이어야 합니다")
     private Integer joinYear;
     
-    @Size(max = 50, message = "전공은 50자를 초과할 수 없습니다")
-    private String major;
     
-    @Size(max = 50, message = "소속은 50자를 초과할 수 없습니다")
-    private String department;
-    
-    @Size(max = 50, message = "직책은 50자를 초과할 수 없습니다")
-    private String position;
-    
-    @Size(max = 100, message = "업무/담당은 100자를 초과할 수 없습니다")
-    private String responsibility;
-    
-    @Size(max = 500, message = "비고는 500자를 초과할 수 없습니다")
-    private String remarks;
-    
+    @NotBlank(message = "고유번호는 필수입니다")
+    @Pattern(regexp = "^\\d{8}-\\d{5}$", message = "고유번호는 00000000-00000 형식으로 입력해주세요")
     @Size(max = 20, message = "고유번호는 20자를 초과할 수 없습니다")
     private String uniqueCode;
     
@@ -72,8 +61,7 @@ public class SignupRequestDto {
     @Builder
     public SignupRequestDto(String name, String email, String password, String confirmPassword,
                         String phoneNumber, LocalDate birthDate, Gender gender, Integer joinYear,
-                        String major, String department, String position, String responsibility,
-                        String remarks, String uniqueCode, Long teamId) {
+                        String uniqueCode, Long teamId) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -82,11 +70,6 @@ public class SignupRequestDto {
         this.birthDate = birthDate;
         this.gender = gender;
         this.joinYear = joinYear;
-        this.major = major;
-        this.department = department;
-        this.position = position;
-        this.responsibility = responsibility;
-        this.remarks = remarks;
         this.uniqueCode = uniqueCode;
         this.teamId = teamId;
     }
