@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProfile name="!prod">
+        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+        
+        <!-- 개발환경: 콘솔 및 파일 로그 -->
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>logs/application.log</file>
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                <charset>UTF-8</charset>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>logs/application.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                    <maxFileSize>10MB</maxFileSize>
+                </timeBasedFileNamingAndTriggeringPolicy>
+                <maxHistory>30</maxHistory>
+                <totalSizeCap>1GB</totalSizeCap>
+            </rollingPolicy>
+        </appender>
+        
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+    
+    <springProfile name="prod">
+        <!-- 운영환경: JSON 구조화 로깅 -->
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <timestamp>
+                        <timeZone>Asia/Seoul</timeZone>
+                        <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</pattern>
+                    </timestamp>
+                    <logLevel/>
+                    <loggerName/>
+                    <message/>
+                    <mdc/>
+                    <arguments/>
+                    <stackTrace/>
+                </providers>
+            </encoder>
+        </appender>
+        
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>logs/application.log</file>
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <timestamp>
+                        <timeZone>Asia/Seoul</timeZone>
+                        <pattern>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</pattern>
+                    </timestamp>
+                    <logLevel/>
+                    <loggerName/>
+                    <message/>
+                    <mdc/>
+                    <arguments/>
+                    <stackTrace/>
+                </providers>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>logs/application.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                    <maxFileSize>50MB</maxFileSize>
+                </timeBasedFileNamingAndTriggeringPolicy>
+                <maxHistory>30</maxHistory>
+                <totalSizeCap>5GB</totalSizeCap>
+            </rollingPolicy>
+        </appender>
+        
+        <!-- 비동기 로깅 -->
+        <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+            <queueSize>512</queueSize>
+            <discardingThreshold>0</discardingThreshold>
+            <includeCallerData>false</includeCallerData>
+            <appender-ref ref="FILE"/>
+        </appender>
+        
+        <root level="INFO">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="ASYNC_FILE"/>
+        </root>
+    </springProfile>
+    
+    <!-- 특정 로거 설정 -->
+    <logger name="org.springframework.security.access.vote" level="ERROR" additivity="false">
+        <appender-ref ref="FILE"/>
+    </logger>
+    
+    <logger name="org.springframework.security.web.access.intercept.FilterSecurityInterceptor" level="ERROR" additivity="false">
+        <appender-ref ref="FILE"/>
+    </logger>
+    
+    <logger name="com.culture.performingarts" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+    
+    <!-- 슬로우 쿼리 모니터링 -->
+    <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+        <springProfile name="dev">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </springProfile>
+        <springProfile name="prod">
+            <appender-ref ref="ASYNC_FILE"/>
+        </springProfile>
+    </logger>
+</configuration>
