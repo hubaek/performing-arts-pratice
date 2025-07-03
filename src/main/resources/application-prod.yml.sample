@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://localhost:3306/performing_arts}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: false
+
+server:
+  port: ${PORT:8080}
+
+logging:
+  level:
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    com.culture.performingarts: INFO
+    org.hibernate.SQL: OFF
+    org.hibernate.type.descriptor.sql.BasicBinder: OFF
+    org.springframework.security.access.vote: ERROR
