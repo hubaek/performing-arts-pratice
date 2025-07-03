@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Card,
   CardContent,
@@ -24,12 +24,12 @@ const TeamStatsTable: React.FC<TeamStatsTableProps> = ({
   data, 
   title = "팀별 상세 통계" 
 }) => {
-  const getAttendanceRateColor = (rate: number): "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" => {
+  const getAttendanceRateColor = useCallback((rate: number): "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" => {
     if (rate >= 90) return 'success';
     if (rate >= 80) return 'info';
     if (rate >= 70) return 'warning';
     return 'error';
-  };
+  }, []);
 
   return (
     <Card sx={{ height: '100%' }}>
@@ -54,6 +54,7 @@ const TeamStatsTable: React.FC<TeamStatsTableProps> = ({
                   key={team.teamId}
                   hover
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  aria-label={`${team.teamName} 팀 통계: 전체 ${team.memberCount}명, 활성 ${team.activeMemberCount}명, 출석률 ${team.averageAttendanceRate.toFixed(1)}%`}
                 >
                   <TableCell component="th" scope="row">
                     <Typography variant="subtitle2" fontWeight="bold">

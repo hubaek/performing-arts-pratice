@@ -15,6 +15,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -182,9 +184,9 @@ public class DashboardService {
         }
         
         Object[] result = stats.get(0);
-        Long totalParticipations = ((Number) result[0]).longValue();
-        Long attendanceCount = ((Number) result[1]).longValue();
-        Long lateCount = ((Number) result[2]).longValue();
+        Long totalParticipations = result[0] != null ? ((Number) result[0]).longValue() : 0L;
+        Long attendanceCount = result[1] != null ? ((Number) result[1]).longValue() : 0L;
+        Long lateCount = result[2] != null ? ((Number) result[2]).longValue() : 0L;
         
         return totalParticipations > 0 
             ? ((double) (attendanceCount + lateCount) / totalParticipations) * 100 
@@ -196,6 +198,8 @@ public class DashboardService {
         List<Object[]> results = practiceRepository.findMonthlyPracticeCount(startDate);
         
         return results.stream()
+                .filter(Objects::nonNull)
+                .filter(result -> result.length >= 2 && result[0] != null && result[1] != null)
                 .map(result -> PracticeStatisticsDto.MonthlyPracticeCountDto.builder()
                         .month((String) result[0])
                         .practiceCount(((Number) result[1]).longValue())
@@ -207,8 +211,10 @@ public class DashboardService {
         List<Object[]> results = practiceRepository.findPracticeCountAndAttendanceRateByLocation();
         
         return results.stream()
+                .filter(Objects::nonNull)
+                .filter(result -> result.length >= 3)
                 .map(result -> PracticeStatisticsDto.LocationPracticeCountDto.builder()
-                        .location(result[0] != null ? (String) result[0] : "")
+                        .location(result[0] != null ? (String) result[0] : "알 수 없음")
                         .practiceCount(result[1] != null ? ((Number) result[1]).longValue() : 0L)
                         .averageAttendanceRate(result[2] != null ? ((Number) result[2]).doubleValue() : 0.0)
                         .build())
@@ -220,10 +226,13 @@ public class DashboardService {
         List<Object[]> attendanceRates = participationRepository.findAttendanceRateByDepartment();
         
         return results.stream()
+                .filter(Objects::nonNull)
+                .filter(result -> result.length >= 2 && result[0] != null && result[1] != null)
                 .map(result -> {
                     String department = (String) result[0];
                     Double attendanceRate = attendanceRates.stream()
-                            .filter(ar -> department.equals(ar[0]))
+                            .filter(Objects::nonNull)
+                            .filter(ar -> ar.length >= 2 && department.equals(ar[0]) && ar[1] != null)
                             .map(ar -> ((Number) ar[1]).doubleValue())
                             .findFirst()
                             .orElse(0.0);
@@ -241,6 +250,8 @@ public class DashboardService {
         List<Object[]> results = memberRepository.findMemberCountByJoinYear(MemberStatus.ACTIVE);
         
         return results.stream()
+                .filter(Objects::nonNull)
+                .filter(result -> result.length >= 2)
                 .map(result -> MemberStatisticsDto.JoinYearMemberCountDto.builder()
                         .joinYear(result[0] != null ? ((Number) result[0]).intValue() : 0)
                         .memberCount(result[1] != null ? ((Number) result[1]).longValue() : 0L)
@@ -253,8 +264,10 @@ public class DashboardService {
         List<Object[]> results = memberRepository.findMonthlyNewMemberCount(startDate);
         
         return results.stream()
+                .filter(Objects::nonNull)
+                .filter(result -> result.length >= 2)
                 .map(result -> MemberStatisticsDto.MonthlyNewMemberDto.builder()
-                        .month(result[0] != null ? (String) result[0] : "")
+                        .month(result[0] != null ? (String) result[0] : "알 수 없음")
                         .newMemberCount(result[1] != null ? ((Number) result[1]).longValue() : 0L)
                         .build())
                 .collect(Collectors.toList());
@@ -264,12 +277,14 @@ public class DashboardService {
         List<Object[]> results = participationRepository.findTopAttendanceMembers(limit);
         
         return results.stream()
+                .filter(Objects::nonNull)
+                .filter(result -> result.length >= 5 && result[0] != null && result[1] != null)
                 .map(result -> MemberStatisticsDto.TopAttendanceMemberDto.builder()
                         .memberId(((Number) result[0]).longValue())
                         .memberName((String) result[1])
-                        .department((String) result[2])
-                        .totalPractices(((Number) result[3]).longValue())
-                        .attendanceRate(((Number) result[4]).doubleValue())
+                        .department(result[2] != null ? (String) result[2] : "알 수 없음")
+                        .totalPractices(result[3] != null ? ((Number) result[3]).longValue() : 0L)
+                        .attendanceRate(result[4] != null ? ((Number) result[4]).doubleValue() : 0.0)
                         .build())
                 .collect(Collectors.toList());
     }
@@ -285,6 +300,8 @@ public class DashboardService {
         List<Object[]> results = teamRepository.findTeamDetailStats(startOfMonth);
         
         return results.stream()
+                .filter(Objects::nonNull)
+                .filter(result -> result.length >= 7 && result[0] != null && result[1] != null)
                 .map(result -> {
                     // 팀별 평균 출석률은 별도 계산 필요
                     Double avgAttendanceRate = calculateTeamAttendanceRate(((Number) result[0]).longValue());
@@ -292,11 +309,11 @@ public class DashboardService {
                     return TeamStatisticsDto.TeamDetailStatDto.builder()
                             .teamId(((Number) result[0]).longValue())
                             .teamName((String) result[1])
-                            .leader((String) result[2])
-                            .memberCount(((Number) result[3]).longValue())
-                            .activeMemberCount(((Number) result[4]).longValue())
-                            .totalPractices(((Number) result[5]).longValue())
-                            .thisMonthPractices(((Number) result[6]).longValue())
+                            .leader(result[2] != null ? (String) result[2] : "알 수 없음")
+                            .memberCount(result[3] != null ? ((Number) result[3]).longValue() : 0L)
+                            .activeMemberCount(result[4] != null ? ((Number) result[4]).longValue() : 0L)
+                            .totalPractices(result[5] != null ? ((Number) result[5]).longValue() : 0L)
+                            .thisMonthPractices(result[6] != null ? ((Number) result[6]).longValue() : 0L)
                             .averageAttendanceRate(avgAttendanceRate)
                             .build();
                 })

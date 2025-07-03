@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Card,
   CardContent,
@@ -24,19 +24,19 @@ const TopAttendanceList: React.FC<TopAttendanceListProps> = ({
   data, 
   title = "출석률 상위 회원" 
 }) => {
-  const getAvatarColor = (index: number) => {
+  const getAvatarColor = useCallback((index: number) => {
     if (index === 0) return 'gold';
     if (index === 1) return 'silver';
     if (index === 2) return '#cd7f32'; // bronze
     return 'grey';
-  };
+  }, []);
 
-  const getRankChipColor = (index: number): "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" => {
+  const getRankChipColor = useCallback((index: number): "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" => {
     if (index === 0) return 'warning'; // gold
     if (index === 1) return 'info'; // silver
     if (index === 2) return 'success'; // bronze
     return 'default';
-  };
+  }, []);
 
   return (
     <Card sx={{ height: '100%' }}>

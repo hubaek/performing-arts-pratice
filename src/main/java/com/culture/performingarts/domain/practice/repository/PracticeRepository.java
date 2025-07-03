@@ -119,7 +119,7 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
      * @param month 월
      * @return 해당 월의 연습 목록
      */
-    @Query("SELECT p FROM Practice p WHERE YEAR(p.practiceDate) = :year AND MONTH(p.practiceDate) = :month ORDER BY p.practiceDate")
+    @Query("SELECT p FROM Practice p WHERE EXTRACT(YEAR FROM p.practiceDate) = :year AND EXTRACT(MONTH FROM p.practiceDate) = :month ORDER BY p.practiceDate")
     List<Practice> findByYearAndMonth(@Param("year") int year, @Param("month") int month);
 
     /**
@@ -156,40 +156,40 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
     /**
      * 월별 연습 수 조회 (최근 N개월)
      */
-    @Query("SELECT CONCAT(YEAR(p.practiceDate), '-', " +
-           "CASE WHEN MONTH(p.practiceDate) < 10 THEN CONCAT('0', MONTH(p.practiceDate)) ELSE MONTH(p.practiceDate) END) as month, " +
+    @Query("SELECT CONCAT(EXTRACT(YEAR FROM p.practiceDate), '-', " +
+           "CASE WHEN EXTRACT(MONTH FROM p.practiceDate) < 10 THEN CONCAT('0', EXTRACT(MONTH FROM p.practiceDate)) ELSE EXTRACT(MONTH FROM p.practiceDate) END) as month, " +
            "COUNT(p) " +
            "FROM Practice p " +
            "WHERE p.practiceDate >= :startDate " +
-           "GROUP BY YEAR(p.practiceDate), MONTH(p.practiceDate) " +
-           "ORDER BY YEAR(p.practiceDate) DESC, MONTH(p.practiceDate) DESC")
+           "GROUP BY EXTRACT(YEAR FROM p.practiceDate), EXTRACT(MONTH FROM p.practiceDate) " +
+           "ORDER BY EXTRACT(YEAR FROM p.practiceDate) DESC, EXTRACT(MONTH FROM p.practiceDate) DESC")
     List<Object[]> findMonthlyPracticeCount(@Param("startDate") LocalDate startDate);
     
     /**
      * 주별 연습 수 조회 (최근 N주)
      */
-    @Query("SELECT CONCAT(YEAR(p.practiceDate), '-', " +
-           "CASE WHEN (WEEK(p.practiceDate) + 1) < 10 THEN CONCAT('0', (WEEK(p.practiceDate) + 1)) ELSE (WEEK(p.practiceDate) + 1) END) as week, " +
+    @Query("SELECT CONCAT(EXTRACT(YEAR FROM p.practiceDate), '-', " +
+           "CASE WHEN (EXTRACT(WEEK FROM p.practiceDate) + 1) < 10 THEN CONCAT('0', (EXTRACT(WEEK FROM p.practiceDate) + 1)) ELSE (EXTRACT(WEEK FROM p.practiceDate) + 1) END) as week, " +
            "COUNT(p), " +
            "AVG(CASE WHEN p.totalParticipants > 0 THEN (p.presentCount + p.lateCount) * 100.0 / p.totalParticipants ELSE 0 END) " +
            "FROM Practice p " +
            "WHERE p.practiceDate >= :startDate " +
-           "GROUP BY YEAR(p.practiceDate), WEEK(p.practiceDate) " +
-           "ORDER BY YEAR(p.practiceDate) DESC, WEEK(p.practiceDate) DESC")
+           "GROUP BY EXTRACT(YEAR FROM p.practiceDate), EXTRACT(WEEK FROM p.practiceDate) " +
+           "ORDER BY EXTRACT(YEAR FROM p.practiceDate) DESC, EXTRACT(WEEK FROM p.practiceDate) DESC")
     List<Object[]> findWeeklyPracticeStats(@Param("startDate") LocalDate startDate);
     
     /**
      * 월별 트렌드 통계 조회
      */
-    @Query("SELECT CONCAT(YEAR(p.practiceDate), '-', " +
-           "CASE WHEN MONTH(p.practiceDate) < 10 THEN CONCAT('0', MONTH(p.practiceDate)) ELSE MONTH(p.practiceDate) END) as month, " +
+    @Query("SELECT CONCAT(EXTRACT(YEAR FROM p.practiceDate), '-', " +
+           "CASE WHEN EXTRACT(MONTH FROM p.practiceDate) < 10 THEN CONCAT('0', EXTRACT(MONTH FROM p.practiceDate)) ELSE EXTRACT(MONTH FROM p.practiceDate) END) as month, " +
            "COUNT(p) as practiceCount, " +
            "SUM(CASE WHEN p.isCompleted = true THEN 1 ELSE 0 END) as completedCount, " +
            "AVG(CASE WHEN p.totalParticipants > 0 THEN (p.presentCount + p.lateCount) * 100.0 / p.totalParticipants ELSE 0 END) as avgAttendanceRate " +
            "FROM Practice p " +
            "WHERE p.practiceDate >= :startDate " +
-           "GROUP BY YEAR(p.practiceDate), MONTH(p.practiceDate) " +
-           "ORDER BY YEAR(p.practiceDate) DESC, MONTH(p.practiceDate) DESC")
+           "GROUP BY EXTRACT(YEAR FROM p.practiceDate), EXTRACT(MONTH FROM p.practiceDate) " +
+           "ORDER BY EXTRACT(YEAR FROM p.practiceDate) DESC, EXTRACT(MONTH FROM p.practiceDate) DESC")
     List<Object[]> findMonthlyTrendStats(@Param("startDate") LocalDate startDate);
     
     /**
