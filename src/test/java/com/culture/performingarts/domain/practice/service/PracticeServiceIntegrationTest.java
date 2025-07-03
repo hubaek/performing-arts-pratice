@@ -7,6 +7,7 @@ import com.culture.performingarts.domain.practice.repository.PracticeRepository;
 import com.culture.performingarts.domain.member.entity.Member;
 import com.culture.performingarts.domain.member.repository.MemberRepository;
 import com.culture.performingarts.domain.member.enums.MemberStatus;
+import com.culture.performingarts.domain.member.enums.Gender;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ class PracticeServiceIntegrationTest {
                 .password("password123")
                 .phoneNumber("010-1234-5678")
                 .birthDate(LocalDate.of(1990, 1, 1))
+                .gender(Gender.MALE)
                 .joinYear(2020)
                 .department("연극과")
                 .major("연기")
