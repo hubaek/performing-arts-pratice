@@ -30,7 +30,9 @@ interface SignupFormData {
   password: string;
   confirmPassword: string;
   phoneNumber: string;
-  birthDate: string;
+  birthYear: string;
+  birthMonth: string;
+  birthDay: string;
   gender: 'MALE' | 'FEMALE' | 'OTHER';
   joinYear: number;
   uniqueCode: string;
@@ -49,7 +51,10 @@ const validateSignupForm = (formData: SignupFormData) => {
   if (!formData.name) errors.name = '이름을 입력해주세요';
   if (!formData.email) errors.email = '이메일을 입력해주세요';
   if (!formData.password) errors.password = '비밀번호를 입력해주세요';
-  if (!formData.birthDate) errors.birthDate = '생년월일을 입력해주세요';
+  if (!formData.phoneNumber) errors.phoneNumber = '전화번호를 입력해주세요';
+  if (!formData.birthYear) errors.birthYear = '출생년도를 선택해주세요';
+  if (!formData.birthMonth) errors.birthMonth = '출생월을 선택해주세요';
+  if (!formData.birthDay) errors.birthDay = '출생일을 선택해주세요';
   if (!formData.uniqueCode) errors.uniqueCode = '고유번호를 입력해주세요';
 
   // 이메일 형식 검증
@@ -62,14 +67,34 @@ const validateSignupForm = (formData: SignupFormData) => {
     errors.password = `비밀번호는 ${MIN_PASSWORD_LENGTH}자 이상이어야 합니다`;
   }
 
-  // 생년월일 형식 검증
-  if (formData.birthDate && !/^\d{4}-\d{2}-\d{2}$/.test(formData.birthDate)) {
-    errors.birthDate = '올바른 날짜 형식을 입력해주세요 (YYYY-MM-DD)';
+  // 생년월일 유효성 검증
+  if (formData.birthYear && formData.birthMonth && formData.birthDay) {
+    const year = parseInt(formData.birthYear);
+    const month = parseInt(formData.birthMonth);
+    const day = parseInt(formData.birthDay);
+    
+    if (year < 1900 || year > new Date().getFullYear()) {
+      errors.birthYear = '올바른 출생년도를 선택해주세요';
+    }
+    
+    const date = new Date(year, month - 1, day);
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+      errors.birthDay = '존재하지 않는 날짜입니다';
+    }
+    
+    if (date > new Date()) {
+      errors.birthDay = '미래 날짜는 선택할 수 없습니다';
+    }
   }
 
-  // 전화번호 형식 검증 (선택사항)
-  if (formData.phoneNumber && !/^\d{3}-\d{4}-\d{4}$/.test(formData.phoneNumber)) {
-    errors.phoneNumber = '올바른 전화번호 형식을 입력해주세요 (000-0000-0000)';
+  // 전화번호 형식 검증
+  if (formData.phoneNumber && !/^010-\d{4}-\d{4}$/.test(formData.phoneNumber)) {
+    errors.phoneNumber = '올바른 전화번호 형식을 입력해주세요 (010-1234-1234)';
+  }
+
+  // 고유번호 형식 검증 (6자리-5자리)
+  if (formData.uniqueCode && !/^\d{6}-\d{5}$/.test(formData.uniqueCode)) {
+    errors.uniqueCode = '올바른 고유번호 형식을 입력해주세요 (321110-00036)';
   }
 
   // 비밀번호 확인 검증
@@ -92,13 +117,16 @@ const SignupForm: React.FC = () => {
     password: '',
     confirmPassword: '',
     phoneNumber: '',
-    birthDate: '',
+    birthYear: '',
+    birthMonth: '',
+    birthDay: '',
     gender: 'MALE' as 'MALE' | 'FEMALE' | 'OTHER',
     joinYear: new Date().getFullYear(),
     uniqueCode: '',
     teamId: ''
   });
   const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [touchedFields, setTouchedFields] = useState<{[key: string]: boolean}>({});
   const [teams, setTeams] = useState<TeamListItem[]>([]);
   const [loadingTeams, setLoadingTeams] = useState(true);
 
@@ -126,12 +154,31 @@ const SignupForm: React.FC = () => {
       [name]: value
     }));
     
-    if (formErrors[name]) {
+    // 이미 touched된 필드만 실시간 검증
+    if (touchedFields[name]) {
+      const newFormData = { ...formData, [name]: value };
+      const { errors } = validateSignupForm(newFormData);
       setFormErrors(prev => ({
         ...prev,
-        [name]: ''
+        [name]: errors[name] || ''
       }));
     }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const name = e.target.name as string;
+    
+    setTouchedFields(prev => ({
+      ...prev,
+      [name]: true
+    }));
+    
+    // 필드 검증 수행
+    const { errors } = validateSignupForm(formData);
+    setFormErrors(prev => ({
+      ...prev,
+      [name]: errors[name] || ''
+    }));
   };
 
   const validateForm = (): boolean => {
@@ -148,8 +195,19 @@ const SignupForm: React.FC = () => {
     }
 
     try {
+      // 생년월일 조합
+      const birthDate = `${formData.birthYear}-${formData.birthMonth.padStart(2, '0')}-${formData.birthDay.padStart(2, '0')}`;
+      
       const signupData = {
-        ...formData,
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        phoneNumber: formData.phoneNumber,
+        birthDate: birthDate,
+        gender: formData.gender,
+        joinYear: formData.joinYear,
+        uniqueCode: formData.uniqueCode,
         teamId: formData.teamId ? Number(formData.teamId) : undefined
       };
       
@@ -188,6 +246,7 @@ const SignupForm: React.FC = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
+              onBlur={handleBlur}
               error={!!formErrors.name}
               helperText={formErrors.name}
               margin="normal"
@@ -201,6 +260,7 @@ const SignupForm: React.FC = () => {
               type="email"
               value={formData.email}
               onChange={handleChange}
+              onBlur={handleBlur}
               error={!!formErrors.email}
               helperText={formErrors.email}
               margin="normal"
@@ -214,6 +274,7 @@ const SignupForm: React.FC = () => {
               type="password"
               value={formData.password}
               onChange={handleChange}
+              onBlur={handleBlur}
               error={!!formErrors.password}
               helperText={formErrors.password}
               margin="normal"
@@ -227,6 +288,7 @@ const SignupForm: React.FC = () => {
               type="password"
               value={formData.confirmPassword}
               onChange={handleChange}
+              onBlur={handleBlur}
               error={!!formErrors.confirmPassword}
               helperText={formErrors.confirmPassword}
               margin="normal"
@@ -239,27 +301,75 @@ const SignupForm: React.FC = () => {
               name="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleChange}
+              onBlur={handleBlur}
               error={!!formErrors.phoneNumber}
               helperText={formErrors.phoneNumber}
               margin="normal"
-              placeholder="000-0000-0000"
+              placeholder="010-1234-1234"
+              required
             />
 
-            <TextField
-              fullWidth
-              label="생년월일"
-              name="birthDate"
-              type="date"
-              value={formData.birthDate}
-              onChange={handleChange}
-              error={!!formErrors.birthDate}
-              helperText={formErrors.birthDate}
-              margin="normal"
-              required
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
+            <Typography variant="body1" sx={{ mt: 2, mb: 1, fontWeight: 'medium' }}>
+              생년월일 *
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+              <FormControl sx={{ minWidth: 120 }} error={!!formErrors.birthYear}>
+                <InputLabel>년도</InputLabel>
+                <Select
+                  name="birthYear"
+                  value={formData.birthYear}
+                  onChange={handleChange}
+                  label="년도"
+                >
+                  {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                    <MenuItem key={year} value={year.toString()}>{year}년</MenuItem>
+                  ))}
+                </Select>
+                {formErrors.birthYear && (
+                  <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+                    {formErrors.birthYear}
+                  </Typography>
+                )}
+              </FormControl>
+              
+              <FormControl sx={{ minWidth: 80 }} error={!!formErrors.birthMonth}>
+                <InputLabel>월</InputLabel>
+                <Select
+                  name="birthMonth"
+                  value={formData.birthMonth}
+                  onChange={handleChange}
+                  label="월"
+                >
+                  {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
+                    <MenuItem key={month} value={month.toString()}>{month}월</MenuItem>
+                  ))}
+                </Select>
+                {formErrors.birthMonth && (
+                  <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+                    {formErrors.birthMonth}
+                  </Typography>
+                )}
+              </FormControl>
+              
+              <FormControl sx={{ minWidth: 80 }} error={!!formErrors.birthDay}>
+                <InputLabel>일</InputLabel>
+                <Select
+                  name="birthDay"
+                  value={formData.birthDay}
+                  onChange={handleChange}
+                  label="일"
+                >
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                    <MenuItem key={day} value={day.toString()}>{day}일</MenuItem>
+                  ))}
+                </Select>
+                {formErrors.birthDay && (
+                  <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.5 }}>
+                    {formErrors.birthDay}
+                  </Typography>
+                )}
+              </FormControl>
+            </Box>
 
             <FormControl fullWidth margin="normal">
               <InputLabel>성별</InputLabel>
@@ -292,9 +402,11 @@ const SignupForm: React.FC = () => {
               name="uniqueCode"
               value={formData.uniqueCode}
               onChange={handleChange}
+              onBlur={handleBlur}
               error={!!formErrors.uniqueCode}
               helperText={formErrors.uniqueCode}
               margin="normal"
+              placeholder="321110-00036"
               required
             />
 

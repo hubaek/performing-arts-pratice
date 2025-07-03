@@ -34,11 +34,11 @@ export interface SignupRequest {
   email: string;
   password: string;
   confirmPassword: string;
-  phoneNumber?: string;
+  phoneNumber: string;
   birthDate: string;
   gender: 'MALE' | 'FEMALE' | 'OTHER';
   joinYear: number;
-  uniqueCode?: string;
+  uniqueCode: string;
   teamId?: number;
 }
 
