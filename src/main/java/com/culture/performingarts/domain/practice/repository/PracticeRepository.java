@@ -96,7 +96,7 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
      * @param keyword 검색 키워드
      * @return 검색된 연습 목록
      */
-    @Query("SELECT p FROM Practice p WHERE p.title LIKE %:keyword% OR p.content LIKE %:keyword% ORDER BY p.practiceDate DESC")
+    @Query("SELECT p FROM Practice p WHERE p.title LIKE CONCAT('%', :keyword, '%') OR p.content LIKE CONCAT('%', :keyword, '%') ORDER BY p.practiceDate DESC")
     List<Practice> searchByKeyword(@Param("keyword") String keyword);
 
     /**
@@ -156,8 +156,8 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
     /**
      * 월별 연습 수 조회 (최근 N개월)
      */
-    @Query("SELECT CONCAT(EXTRACT(YEAR FROM p.practiceDate), '-', " +
-           "CASE WHEN EXTRACT(MONTH FROM p.practiceDate) < 10 THEN CONCAT('0', EXTRACT(MONTH FROM p.practiceDate)) ELSE EXTRACT(MONTH FROM p.practiceDate) END) as month, " +
+    @Query("SELECT CONCAT(CAST(EXTRACT(YEAR FROM p.practiceDate) AS string), '-', " +
+           "CASE WHEN EXTRACT(MONTH FROM p.practiceDate) < 10 THEN CONCAT('0', CAST(EXTRACT(MONTH FROM p.practiceDate) AS string)) ELSE CAST(EXTRACT(MONTH FROM p.practiceDate) AS string) END) as month, " +
            "COUNT(p) " +
            "FROM Practice p " +
            "WHERE p.practiceDate >= :startDate " +
@@ -168,21 +168,21 @@ public interface PracticeRepository extends JpaRepository<Practice, Long> {
     /**
      * 주별 연습 수 조회 (최근 N주)
      */
-    @Query("SELECT CONCAT(EXTRACT(YEAR FROM p.practiceDate), '-', " +
-           "CASE WHEN (EXTRACT(WEEK FROM p.practiceDate) + 1) < 10 THEN CONCAT('0', (EXTRACT(WEEK FROM p.practiceDate) + 1)) ELSE (EXTRACT(WEEK FROM p.practiceDate) + 1) END) as week, " +
+    @Query("SELECT CONCAT(CAST(EXTRACT(YEAR FROM p.practiceDate) AS string), '-', " +
+           "CASE WHEN (WEEK(p.practiceDate) + 1) < 10 THEN CONCAT('0', CAST((WEEK(p.practiceDate) + 1) AS string)) ELSE CAST((WEEK(p.practiceDate) + 1) AS string) END) as week, " +
            "COUNT(p), " +
            "AVG(CASE WHEN p.totalParticipants > 0 THEN (p.presentCount + p.lateCount) * 100.0 / p.totalParticipants ELSE 0 END) " +
            "FROM Practice p " +
            "WHERE p.practiceDate >= :startDate " +
-           "GROUP BY EXTRACT(YEAR FROM p.practiceDate), EXTRACT(WEEK FROM p.practiceDate) " +
-           "ORDER BY EXTRACT(YEAR FROM p.practiceDate) DESC, EXTRACT(WEEK FROM p.practiceDate) DESC")
+           "GROUP BY EXTRACT(YEAR FROM p.practiceDate), WEEK(p.practiceDate) " +
+           "ORDER BY EXTRACT(YEAR FROM p.practiceDate) DESC, WEEK(p.practiceDate) DESC")
     List<Object[]> findWeeklyPracticeStats(@Param("startDate") LocalDate startDate);
     
     /**
      * 월별 트렌드 통계 조회
      */
-    @Query("SELECT CONCAT(EXTRACT(YEAR FROM p.practiceDate), '-', " +
-           "CASE WHEN EXTRACT(MONTH FROM p.practiceDate) < 10 THEN CONCAT('0', EXTRACT(MONTH FROM p.practiceDate)) ELSE EXTRACT(MONTH FROM p.practiceDate) END) as month, " +
+    @Query("SELECT CONCAT(CAST(EXTRACT(YEAR FROM p.practiceDate) AS string), '-', " +
+           "CASE WHEN EXTRACT(MONTH FROM p.practiceDate) < 10 THEN CONCAT('0', CAST(EXTRACT(MONTH FROM p.practiceDate) AS string)) ELSE CAST(EXTRACT(MONTH FROM p.practiceDate) AS string) END) as month, " +
            "COUNT(p) as practiceCount, " +
            "SUM(CASE WHEN p.isCompleted = true THEN 1 ELSE 0 END) as completedCount, " +
            "AVG(CASE WHEN p.totalParticipants > 0 THEN (p.presentCount + p.lateCount) * 100.0 / p.totalParticipants ELSE 0 END) as avgAttendanceRate " +
