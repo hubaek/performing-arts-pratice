@@ -191,6 +191,7 @@ const SignupForm: React.FC = () => {
     e.preventDefault();
     
     if (!validateForm()) {
+      alert('입력한 정보를 다시 확인해주세요.');
       return;
     }
 
@@ -212,9 +213,11 @@ const SignupForm: React.FC = () => {
       };
       
       await signup(signupData);
+      alert('회원가입이 완료되었습니다! 환영합니다.');
       navigate('/');
     } catch (error) {
       console.error('Signup failed:', error);
+      alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
 
@@ -225,10 +228,10 @@ const SignupForm: React.FC = () => {
       alignItems="center"
       minHeight="100vh"
       bgcolor="#f5f5f5"
-      py={4}
+      py={2}
     >
       <Card sx={{ maxWidth: 600, width: '100%', mx: 2 }}>
-        <CardContent sx={{ p: 4 }}>
+        <CardContent sx={{ p: 3 }}>
           <Typography variant="h4" component="h1" gutterBottom align="center">
             회원가입
           </Typography>
@@ -242,20 +245,20 @@ const SignupForm: React.FC = () => {
           <Box component="form" onSubmit={handleSubmit} noValidate>
             <TextField
               fullWidth
-              label="이름"
+              label={<span>이름 <span style={{ color: 'red' }}>*</span></span>}
               name="name"
               value={formData.name}
               onChange={handleChange}
               onBlur={handleBlur}
               error={!!formErrors.name}
               helperText={formErrors.name}
-              margin="normal"
+              margin="dense"
               required
             />
 
             <TextField
               fullWidth
-              label="이메일"
+              label={<span>이메일 <span style={{ color: 'red' }}>*</span></span>}
               name="email"
               type="email"
               value={formData.email}
@@ -263,13 +266,13 @@ const SignupForm: React.FC = () => {
               onBlur={handleBlur}
               error={!!formErrors.email}
               helperText={formErrors.email}
-              margin="normal"
+              margin="dense"
               required
             />
 
             <TextField
               fullWidth
-              label="비밀번호"
+              label={<span>비밀번호 <span style={{ color: 'red' }}>*</span></span>}
               name="password"
               type="password"
               value={formData.password}
@@ -277,13 +280,13 @@ const SignupForm: React.FC = () => {
               onBlur={handleBlur}
               error={!!formErrors.password}
               helperText={formErrors.password}
-              margin="normal"
+              margin="dense"
               required
             />
 
             <TextField
               fullWidth
-              label="비밀번호 확인"
+              label={<span>비밀번호 확인 <span style={{ color: 'red' }}>*</span></span>}
               name="confirmPassword"
               type="password"
               value={formData.confirmPassword}
@@ -291,28 +294,28 @@ const SignupForm: React.FC = () => {
               onBlur={handleBlur}
               error={!!formErrors.confirmPassword}
               helperText={formErrors.confirmPassword}
-              margin="normal"
+              margin="dense"
               required
             />
 
             <TextField
               fullWidth
-              label="전화번호"
+              label={<span>전화번호 <span style={{ color: 'red' }}>*</span></span>}
               name="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleChange}
               onBlur={handleBlur}
               error={!!formErrors.phoneNumber}
               helperText={formErrors.phoneNumber}
-              margin="normal"
+              margin="dense"
               placeholder="010-1234-1234"
               required
             />
 
-            <Typography variant="body1" sx={{ mt: 2, mb: 1, fontWeight: 'medium' }}>
-              생년월일 *
+            <Typography variant="body1" sx={{ mt: 1, mb: 0.5, fontWeight: 'medium' }}>
+              생년월일 <span style={{ color: 'red' }}>*</span>
             </Typography>
-            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+            <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
               <FormControl sx={{ minWidth: 120 }} error={!!formErrors.birthYear}>
                 <InputLabel>년도</InputLabel>
                 <Select
@@ -371,7 +374,7 @@ const SignupForm: React.FC = () => {
               </FormControl>
             </Box>
 
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth sx={{ mt: 1, mb: 1 }}>
               <InputLabel>성별</InputLabel>
               <Select
                 name="gender"
@@ -392,26 +395,26 @@ const SignupForm: React.FC = () => {
               type="number"
               value={formData.joinYear}
               onChange={handleChange}
-              margin="normal"
+              margin="dense"
             />
 
 
             <TextField
               fullWidth
-              label="고유번호"
+              label={<span>고유번호 <span style={{ color: 'red' }}>*</span></span>}
               name="uniqueCode"
               value={formData.uniqueCode}
               onChange={handleChange}
               onBlur={handleBlur}
               error={!!formErrors.uniqueCode}
               helperText={formErrors.uniqueCode}
-              margin="normal"
+              margin="dense"
               placeholder="00120314-00001"
               required
             />
 
 
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth sx={{ mt: 1, mb: 1 }}>
               <InputLabel>팀 선택</InputLabel>
               <Select
                 name="teamId"
@@ -439,7 +442,7 @@ const SignupForm: React.FC = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 2, mb: 1 }}
               disabled={loading}
               size="large"
             >
