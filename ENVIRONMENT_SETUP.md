@@ -9,6 +9,7 @@
 cp src/main/resources/application.yml.sample src/main/resources/application.yml
 cp src/main/resources/application-dev.yml.sample src/main/resources/application-dev.yml
 cp src/main/resources/application-prod.yml.sample src/main/resources/application-prod.yml
+cp src/main/resources/application-test.yml.sample src/main/resources/application-test.yml
 
 # application-dev.yml에서 YOUR_DB_PASSWORD를 실제 비밀번호로 변경
 ```
@@ -22,6 +23,22 @@ cp src/main/resources/application-prod.yml.sample src/main/resources/application
 ### 개발 환경 (dev)
 
 기본적으로 `dev` 프로필이 활성화됩니다.
+
+**특징:**
+- MySQL 데이터베이스 사용
+- DEBUG 레벨 로깅
+- SQL 쿼리 로그 출력
+- 콘솔과 파일 모두 로그 출력
+
+### 테스트 환경 (test)
+
+테스트 실행 시 자동으로 활성화되는 프로필입니다.
+
+**특징:**
+- H2 인메모리 데이터베이스 사용
+- 테스트마다 스키마 재생성 (create-drop)
+- H2 콘솔 활성화 (/h2-console)
+- 테스트 전용 로깅 설정
 
 ```bash
 ./gradlew bootRun
@@ -124,12 +141,14 @@ services:
 ```
 src/main/resources/
 ├── application.yml.sample              # 기본 설정 템플릿
-├── application-dev.yml.sample          # 개발환경 템플릿
+├── application-dev.yml.sample          # 개발환경 템플릿  
 ├── application-prod.yml.sample         # 운영환경 템플릿
+├── application-test.yml.sample         # 테스트환경 템플릿
 ├── logback-spring.xml                  # 로깅 설정
 ├── application.yml                     # 실제 기본 설정 (Git 제외)
 ├── application-dev.yml                 # 실제 개발 설정 (Git 제외)
-└── application-prod.yml                # 실제 운영 설정 (Git 제외)
+├── application-prod.yml                # 실제 운영 설정 (Git 제외)
+└── application-test.yml                # 실제 테스트 설정 (Git 제외)
 ```
 
 ## 문제 해결
