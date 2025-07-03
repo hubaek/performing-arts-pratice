@@ -261,7 +261,7 @@ const SignupForm: React.FC = () => {
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               fullWidth
-              label="이름 *"
+              label="이름"
               name="name"
               value={formData.name}
               onChange={handleChange}
@@ -292,7 +292,7 @@ const SignupForm: React.FC = () => {
 
             <TextField
               fullWidth
-              label="이메일 *"
+              label="이메일"
               name="email"
               type="email"
               value={formData.email}
@@ -324,7 +324,7 @@ const SignupForm: React.FC = () => {
 
             <TextField
               fullWidth
-              label="비밀번호 *"
+              label="비밀번호"
               name="password"
               type="password"
               value={formData.password}
@@ -356,7 +356,7 @@ const SignupForm: React.FC = () => {
 
             <TextField
               fullWidth
-              label="비밀번호 확인 *"
+              label="비밀번호 확인"
               name="confirmPassword"
               type="password"
               value={formData.confirmPassword}
@@ -388,7 +388,7 @@ const SignupForm: React.FC = () => {
 
             <TextField
               fullWidth
-              label="전화번호 *"
+              label="전화번호"
               name="phoneNumber"
               value={formData.phoneNumber}
               onChange={handleChange}
@@ -428,7 +428,7 @@ const SignupForm: React.FC = () => {
                 color: '#333'
               }}
             >
-              생년월일 *
+              생년월일
             </Typography>
             <Box sx={{ display: 'flex', gap: 1.5, mb: 2.5 }}>
               <FormControl 
@@ -611,7 +611,7 @@ const SignupForm: React.FC = () => {
 
             <TextField
               fullWidth
-              label="고유번호 *"
+              label="고유번호"
               name="uniqueCode"
               value={formData.uniqueCode}
               onChange={handleChange}
