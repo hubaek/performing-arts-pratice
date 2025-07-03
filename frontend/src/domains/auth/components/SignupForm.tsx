@@ -92,9 +92,9 @@ const validateSignupForm = (formData: SignupFormData) => {
     errors.phoneNumber = '올바른 전화번호 형식을 입력해주세요 (010-1234-1234)';
   }
 
-  // 고유번호 형식 검증 (6자리-5자리)
-  if (formData.uniqueCode && !/^\d{6}-\d{5}$/.test(formData.uniqueCode)) {
-    errors.uniqueCode = '올바른 고유번호 형식을 입력해주세요 (321110-00036)';
+  // 고유번호 형식 검증 (8자리-5자리)
+  if (formData.uniqueCode && !/^\d{8}-\d{5}$/.test(formData.uniqueCode)) {
+    errors.uniqueCode = '올바른 고유번호 형식을 입력해주세요 (00120314-00001)';
   }
 
   // 비밀번호 확인 검증
@@ -406,7 +406,7 @@ const SignupForm: React.FC = () => {
               error={!!formErrors.uniqueCode}
               helperText={formErrors.uniqueCode}
               margin="normal"
-              placeholder="321110-00036"
+              placeholder="00120314-00001"
               required
             />
 

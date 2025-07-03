@@ -52,7 +52,7 @@ public class SignupRequestDto {
     
     
     @NotBlank(message = "고유번호는 필수입니다")
-    @Pattern(regexp = "^\\d{6}-\\d{5}$", message = "고유번호는 000000-00000 형식으로 입력해주세요")
+    @Pattern(regexp = "^\\d{8}-\\d{5}$", message = "고유번호는 00000000-00000 형식으로 입력해주세요")
     @Size(max = 20, message = "고유번호는 20자를 초과할 수 없습니다")
     private String uniqueCode;
     
