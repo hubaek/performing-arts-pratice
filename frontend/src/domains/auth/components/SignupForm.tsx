@@ -33,11 +33,6 @@ interface SignupFormData {
   birthDate: string;
   gender: 'MALE' | 'FEMALE' | 'OTHER';
   joinYear: number;
-  major: string;
-  department: string;
-  position: string;
-  responsibility: string;
-  remarks: string;
   uniqueCode: string;
   teamId: string;
 }
@@ -100,11 +95,6 @@ const SignupForm: React.FC = () => {
     birthDate: '',
     gender: 'MALE' as 'MALE' | 'FEMALE' | 'OTHER',
     joinYear: new Date().getFullYear(),
-    major: '',
-    department: '',
-    position: '',
-    responsibility: '',
-    remarks: '',
     uniqueCode: '',
     teamId: ''
   });
@@ -287,7 +277,7 @@ const SignupForm: React.FC = () => {
 
             <TextField
               fullWidth
-              label="가입년도"
+              label="입과년도"
               name="joinYear"
               type="number"
               value={formData.joinYear}
@@ -295,32 +285,6 @@ const SignupForm: React.FC = () => {
               margin="normal"
             />
 
-            <TextField
-              fullWidth
-              label="전공"
-              name="major"
-              value={formData.major}
-              onChange={handleChange}
-              margin="normal"
-            />
-
-            <TextField
-              fullWidth
-              label="소속"
-              name="department"
-              value={formData.department}
-              onChange={handleChange}
-              margin="normal"
-            />
-
-            <TextField
-              fullWidth
-              label="직책"
-              name="position"
-              value={formData.position}
-              onChange={handleChange}
-              margin="normal"
-            />
 
             <TextField
               fullWidth
@@ -334,14 +298,6 @@ const SignupForm: React.FC = () => {
               required
             />
 
-            <TextField
-              fullWidth
-              label="업무/담당"
-              name="responsibility"
-              value={formData.responsibility}
-              onChange={handleChange}
-              margin="normal"
-            />
 
             <FormControl fullWidth margin="normal">
               <InputLabel>팀 선택</InputLabel>
@@ -366,16 +322,6 @@ const SignupForm: React.FC = () => {
               )}
             </FormControl>
 
-            <TextField
-              fullWidth
-              label="비고"
-              name="remarks"
-              multiline
-              rows={2}
-              value={formData.remarks}
-              onChange={handleChange}
-              margin="normal"
-            />
 
             <Button
               type="submit"
