@@ -88,16 +88,59 @@
     
     <!-- 특정 로거 설정 -->
     <logger name="org.springframework.security.access.vote" level="ERROR" additivity="false">
-        <appender-ref ref="FILE"/>
+        <springProfile name="!prod">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </springProfile>
+        <springProfile name="prod">
+            <appender-ref ref="ASYNC_FILE"/>
+        </springProfile>
     </logger>
     
     <logger name="org.springframework.security.web.access.intercept.FilterSecurityInterceptor" level="ERROR" additivity="false">
-        <appender-ref ref="FILE"/>
+        <springProfile name="!prod">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </springProfile>
+        <springProfile name="prod">
+            <appender-ref ref="ASYNC_FILE"/>
+        </springProfile>
     </logger>
     
+    <!-- 애플리케이션 로거 설정 -->
     <logger name="com.culture.performingarts" level="INFO" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/>
+        <springProfile name="!prod">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </springProfile>
+        <springProfile name="prod">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="ASYNC_FILE"/>
+        </springProfile>
+    </logger>
+    
+    <!-- JWT 관련 보안 로깅 -->
+    <logger name="com.culture.performingarts.config.security" level="WARN" additivity="false">
+        <springProfile name="!prod">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </springProfile>
+        <springProfile name="prod">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="ASYNC_FILE"/>
+        </springProfile>
+    </logger>
+    
+    <!-- 인증 관련 로깅 -->
+    <logger name="com.culture.performingarts.domain.auth" level="INFO" additivity="false">
+        <springProfile name="!prod">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </springProfile>
+        <springProfile name="prod">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="ASYNC_FILE"/>
+        </springProfile>
     </logger>
     
     <!-- 슬로우 쿼리 모니터링 -->

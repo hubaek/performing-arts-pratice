@@ -19,3 +19,5 @@ logging:
       max-file-size: 10MB
       max-history: 30
       total-size-cap: 1GB
+  performance:
+    threshold-ms: 1000  # 성능 로깅 임계값 (1초)

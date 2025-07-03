@@ -1,11 +1,13 @@
 package com.culture.performingarts.config.security;
 
+import com.culture.performingarts.global.util.SecurityMaskingUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,6 +31,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
     
+    @Value("${spring.profiles.active:dev}")
+    private String activeProfile;
+    
     @Override
     protected void doFilterInternal(HttpServletRequest request, 
                                     HttpServletResponse response, 
@@ -49,7 +54,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 log.debug("Authentication set for user: {}", username);
             }
         } catch (Exception ex) {
-            log.error("Could not set user authentication in security context", ex);
+            if ("prod".equals(activeProfile)) {
+                log.error("Could not set user authentication in security context: {}", ex.getMessage());
+            } else {
+                log.error("Could not set user authentication in security context", ex);
+            }
         }
         
         filterChain.doFilter(request, response);
