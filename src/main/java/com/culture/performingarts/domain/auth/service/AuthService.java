@@ -41,6 +41,21 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     
     /**
+     * 이메일 마스킹 처리
+     * 예: user@example.com -> u***@example.com
+     */
+    private String maskEmail(String email) {
+        if (email == null || email.length() < 3) {
+            return "***";
+        }
+        int atIndex = email.indexOf('@');
+        if (atIndex <= 1) {
+            return "***@" + email.substring(atIndex + 1);
+        }
+        return email.charAt(0) + "***@" + email.substring(atIndex + 1);
+    }
+    
+    /**
      * 로그인 처리
      */
     public AuthResponseDto login(LoginRequestDto loginRequest) {
@@ -67,7 +82,7 @@ public class AuthService {
         String accessToken = jwtTokenProvider.createAccessToken(authentication);
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
         
-        log.info("User logged in successfully");
+        log.info("User logged in successfully - email: {}", maskEmail(member.getEmail()));
         
         return AuthResponseDto.builder()
                 .accessToken(accessToken)
@@ -137,7 +152,7 @@ public class AuthService {
         String accessToken = jwtTokenProvider.createAccessToken(authentication);
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
         
-        log.info("User signed up successfully");
+        log.info("User signed up successfully - email: {}", maskEmail(savedMember.getEmail()));
         
         return AuthResponseDto.builder()
                 .accessToken(accessToken)
@@ -177,7 +192,7 @@ public class AuthService {
         // 새로운 액세스 토큰 생성
         String newAccessToken = jwtTokenProvider.createAccessToken(authentication);
         
-        log.info("Token refreshed successfully");
+        log.info("Token refreshed successfully - email: {}", maskEmail(member.getEmail()));
         
         return AuthResponseDto.builder()
                 .accessToken(newAccessToken)
