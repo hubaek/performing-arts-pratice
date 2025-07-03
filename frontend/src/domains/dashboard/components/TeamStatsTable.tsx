@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import {
   Card,
   CardContent,
@@ -24,12 +24,12 @@ const TeamStatsTable: React.FC<TeamStatsTableProps> = ({
   data, 
   title = "팀별 상세 통계" 
 }) => {
-  const getAttendanceRateColor = useCallback((rate: number): "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" => {
+  const getAttendanceRateColor = (rate: number): "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" => {
     if (rate >= 90) return 'success';
     if (rate >= 80) return 'info';
     if (rate >= 70) return 'warning';
     return 'error';
-  }, []);
+  };
 
   return (
     <Card sx={{ height: '100%' }}>

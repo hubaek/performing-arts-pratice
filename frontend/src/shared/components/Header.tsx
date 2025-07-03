@@ -16,7 +16,6 @@ import {
 import {
   AccountCircle as AccountCircleIcon,
   ExitToApp as LogoutIcon,
-  Home as HomeIcon,
   List as ListIcon,
   AdminPanelSettings as AdminIcon,
   Menu as MenuIcon,
