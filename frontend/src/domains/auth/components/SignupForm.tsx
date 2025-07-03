@@ -223,22 +223,30 @@ const SignupForm: React.FC = () => {
     <Box
       display="flex"
       justifyContent="center"
-      alignItems="center"
+      alignItems="flex-start"
       minHeight="100vh"
-      bgcolor="#ffffff"
-      py={3}
+      bgcolor="#f8f9fa"
+      py={4}
     >
-      <Box sx={{ maxWidth: 480, width: '100%', mx: 2 }}>
+      <Box sx={{ 
+        maxWidth: 600, 
+        width: '100%', 
+        mx: 2,
+        backgroundColor: '#ffffff',
+        borderRadius: '12px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        p: 4
+      }}>
           <Typography 
-            variant="h3" 
+            variant="h4" 
             component="h1" 
             gutterBottom 
             align="center"
             sx={{ 
               fontWeight: 700, 
               color: '#333', 
-              mb: 4,
-              fontSize: '28px'
+              mb: 3,
+              fontSize: '24px'
             }}
           >
             회원가입
@@ -250,7 +258,7 @@ const SignupForm: React.FC = () => {
             </Alert>
           )}
 
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               fullWidth
               label="이름 *"
@@ -264,7 +272,7 @@ const SignupForm: React.FC = () => {
               required
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '6px',
+                  borderRadius: '4px',
                   fontSize: '16px',
                   '&:hover fieldset': {
                     borderColor: '#1976d2',
@@ -295,7 +303,7 @@ const SignupForm: React.FC = () => {
               margin="normal"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '6px',
+                  borderRadius: '4px',
                   fontSize: '16px',
                   '&:hover fieldset': {
                     borderColor: '#1976d2',
@@ -327,7 +335,7 @@ const SignupForm: React.FC = () => {
               margin="normal"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '6px',
+                  borderRadius: '4px',
                   fontSize: '16px',
                   '&:hover fieldset': {
                     borderColor: '#1976d2',
@@ -359,7 +367,7 @@ const SignupForm: React.FC = () => {
               margin="normal"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '6px',
+                  borderRadius: '4px',
                   fontSize: '16px',
                   '&:hover fieldset': {
                     borderColor: '#1976d2',
@@ -390,7 +398,7 @@ const SignupForm: React.FC = () => {
               margin="normal"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '6px',
+                  borderRadius: '4px',
                   fontSize: '16px',
                   '&:hover fieldset': {
                     borderColor: '#1976d2',
@@ -413,31 +421,31 @@ const SignupForm: React.FC = () => {
             <Typography 
               variant="body1" 
               sx={{ 
-                mt: 2, 
-                mb: 1, 
+                mt: 1, 
+                mb: 1.5, 
                 fontWeight: 600,
-                fontSize: '16px',
+                fontSize: '15px',
                 color: '#333'
               }}
             >
               생년월일 *
             </Typography>
-            <Box sx={{ display: 'flex', gap: 2, mb: 1 }}>
+            <Box sx={{ display: 'flex', gap: 1.5, mb: 2.5 }}>
               <FormControl 
                 sx={{ 
                   minWidth: 120,
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: '6px',
+                    borderRadius: '4px',
                     '&:hover fieldset': {
-                      borderColor: '#5f0080',
+                      borderColor: '#1976d2',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#5f0080',
+                      borderColor: '#1976d2',
                     }
                   },
                   '& .MuiInputLabel-root': {
                     '&.Mui-focused': {
-                      color: '#5f0080',
+                      color: '#1976d2',
                     }
                   }
                 }} 
@@ -465,17 +473,17 @@ const SignupForm: React.FC = () => {
                 sx={{ 
                   minWidth: 80,
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: '6px',
+                    borderRadius: '4px',
                     '&:hover fieldset': {
-                      borderColor: '#5f0080',
+                      borderColor: '#1976d2',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#5f0080',
+                      borderColor: '#1976d2',
                     }
                   },
                   '& .MuiInputLabel-root': {
                     '&.Mui-focused': {
-                      color: '#5f0080',
+                      color: '#1976d2',
                     }
                   }
                 }} 
@@ -503,17 +511,17 @@ const SignupForm: React.FC = () => {
                 sx={{ 
                   minWidth: 80,
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: '6px',
+                    borderRadius: '4px',
                     '&:hover fieldset': {
-                      borderColor: '#5f0080',
+                      borderColor: '#1976d2',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#5f0080',
+                      borderColor: '#1976d2',
                     }
                   },
                   '& .MuiInputLabel-root': {
                     '&.Mui-focused': {
-                      color: '#5f0080',
+                      color: '#1976d2',
                     }
                   }
                 }} 
@@ -542,9 +550,9 @@ const SignupForm: React.FC = () => {
               fullWidth 
               sx={{ 
                 mt: 2, 
-                mb: 1,
+                mb: 2,
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '6px',
+                  borderRadius: '4px',
                   '&:hover fieldset': {
                     borderColor: '#1976d2',
                   },
@@ -582,7 +590,7 @@ const SignupForm: React.FC = () => {
               margin="normal"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '6px',
+                  borderRadius: '4px',
                   fontSize: '16px',
                   '&:hover fieldset': {
                     borderColor: '#1976d2',
@@ -613,7 +621,7 @@ const SignupForm: React.FC = () => {
               margin="normal"
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '6px',
+                  borderRadius: '4px',
                   fontSize: '16px',
                   '&:hover fieldset': {
                     borderColor: '#1976d2',
@@ -638,9 +646,9 @@ const SignupForm: React.FC = () => {
               fullWidth 
               sx={{ 
                 mt: 2, 
-                mb: 1,
+                mb: 2,
                 '& .MuiOutlinedInput-root': {
-                  borderRadius: '6px',
+                  borderRadius: '4px',
                   '&:hover fieldset': {
                     borderColor: '#1976d2',
                   },
@@ -685,9 +693,9 @@ const SignupForm: React.FC = () => {
               disabled={loading}
               size="large"
               sx={{
-                mt: 4,
-                mb: 2,
-                height: '56px',
+                mt: 3,
+                mb: 3,
+                height: '48px',
                 borderRadius: '6px',
                 backgroundColor: '#1976d2',
                 fontSize: '16px',
@@ -703,10 +711,18 @@ const SignupForm: React.FC = () => {
               {loading ? <CircularProgress size={LOADING_SPINNER_SIZE} color="inherit" /> : '회원가입'}
             </Button>
 
-            <Box textAlign="center">
-              <Typography variant="body2">
+            <Box textAlign="center" sx={{ mt: 2 }}>
+              <Typography variant="body2" sx={{ color: '#666' }}>
                 이미 계정이 있으신가요?{' '}
-                <Link component={RouterLink} to="/login" underline="hover">
+                <Link 
+                  component={RouterLink} 
+                  to="/login" 
+                  underline="hover"
+                  sx={{ 
+                    color: '#1976d2',
+                    fontWeight: 500
+                  }}
+                >
                   로그인
                 </Link>
               </Typography>
