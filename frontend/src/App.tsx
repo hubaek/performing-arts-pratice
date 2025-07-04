@@ -8,7 +8,7 @@ import { LoginForm, SignupForm, ProtectedRoute, AdminRoute } from './domains/aut
 import { PracticeList, PracticeForm, PracticeDetail } from './domains/practice';
 import { AdminTeamList } from './domains/admin';
 import { Dashboard } from './domains/dashboard';
-import { Header } from './shared/components';
+import { Header, SnackbarProvider } from './shared/components';
 
 const theme = createTheme({
   palette: {
@@ -25,54 +25,56 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
-        <AuthProvider>
-          <div className="App">
-            <Header />
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-              <Routes>
-                <Route path="/login" element={<LoginForm />} />
-                <Route path="/signup" element={<SignupForm />} />
-                <Route path="/" element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="/practices" element={
-                  <ProtectedRoute>
-                    <PracticeList />
-                  </ProtectedRoute>
-                } />
-                <Route path="/practices/new" element={
-                  <ProtectedRoute>
-                    <PracticeForm />
-                  </ProtectedRoute>
-                } />
-                <Route path="/practices/:id" element={
-                  <ProtectedRoute>
-                    <PracticeDetail />
-                  </ProtectedRoute>
-                } />
-                <Route path="/practices/:id/edit" element={
-                  <ProtectedRoute>
-                    <PracticeForm />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/teams" element={
-                  <AdminRoute>
-                    <AdminTeamList />
-                  </AdminRoute>
-                } />
-              </Routes>
-            </Container>
-          </div>
-        </AuthProvider>
-      </Router>
+      <SnackbarProvider>
+        <Router>
+          <AuthProvider>
+            <div className="App">
+              <Header />
+              <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                <Routes>
+                  <Route path="/login" element={<LoginForm />} />
+                  <Route path="/signup" element={<SignupForm />} />
+                  <Route path="/" element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/practices" element={
+                    <ProtectedRoute>
+                      <PracticeList />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/practices/new" element={
+                    <ProtectedRoute>
+                      <PracticeForm />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/practices/:id" element={
+                    <ProtectedRoute>
+                      <PracticeDetail />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/practices/:id/edit" element={
+                    <ProtectedRoute>
+                      <PracticeForm />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin/teams" element={
+                    <AdminRoute>
+                      <AdminTeamList />
+                    </AdminRoute>
+                  } />
+                </Routes>
+              </Container>
+            </div>
+          </AuthProvider>
+        </Router>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 }

@@ -16,6 +16,8 @@ import { useAuth } from '../hooks/AuthContext';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { teamApi } from '../../team/api/teamApi';
 import { TeamListItem } from '../../team/types';
+import { useSnackbar } from '../../../shared/components';
+import { textFieldStyle, formControlStyle, primaryButtonStyle, cardContainerStyle, titleStyle } from '../../../shared/styles/formStyles';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 6;
@@ -70,24 +72,56 @@ const validateSignupForm = (formData: SignupFormData) => {
     const year = parseInt(formData.birthYear);
     const month = parseInt(formData.birthMonth);
     const day = parseInt(formData.birthDay);
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
     
-    if (year < 1900 || year > new Date().getFullYear()) {
+    // 년도 범위 검증
+    if (year < 1900 || year > currentYear) {
       errors.birthYear = '올바른 출생년도를 선택해주세요';
     }
     
-    const date = new Date(year, month - 1, day);
-    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+    // 유효한 날짜인지 검증
+    const inputDate = new Date(year, month - 1, day);
+    const isValidDate = inputDate.getFullYear() === year && 
+                       inputDate.getMonth() === month - 1 && 
+                       inputDate.getDate() === day;
+    
+    if (!isValidDate) {
       errors.birthDay = '존재하지 않는 날짜입니다';
     }
     
-    if (date > new Date()) {
+    // 미래 날짜 검증
+    if (isValidDate && inputDate > currentDate) {
       errors.birthDay = '미래 날짜는 선택할 수 없습니다';
+    }
+    
+    // 너무 오래된 날짜 검증 (120세 이상)
+    const minDate = new Date(currentYear - 120, 0, 1);
+    if (isValidDate && inputDate < minDate) {
+      errors.birthYear = '올바른 출생년도를 선택해주세요';
+    }
+    
+    // 윤년 처리 - 2월 29일 검증
+    if (month === 2 && day === 29) {
+      const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+      if (!isLeapYear) {
+        errors.birthDay = '해당 년도에는 2월 29일이 없습니다';
+      }
     }
   }
 
-  // 전화번호 형식 검증
-  if (formData.phoneNumber && !/^010-\d{4}-\d{4}$/.test(formData.phoneNumber)) {
-    errors.phoneNumber = '올바른 전화번호 형식을 입력해주세요 (010-1234-1234)';
+  // 전화번호 형식 검증 (더 유연한 형식 지원)
+  if (formData.phoneNumber) {
+    // 숫자만 추출
+    const numbersOnly = formData.phoneNumber.replace(/\D/g, '');
+    
+    // 010으로 시작하는 11자리 또는 02/031/032 등으로 시작하는 지역번호
+    const mobilePattern = /^010\d{8}$/;
+    const landlinePattern = /^(02|0[3-6]\d)\d{7,8}$/;
+    
+    if (!mobilePattern.test(numbersOnly) && !landlinePattern.test(numbersOnly)) {
+      errors.phoneNumber = '올바른 전화번호를 입력해주세요 (예: 010-1234-1234, 02-1234-5678)';
+    }
   }
 
   // 고유번호 형식 검증 (8자리-5자리)
@@ -109,6 +143,7 @@ const validateSignupForm = (formData: SignupFormData) => {
 const SignupForm: React.FC = () => {
   const navigate = useNavigate();
   const { signup, loading, error } = useAuth();
+  const { showSnackbar } = useSnackbar();
   const [formData, setFormData] = useState<SignupFormData>({
     name: '',
     email: '',
@@ -189,7 +224,7 @@ const SignupForm: React.FC = () => {
     e.preventDefault();
     
     if (!validateForm()) {
-      alert('입력한 정보를 다시 확인해주세요.');
+      showSnackbar('입력한 정보를 다시 확인해주세요.', 'error');
       return;
     }
 
@@ -211,11 +246,11 @@ const SignupForm: React.FC = () => {
       };
       
       await signup(signupData);
-      alert('회원가입이 완료되었습니다! 환영합니다.');
+      showSnackbar('회원가입이 완료되었습니다! 환영합니다.', 'success');
       navigate('/');
     } catch (error) {
       console.error('Signup failed:', error);
-      alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
+      showSnackbar('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.', 'error');
     }
   };
 
@@ -228,26 +263,13 @@ const SignupForm: React.FC = () => {
       bgcolor="#f8f9fa"
       py={4}
     >
-      <Box sx={{ 
-        maxWidth: 600, 
-        width: '100%', 
-        mx: 2,
-        backgroundColor: '#ffffff',
-        borderRadius: '12px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        p: 4
-      }}>
+      <Box sx={cardContainerStyle}>
           <Typography 
             variant="h4" 
             component="h1" 
             gutterBottom 
             align="center"
-            sx={{ 
-              fontWeight: 700, 
-              color: '#333', 
-              mb: 3,
-              fontSize: '24px'
-            }}
+            sx={titleStyle}
           >
             회원가입
           </Typography>
@@ -270,24 +292,7 @@ const SignupForm: React.FC = () => {
               helperText={formErrors.name}
               margin="normal"
               required
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '4px',
-                  fontSize: '16px',
-                  '&:hover fieldset': {
-                    borderColor: '#1976d2',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#1976d2',
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  fontSize: '16px',
-                  '&.Mui-focused': {
-                    color: '#1976d2',
-                  }
-                }
-              }}
+              sx={textFieldStyle}
             />
 
             <TextField
@@ -301,24 +306,7 @@ const SignupForm: React.FC = () => {
               error={!!formErrors.email}
               helperText={formErrors.email}
               margin="normal"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '4px',
-                  fontSize: '16px',
-                  '&:hover fieldset': {
-                    borderColor: '#1976d2',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#1976d2',
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  fontSize: '16px',
-                  '&.Mui-focused': {
-                    color: '#1976d2',
-                  }
-                }
-              }}
+              sx={textFieldStyle}
               required
             />
 
@@ -333,24 +321,7 @@ const SignupForm: React.FC = () => {
               error={!!formErrors.password}
               helperText={formErrors.password}
               margin="normal"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '4px',
-                  fontSize: '16px',
-                  '&:hover fieldset': {
-                    borderColor: '#1976d2',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#1976d2',
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  fontSize: '16px',
-                  '&.Mui-focused': {
-                    color: '#1976d2',
-                  }
-                }
-              }}
+              sx={textFieldStyle}
               required
             />
 
@@ -365,24 +336,7 @@ const SignupForm: React.FC = () => {
               error={!!formErrors.confirmPassword}
               helperText={formErrors.confirmPassword}
               margin="normal"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '4px',
-                  fontSize: '16px',
-                  '&:hover fieldset': {
-                    borderColor: '#1976d2',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#1976d2',
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  fontSize: '16px',
-                  '&.Mui-focused': {
-                    color: '#1976d2',
-                  }
-                }
-              }}
+              sx={textFieldStyle}
               required
             />
 
@@ -396,25 +350,8 @@ const SignupForm: React.FC = () => {
               error={!!formErrors.phoneNumber}
               helperText={formErrors.phoneNumber}
               margin="normal"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '4px',
-                  fontSize: '16px',
-                  '&:hover fieldset': {
-                    borderColor: '#1976d2',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#1976d2',
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  fontSize: '16px',
-                  '&.Mui-focused': {
-                    color: '#1976d2',
-                  }
-                }
-              }}
-              placeholder="010-1234-1234"
+              sx={textFieldStyle}
+              placeholder="예: 010-1234-1234 또는 02-1234-5678"
               required
             />
 
@@ -434,20 +371,7 @@ const SignupForm: React.FC = () => {
               <FormControl 
                 sx={{ 
                   minWidth: 120,
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '4px',
-                    '&:hover fieldset': {
-                      borderColor: '#1976d2',
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: '#1976d2',
-                    }
-                  },
-                  '& .MuiInputLabel-root': {
-                    '&.Mui-focused': {
-                      color: '#1976d2',
-                    }
-                  }
+                  ...formControlStyle
                 }} 
                 error={!!formErrors.birthYear}
               >
@@ -472,20 +396,7 @@ const SignupForm: React.FC = () => {
               <FormControl 
                 sx={{ 
                   minWidth: 80,
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '4px',
-                    '&:hover fieldset': {
-                      borderColor: '#1976d2',
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: '#1976d2',
-                    }
-                  },
-                  '& .MuiInputLabel-root': {
-                    '&.Mui-focused': {
-                      color: '#1976d2',
-                    }
-                  }
+                  ...formControlStyle
                 }} 
                 error={!!formErrors.birthMonth}
               >
@@ -510,20 +421,7 @@ const SignupForm: React.FC = () => {
               <FormControl 
                 sx={{ 
                   minWidth: 80,
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '4px',
-                    '&:hover fieldset': {
-                      borderColor: '#1976d2',
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: '#1976d2',
-                    }
-                  },
-                  '& .MuiInputLabel-root': {
-                    '&.Mui-focused': {
-                      color: '#1976d2',
-                    }
-                  }
+                  ...formControlStyle
                 }} 
                 error={!!formErrors.birthDay}
               >
@@ -551,20 +449,7 @@ const SignupForm: React.FC = () => {
               sx={{ 
                 mt: 2, 
                 mb: 2,
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '4px',
-                  '&:hover fieldset': {
-                    borderColor: '#1976d2',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#1976d2',
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  '&.Mui-focused': {
-                    color: '#1976d2',
-                  }
-                }
+                ...formControlStyle
               }}
             >
               <InputLabel>성별</InputLabel>
@@ -588,24 +473,7 @@ const SignupForm: React.FC = () => {
               value={formData.joinYear}
               onChange={handleChange}
               margin="normal"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '4px',
-                  fontSize: '16px',
-                  '&:hover fieldset': {
-                    borderColor: '#1976d2',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#1976d2',
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  fontSize: '16px',
-                  '&.Mui-focused': {
-                    color: '#1976d2',
-                  }
-                }
-              }}
+              sx={textFieldStyle}
             />
 
 
@@ -619,24 +487,7 @@ const SignupForm: React.FC = () => {
               error={!!formErrors.uniqueCode}
               helperText={formErrors.uniqueCode}
               margin="normal"
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '4px',
-                  fontSize: '16px',
-                  '&:hover fieldset': {
-                    borderColor: '#1976d2',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#1976d2',
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  fontSize: '16px',
-                  '&.Mui-focused': {
-                    color: '#1976d2',
-                  }
-                }
-              }}
+              sx={textFieldStyle}
               placeholder="00120314-00001"
               required
             />
@@ -647,20 +498,7 @@ const SignupForm: React.FC = () => {
               sx={{ 
                 mt: 2, 
                 mb: 2,
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '4px',
-                  '&:hover fieldset': {
-                    borderColor: '#1976d2',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#1976d2',
-                  }
-                },
-                '& .MuiInputLabel-root': {
-                  '&.Mui-focused': {
-                    color: '#1976d2',
-                  }
-                }
+                ...formControlStyle
               }}
             >
               <InputLabel>팀 선택</InputLabel>
@@ -695,17 +533,7 @@ const SignupForm: React.FC = () => {
               sx={{
                 mt: 3,
                 mb: 3,
-                height: '48px',
-                borderRadius: '6px',
-                backgroundColor: '#1976d2',
-                fontSize: '16px',
-                fontWeight: 600,
-                '&:hover': {
-                  backgroundColor: '#1565c0',
-                },
-                '&:disabled': {
-                  backgroundColor: '#b5b5b5',
-                }
+                ...primaryButtonStyle
               }}
             >
               {loading ? <CircularProgress size={LOADING_SPINNER_SIZE} color="inherit" /> : '회원가입'}

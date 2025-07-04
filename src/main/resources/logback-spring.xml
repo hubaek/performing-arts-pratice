@@ -75,7 +75,7 @@
         <!-- 비동기 로깅 -->
         <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
             <queueSize>512</queueSize>
-            <discardingThreshold>0</discardingThreshold>
+            <discardingThreshold>20</discardingThreshold>
             <includeCallerData>false</includeCallerData>
             <appender-ref ref="FILE"/>
         </appender>
@@ -150,7 +150,19 @@
             <appender-ref ref="FILE"/>
         </springProfile>
         <springProfile name="prod">
+            <level value="WARN"/>
             <appender-ref ref="ASYNC_FILE"/>
+        </springProfile>
+    </logger>
+    
+    <!-- 하이버네이트 SQL 파라미터 로깅 (개발환경만) -->
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" additivity="false">
+        <springProfile name="dev">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </springProfile>
+        <springProfile name="prod">
+            <level value="OFF"/>
         </springProfile>
     </logger>
 </configuration>

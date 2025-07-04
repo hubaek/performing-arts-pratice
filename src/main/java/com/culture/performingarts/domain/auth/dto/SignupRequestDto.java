@@ -1,7 +1,6 @@
 package com.culture.performingarts.domain.auth.dto;
 
 import com.culture.performingarts.domain.member.enums.Gender;
-import com.culture.performingarts.domain.member.enums.MemberStatus;
 import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Builder;
